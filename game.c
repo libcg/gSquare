@@ -234,6 +234,7 @@ void gameControls()
         popGameState();
         if (pause.i == 1) resetPlayerState();
         if (pause.i == 2) resetLevel();
+        if (pause.i == 3) {setGameState(MENU); menu.state = 0;}
       }
      break;
   }
@@ -367,10 +368,10 @@ void gameMenu()
         {
           play = 1;
           menu.state = 2;
+          luaDoFile("start.lua");
           if (menu.sub_i == 0)
           {
             strncpy(lvl.next,saved_lvl,512);
-            setMusic("!");
           }
         }
         if (buttonJustPressed(PSP_CTRL_CIRCLE))
@@ -380,8 +381,8 @@ void gameMenu()
       }
       else if (menu.mod_i == 1) // Options
       {
-        if (menu.sub_i < 0) menu.sub_i = 2;
-        if (menu.sub_i >= 2) menu.sub_i = 0;
+        if (menu.sub_i < 0) menu.sub_i = 3;
+        if (menu.sub_i >= 3) menu.sub_i = 0;
 
         if (buttonJustPressed(PSP_CTRL_LEFT))
         {
@@ -396,6 +397,11 @@ void gameMenu()
               cfg.sound_vol -= 25;
               if (cfg.sound_vol < 0) cfg.sound_vol = 0;
               sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
+            break;
+            case 2:
+              cfg.lang_id--;
+              if (cfg.lang_id < 0) cfg.lang_id = lang_n-1;
+              loadLanguage();
             break;
           }
         }
@@ -412,6 +418,11 @@ void gameMenu()
               cfg.sound_vol += 25;
               if (cfg.sound_vol > 100) cfg.sound_vol = 100;
               sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
+            break;
+            case 2:
+              cfg.lang_id++;
+              if (cfg.lang_id >= lang_n) cfg.lang_id = 0;
+              loadLanguage();
             break;
           }
         }

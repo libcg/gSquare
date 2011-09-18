@@ -241,7 +241,7 @@ void nextLevel()
       setFadeMode(&main_fade,FADE_IN,0);
       waitFadeDone(&main_fade);
       setFadeMode(&main_fade,FADE_OUT,0);
-      setGameState(INGAME); // FIXME
+      setGameState(INGAME);
     }
     resetLevel();
   }

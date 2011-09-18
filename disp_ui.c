@@ -83,13 +83,12 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 3.f;
     intraFontSetStyle(bigfont,0.9f,BLACK,0,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,"You won !");
+    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.win);
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
       intraFontSetStyle(font,1.f,G2D_MODULATE(BLACK,255,255*dcount/DCOUNT_MAX),0,
                         0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,
-                     "Press start for the next level...");
+      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.next_level);
     }
   }
   else if (getGameState() == TIME_OVER)
@@ -99,12 +98,12 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
     intraFontSetStyle(bigfont,0.9f,WHITE,0,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,"Time over !");
+    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.time_over);
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
       intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
                         0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,"Press start to respawn...");
+      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
     }
   }
   else if (getGameState() == OUT_OF_BOUNDS)
@@ -114,12 +113,12 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
     intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,"Out of bounds !");
+    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.out_bounds);
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
       intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
                         0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,"Press start to respawn...");
+      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
     }
   }
   else if (getGameState() == DEATH)
@@ -129,12 +128,12 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
     intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,"Death !");
+    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.death);
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
       intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
                         0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,"Press start to respawn...");
+      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
     }
   }
   else if (getGameState() == PAUSE)
@@ -144,14 +143,15 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 0.75f;
     intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.pause.title);
+    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.pause);
     
     int i;
     for (i=0; i!=PAUSE_CHOICE_NBR; i++)
     {
       intraFontSetStyle(font,1.f,WHITE,(pause.i == i ? 0 : BLACK),
                         0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrintf(font,G2D_SCR_W-15,G2D_SCR_H-5-15*i,text.pause.choice[i]);
+      intraFontPrintf(font,G2D_SCR_W-15,G2D_SCR_H-5-15*i,
+                      text.game.pause_choice[i]);
       if (pause.i == i && dcount < DCOUNT_MAX * 5 / 6)
       {
         intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),
@@ -174,8 +174,8 @@ void dispgSquare()
   g2dEnd();
   
   intraFontSetStyle(font,1.f,WHITE,0,0.f,INTRAFONT_ALIGN_CENTER);
-  intraFontPrint(font,480/2,240,"presented by Meastnt and Geecko");
-  intraFontPrint(font,480/2,262,"http://sites.google.com/site/gsquarecenter");
+  intraFontPrint(font,480/2,240,text.authors);
+  intraFontPrint(font,480/2,262,text.website);
 }
 
 
@@ -231,7 +231,7 @@ void dispMenu()
   g2dBeginRects(img.gsquare);
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCoordXY(G2D_SCR_W/2,menu.logo_y);
-    g2dSetScale(0.7f,0.7f);
+    g2dSetScale(0.8f,0.8f);
     g2dAdd();
   g2dEnd();
 
@@ -297,12 +297,12 @@ void dispMenu()
     }
     else if (menu.mod_i == 1) // Config
     {
-      for (i=0; i!=2; i++)
+      for (i=0; i!=3; i++)
       {
         intraFontSetStyle(font,1.f,WHITE,(i == menu.sub_i ? 0 : BLACK),
                           menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);
         intraFontPrintf(font,text_x,text_y+i*30,
-                        (i==menu.sub_i ? "> %s %s <" : "%s %s"),
+                        (i==menu.sub_i ? "< %s %s >" : "%s %s"),
                         text.menu.config[i],text.menu.config_setting[i]);
       }
     }

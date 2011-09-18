@@ -15,6 +15,7 @@
 #include "audio.h"
 #include "common.h"
 #include "disp.h"
+#include "config.h"
 
 #define LUA_EXCEPTION(condition,err)\
   if (condition)\
@@ -371,6 +372,13 @@ int luaSetCameraActive(lua_State* L)
   return 0;
 }
 
+// Language functions
+
+int luaGetLanguageID(lua_State* L)
+{
+  return luaVarInteger(L,&cfg.lang_id);
+}
+
 // Common
 
 void luaRegister()
@@ -411,6 +419,8 @@ void luaRegister()
   // Display
   lua_register(lua_state,"setTimerAspect",luaSetTimerAspect);
   lua_register(lua_state,"setCameraActive",luaSetCameraActive);
+  // Language
+  lua_register(lua_state,"getLanguageID",luaGetLanguageID);
 }
 
 
@@ -444,5 +454,4 @@ void initLua()
   lua_state = lua_open();
   luaL_openlibs(lua_state);
   luaRegister();
-  luaDoFile("start.lua");
 }

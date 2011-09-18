@@ -32,8 +32,9 @@ void setMusic(const char* path)
     if (path[0] != '!') strncpy(music_old_path,path,128);
     music_fade = -1;
   }
-  else if (music_path[0] == '!')
+  else // Same music as before
   {
+    sceKernelDelayThread(0);
     AalibPlay(MUSIC_CHANNEL);
     music_fade = 1;
   }

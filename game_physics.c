@@ -6,6 +6,7 @@
 
 #include <pspkernel.h>
 #include <malloc.h>
+#include <math.h>
 #include <time.h>
 
 #include "level.h"
@@ -13,8 +14,6 @@
 #include "lua.h"
 #include "disp.h"
 #include "audio.h"
-
-#include "lib/glibvfpu.h"
 
 Object* obj_ext;
 static int obj_nbr;
@@ -83,7 +82,7 @@ void bounce(Object* obj, Object* obj_col, float t)
     }
     
     // Speed difference
-    s_diff = gvfpu_abs(obj->vx-tobj_col.vx);
+    s_diff = fabs(obj->vx-tobj_col.vx);
   }
   else if (cy)
   {
@@ -102,7 +101,7 @@ void bounce(Object* obj, Object* obj_col, float t)
     }
     
     // Speed difference
-    s_diff = gvfpu_abs(obj->vy-tobj_col.vy);
+    s_diff = fabs(obj->vy-tobj_col.vy);
   }
   
   // The other object is breakable
@@ -373,11 +372,11 @@ void physics()
       {
         if (ray_i->dir == 3 && obj_j->x + obj_j->w < ray_i->x)
         {
-          tl = gvfpu_abs(ray_i->x - (obj_j->x + obj_j->w));
+          tl = fabs(ray_i->x - (obj_j->x + obj_j->w));
         }
         else if (ray_i->dir == 1 && ray_i->x < obj_j->x)
         {
-          tl = gvfpu_abs(obj_j->x - ray_i->x);
+          tl = fabs(obj_j->x - ray_i->x);
         }
       }
       else if (ray_i->dir%2 == 0 && // Y axis
@@ -385,11 +384,11 @@ void physics()
       {
         if (ray_i->dir == 0 && obj_j->y + obj_j->h < ray_i->y)
         {
-          tl = gvfpu_abs(ray_i->y - (obj_j->y + obj_j->h));
+          tl = fabs(ray_i->y - (obj_j->y + obj_j->h));
         }
         else if (ray_i->dir == 2 && ray_i->y < obj_j->y)
         {
-          tl = gvfpu_abs(obj_j->y - ray_i->y);
+          tl = fabs(obj_j->y - ray_i->y);
         }
       }
       

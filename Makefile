@@ -7,7 +7,6 @@ OBJS = main.o level.o controls.o language.o audio.o config.o\
        lua.o\
        ./lib/intraFont.o ./lib/libccc.o\
        ./lib/glib2d.o\
-       ./lib/glibvfpu.o\
        ./lib/pspaalib.o ./lib/pspaalibat3.o ./lib/pspaalibeffects.o\
        ./lib/pspaalibogg.o ./lib/pspaalibscemp3.o ./lib/pspaalibwav.o
 LIBS = -lpng -ljpeg -lz -lpspgum -lpspgu -lpsprtc -lpspvram -llua\

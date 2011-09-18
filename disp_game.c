@@ -11,7 +11,6 @@
 #include "disp.h"
 
 #include "lib/glib2d.h"
-#include "lib/glibvfpu.h"
 
 Camera cam = {1,0.f,0.f,0.f,0.f,1.f,1.f};
 
@@ -47,7 +46,7 @@ void camera()
     g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
     g2dSetRotation(-cam.rot);
     g2dSetGlobalScale(cam.zoom);
-    g2dSetCoordXYRelative(-gvfpu_floor(cam.x),-gvfpu_floor(cam.y));
+    g2dSetCoordXYRelative(-cam.x,-cam.y);
     g2dPush();
   g2dEnd();
 }
@@ -123,7 +122,7 @@ void drawLevel()
       {
         g2dSetScaleWH(obj_i->w,obj_i->h);
         g2dSetCropWH(obj_i->type->tex_w,obj_i->type->tex_h);
-        ty = obj_i->type->tex_y + obj_i->type->tex_h * obj_i->state;
+        ty = obj_i->type->tex_y + (obj_i->type->tex_h+1) * obj_i->state;
         g2dSetCropXY(obj_i->type->tex_x,ty);
         g2dAdd();
       }

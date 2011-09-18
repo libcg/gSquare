@@ -15,7 +15,7 @@
 #define CUR_COL collide_list[collide_nbr]
 
 #define MENU_TITLE_NBR 4
-#define PAUSE_CHOICE_NBR 3
+#define PAUSE_CHOICE_NBR 4
 
 enum Game_States { INGAME, DEATH, WIN, TIME_OVER, OUT_OF_BOUNDS,
                    PAUSE, GSQUARE, BANNER, MENU, LEVEL_TITLE, END};
