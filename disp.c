@@ -14,7 +14,6 @@
 #include "game.h"
 #include "common.h"
 
-g2dImage rendertarget;
 intraFont *font, *bigfont, *seriffont;
 Images img;
 Fade main_fade = {FADE_OUT,255.f,3.5f,255,0,0.f,BLACK};
@@ -158,13 +157,6 @@ int dispThread(SceSize args, void *argp)
   
   while (exit_state != EXCEPTION)
   {
-    while (thread_block)
-    {
-      thread_disp_waiting = 1;
-      sceKernelDelayThread(100);
-    }
-    thread_disp_waiting = 0;
-  
     if (exit_state)
     {
       setFadeMode(&main_fade,FADE_IN,0);
@@ -219,15 +211,6 @@ int dispThread(SceSize args, void *argp)
 
 void initDisp()
 {
-  // Render target, 512*512*4 (480*272, 32bit)
-  rendertarget.tw = 512;
-  rendertarget.th = 512;
-  rendertarget.w = G2D_SCR_W;
-  rendertarget.h = G2D_SCR_H;
-  rendertarget.ratio = G2D_SCR_W / G2D_SCR_H;
-  rendertarget.swizzled = false;
-  rendertarget.can_blend = true;
-  rendertarget.data = malloc(512*512*4);
   // Load images
   img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
   img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);

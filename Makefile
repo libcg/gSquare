@@ -13,7 +13,7 @@ LIBS = -lpng -ljpeg -lz -lpspgum -lpspgu -lpsprtc -lpspvram -llua\
        -lpspaudio -lpspaudiocodec -lpspatrac3 -lpspmp3 -lvorbisfile -lvorbis\
        -logg -lpsppower -lm -lpspusb -lpspusbstor
 
-CFLAGS = -O2 -G0 -Wall -g
+CFLAGS = -Os -G0 -Wall -g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

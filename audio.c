@@ -9,6 +9,7 @@
 #include "audio.h"
 #include "common.h"
 #include "config.h"
+#include "controls.h"
 
 #include "./lib/pspaalib.h"
 
@@ -34,16 +35,20 @@ void setMusic(const char* path)
   }
   else // Same music as before
   {
-    sceKernelDelayThread(0);
-    AalibPlay(MUSIC_CHANNEL);
     music_fade = 1;
+    AalibPlay(MUSIC_CHANNEL);
   }
 }
 
 
 void musicStuff()
 {
+  if (buttonJustPressed(PSP_CTRL_TRIANGLE)) AalibPlay(MUSIC_CHANNEL);
+  if (buttonJustPressed(PSP_CTRL_SQUARE)) AalibPause(MUSIC_CHANNEL);
+  if (buttonJustPressed(PSP_CTRL_SELECT)) AalibLoad(music_path,MUSIC_CHANNEL,0);
+
   global_volume += music_fade * FADE_TIME / FPS;
+
   if (music_fade > 0 && global_volume > 1.f)
   {
     music_fade = 0;

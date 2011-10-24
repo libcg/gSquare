@@ -16,8 +16,6 @@
 #define EXCEPTION -1
 #define ERROR_LEN 2048
 
-extern int thread_block;
-extern int thread_disp_waiting;
 extern int exit_state;
 extern char exit_err[ERROR_LEN];
 extern char cwd[512];
@@ -31,9 +29,10 @@ extern char cwd[512];
 #define OBJ_VT 0.87f // Velocity transfert
 #define OBJ_BOUNCE 0.2f
 #define OBJ_BREAK 0.35f
+#define SHADOW_SPEED 0.009f
 
 #define P_SIZE 12
-#define P_ACCEL 0.178f
+#define P_ACCEL 0.14f
 #define P_ID 0
 #define P_OBJ (*lvl.obj_list)
 

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include <math.h>
 
 #include "level.h"
 #include "disp.h"
@@ -64,8 +65,8 @@ int createObject(float x, float y, float s_x, float s_y,
   if (lvl.obj_nbr < OBJ_LIST_SIZE) lvl.obj_nbr++;  
   Object* obj = lvl.obj_list + lvl.obj_nbr - 1;
   
-  obj->x = x;
-  obj->y = y;
+  obj->x = floorf(x);
+  obj->y = floorf(y);
   obj->vx = s_x;
   obj->vy = s_y;
   obj->w = w;

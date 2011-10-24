@@ -4,7 +4,7 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspgu.h>
+#include <math.h>
 
 #include "level.h"
 #include "game.h"
@@ -13,6 +13,7 @@
 #include "lib/glib2d.h"
 
 Camera cam = {1,0.f,0.f,0.f,0.f,1.f,1.f};
+static float shadow_x = 0;
 
 void setCameraRot(int rot)
 {
@@ -76,40 +77,17 @@ int isVisible(Object* obj)
 }
 
 
-// TODO shadowmaps
-/*void renderShadowMask()
-{
-  g2dClear(G2D_MODULATE(WHITE,127,255));
-  _g2dFinish();
-
-  sceGuCopyImage(GU_PSM_8888,0,0,480,272,512,g2d_draw_buffer.data,
-                 0,0,512,rendertarget.data);
-  _g2dStart();
-  sceGuTexSync();
-}
-
-
-void drawShadowMask()
-{
-  sceGuBlendFunc(GU_ADD,GU_DST_COLOR,GU_FIX,0,0);
-  
-  g2dBeginRects(&rendertarget);
-    g2dSetScaleWH(240,136);
-    g2dAdd();
-  g2dEnd();
-  
-  sceGuBlendFunc(GU_ADD,GU_SRC_ALPHA,GU_ONE_MINUS_SRC_ALPHA,0,0);
-}*/
-
-
 void drawLevel()
 {
+  shadow_x += SHADOW_SPEED;
+
   int i, ty;
   g2dBeginRects(img.tileset);
     g2dPop();
     g2dPush();
     g2dSetTexLinear(false);
     g2dSetTexRepeat(false);
+    g2dSetCoordInteger(true);
     
     // Objects
     Object* obj_i = lvl.obj_list;
@@ -124,6 +102,9 @@ void drawLevel()
         g2dSetCropWH(obj_i->type->tex_w,obj_i->type->tex_h);
         ty = obj_i->type->tex_y + (obj_i->type->tex_h+1) * obj_i->state;
         g2dSetCropXY(obj_i->type->tex_x,ty);
+        g2dSetColor(G2D_MODULATE(WHITE,
+                      255+30*(-1+sinf(shadow_x+obj_i->x/50.f+obj_i->y/120.f)),
+                      255));
         g2dAdd();
       }
       

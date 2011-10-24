@@ -85,7 +85,7 @@ int GetRawBuffer(short* buf,int length,float amp,int channel)
 	return PSPAALIB_ERROR_INVALID_CHANNEL;
 }
 
-void GetProcessedBuffer(void* abuf,unsigned int length,int channel)
+int GetProcessedBuffer(void* abuf,unsigned int length,int channel)
 {
 	short* buf=(short*) abuf;
 	//Control Volume
@@ -131,6 +131,8 @@ void GetProcessedBuffer(void* abuf,unsigned int length,int channel)
 	{
 		GetRawBuffer(buf,length,channels[channel].ampValue,channel);
 	}
+	
+	return 0;
 }
 
 int PlayThread(SceSize argsize, void* args)
@@ -164,7 +166,7 @@ int PlayThread(SceSize argsize, void* args)
 		}
 	}
 Play:
-	GetProcessedBuffer(mainBuf,1024,channel);
+	GetProcessedBuffer(mainBuf,1024,channel); 
 	while (!AalibGetStopReason(channel))
 	{
 		sceAudioOutputPanned(hardwareChannel,(unsigned int)(channels[channel].volume.left*channels[channel].audioStrength*PSP_AUDIO_VOLUME_MAX),(unsigned int)(channels[channel].volume.right*channels[channel].audioStrength*PSP_AUDIO_VOLUME_MAX),mainBuf);
@@ -195,7 +197,7 @@ int AalibInit()
 	for (i=0;i<PSPAALIB_HW_CHANNELS;i++)
 	{
 		sprintf(c,"aalibplay%i",i);
-		threads[i]=sceKernelCreateThread(c,PlayThread,0x0F,0x10000,0,NULL);
+		threads[i]=sceKernelCreateThread(c,PlayThread,0x0F,0x2000,0,NULL);
 		if (threads[i]<0)
 		{
 			return PSPAALIB_WARNING_CREATE_THREAD;

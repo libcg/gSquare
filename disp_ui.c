@@ -54,7 +54,7 @@ void drawUI()
   if (getGameState() == INGAME)
   {
     ui_fade.mode = FADE_OUT;
-    cam.zoom_target = 1.5f;
+    cam.zoom_target = 1.6f;
     // Timer
     intraFontSetStyle(bigfont,timer_size,BLACK,timer_back_color,0.f,
                       INTRAFONT_ALIGN_CENTER);
