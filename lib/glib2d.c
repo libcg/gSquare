@@ -1009,7 +1009,8 @@ g2dImage* _g2dTexLoadPNG(FILE* fp)
   png_infop info_ptr;
   unsigned int sig_read = 0;
   png_uint_32 width, height;
-  int bit_depth, color_type, interlace_type, x, y;
+  int bit_depth, color_type, interlace_type;
+  unsigned int x, y;
   u32* line;
   png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
   png_set_error_fn(png_ptr,NULL,NULL,NULL);

@@ -13,10 +13,10 @@
 
 #include "./lib/pspaalib.h"
 
-float global_volume = 0.f, music_fade = 0;
+float global_volume = 0.f;
 char music_path[128] = "!", music_old_path[128] = "!";
 char sound_name[MAX_SOUNDS][128];
-int sound_nbr = 0;
+int sound_nbr = 0, music_fade = 0;
 
 // Streamed music
 
@@ -36,17 +36,12 @@ void setMusic(const char* path)
   else // Same music as before
   {
     music_fade = 1;
-    AalibPlay(MUSIC_CHANNEL);
   }
 }
 
 
 void musicStuff()
 {
-  if (buttonJustPressed(PSP_CTRL_TRIANGLE)) AalibPlay(MUSIC_CHANNEL);
-  if (buttonJustPressed(PSP_CTRL_SQUARE)) AalibPause(MUSIC_CHANNEL);
-  if (buttonJustPressed(PSP_CTRL_SELECT)) AalibLoad(music_path,MUSIC_CHANNEL,0);
-
   global_volume += music_fade * FADE_TIME / FPS;
 
   if (music_fade > 0 && global_volume > 1.f)
@@ -64,22 +59,30 @@ void musicStuff()
       music_fade = 1;
       AalibUnload(MUSIC_CHANNEL);
       int err = AalibLoad(music_path,MUSIC_CHANNEL,0);
-      if (err > 0)
+      if (err != 0)
       {
         throwException("Failed to load the music ! (error = %d)\n",err);
       }
       else
       {
-        AalibSetAutoloop(MUSIC_CHANNEL,1);
         AalibPlay(MUSIC_CHANNEL);
+        AalibSetAutoloop(MUSIC_CHANNEL,1);
+        AalibEnable(MUSIC_CHANNEL,PSPAALIB_EFFECT_VOLUME_MANUAL);
       }
     }
   }
-  
-  AalibVolume vol = {global_volume * (cfg.music_vol / 100.f),
-                     global_volume * (cfg.music_vol / 100.f)};
-  AalibEnable(MUSIC_CHANNEL,PSPAALIB_EFFECT_VOLUME_MANUAL);
-  AalibSetVolume(MUSIC_CHANNEL,vol);
+
+  if (global_volume > 0.f)
+  {
+    if (AalibGetStatus(MUSIC_CHANNEL) == PSPAALIB_STATUS_PAUSED)
+    {
+      AalibPause(MUSIC_CHANNEL); // Unpause
+    }
+    
+    AalibVolume vol = {global_volume * (cfg.music_vol / 100.f),
+                       global_volume * (cfg.music_vol / 100.f)};
+    AalibSetVolume(MUSIC_CHANNEL,vol);
+  }
 }
 
 // Sounds
@@ -187,7 +190,7 @@ void initAudio()
   loadSound("./audio/jump.wav","jump");
   loadSound("./audio/break.wav","break");
   // Start audio thread
-  SceUID thid = sceKernelCreateThread("audio_thread",audioThread,0x11,0x30000,
+  SceUID thid = sceKernelCreateThread("audio_thread",audioThread,0x11,0x10000,
                                       THREAD_ATTR_USER | THREAD_ATTR_VFPU,NULL);
   if (thid < 0)
   {

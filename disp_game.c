@@ -12,7 +12,7 @@
 
 #include "lib/glib2d.h"
 
-Camera cam = {1,0.f,0.f,0.f,0.f,1.f,1.f};
+Camera cam = {1,0.f,0.f,0.f,0.f,1.f,1.f,1.f,1.f};
 static float shadow_x = 0;
 
 void setCameraRot(int rot)
@@ -43,12 +43,14 @@ void camera()
   
   // Place the camera
   g2dBeginRects(NULL);
+  {
     g2dPop();
     g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
     g2dSetRotation(-cam.rot);
     g2dSetGlobalScale(cam.zoom);
     g2dSetCoordXYRelative(-cam.x,-cam.y);
     g2dPush();
+  }
   g2dEnd();
 }
 
@@ -83,6 +85,7 @@ void drawLevel()
 
   int i, ty;
   g2dBeginRects(img.tileset);
+  {
     g2dPop();
     g2dPush();
     g2dSetTexLinear(false);
@@ -103,8 +106,8 @@ void drawLevel()
         ty = obj_i->type->tex_y + (obj_i->type->tex_h+1) * obj_i->state;
         g2dSetCropXY(obj_i->type->tex_x,ty);
         g2dSetColor(G2D_MODULATE(WHITE,
-                      255+30*(-1+sinf(shadow_x+obj_i->x/50.f+obj_i->y/120.f)),
-                      255));
+                    255+30*(-1+sinf(shadow_x+obj_i->x/50.f+obj_i->y/120.f)),
+                    255));
         g2dAdd();
       }
       
@@ -134,7 +137,7 @@ void drawLevel()
         g2dPop();
       } 
     }
-  
+  }
   g2dEnd();
   
   g2dSetGlobalScale(1.f);

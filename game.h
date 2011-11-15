@@ -32,7 +32,7 @@ typedef struct
   int g_dir, g_lock, g_x, g_y;
   int state;
   int time_elapsed;
-  int* state_stack;
+  int state_stack[GAMESTATE_STACK_SIZE];
   int state_stack_size;
   char* flying_text;
 } Game;

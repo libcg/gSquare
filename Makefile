@@ -13,14 +13,14 @@ LIBS = -lpng -ljpeg -lz -lpspgum -lpspgu -lpsprtc -lpspvram -llua\
        -lpspaudio -lpspaudiocodec -lpspatrac3 -lpspmp3 -lvorbisfile -lvorbis\
        -logg -lpsppower -lm -lpspusb -lpspusbstor
 
-CFLAGS = -Os -G0 -Wall -g
+CFLAGS = -O2 -Wall -msingle-float #-G0 -g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 
 PSP_FW_VERSION = 500
-BUILD_PRX = 0
+BUILD_PRX = 1
 EXTRA_TARGETS = EBOOT.PBP
-PSP_EBOOT_TITLE = gSquare 1.1pre
+PSP_EBOOT_TITLE = gSquare 1.1 RC
 PSP_EBOOT_ICON = icon0.png
 
 PSPSDK=$(shell psp-config --pspsdk-path)

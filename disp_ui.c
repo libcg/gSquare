@@ -36,11 +36,6 @@ void drawUI()
 
   drawFade(&ui_fade);
 
-  #ifdef DEBUG
-    intraFontSetStyle(font,0.8f,BLACK,WHITE,90.f,INTRAFONT_ALIGN_LEFT);
-    intraFontPrintf(font,5,5,"%s","DEBUG");
-  #endif
-
   // Timer
   timer_size += (1.f-timer_size) * TIMER_SIZE_SPEED;
   timer_back_color = G2D_RGBA(G2D_GET_R(timer_back_color) +
@@ -141,7 +136,7 @@ void drawUI()
     ui_fade.color = BLACK;
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
-    cam.zoom_target = 0.75f;
+    cam.zoom_target = 0.85f;
     intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
     intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.pause);
     
@@ -166,11 +161,14 @@ void drawUI()
 void dispgSquare()
 {
   gsquare_size /= 1.0002f;
+  
   g2dBeginRects(img.gsquare);
+  {
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2-20);
     g2dSetScale(gsquare_size,gsquare_size);
     g2dAdd();
+  }
   g2dEnd();
   
   intraFontSetStyle(font,1.f,WHITE,0,0.f,INTRAFONT_ALIGN_CENTER);
@@ -182,7 +180,9 @@ void dispgSquare()
 void dispBanner()
 {
   g2dBeginRects(img.banner);
+  {
     g2dAdd();
+  }
   g2dEnd();
 }
 
@@ -214,6 +214,7 @@ void dispMenu()
 
   // Background shade
   g2dBeginQuads(NULL);
+  {
     g2dSetColor(YELLOW);
     g2dSetAlpha(0);
     g2dSetCoordXY(0,0);
@@ -225,14 +226,17 @@ void dispMenu()
     g2dAdd();
     g2dSetCoordXY(0,G2D_SCR_H);
     g2dAdd();
+  }
   g2dEnd();
 
   // Logo
   g2dBeginRects(img.gsquare);
+  {
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCoordXY(G2D_SCR_W/2,menu.logo_y);
     g2dSetScale(0.8f,0.8f);
     g2dAdd();
+  }
   g2dEnd();
 
   // L/R indicator
@@ -249,6 +253,7 @@ void dispMenu()
   }
 
   g2dBeginRects(img.tileset);
+  {
     // Draw Bluz
     g2dSetTexLinear(false);
     g2dSetCoordMode(G2D_CENTER);
@@ -267,6 +272,7 @@ void dispMenu()
       g2dGetCoordXYZ(&title_x[i],&title_y[i],NULL);
       g2dPop();
     }
+  }
   g2dEnd();
   
   // Draw section title

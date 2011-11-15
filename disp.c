@@ -8,11 +8,9 @@
 #include <pspdebug.h>
 #include <stdlib.h>
 #include <time.h>
-#include <malloc.h>
 
 #include "disp.h"
 #include "game.h"
-#include "common.h"
 
 intraFont *font, *bigfont, *seriffont;
 Images img;
@@ -39,14 +37,23 @@ void drawMovingBackground()
   int i;
   for (i=0; i!=4; i++)
   {
-    if (back.a[i] < 0.f  ) back.d[i] =  1, back.a[i] = 0.f;
-    if (back.a[i] > 255.f) back.d[i] = -1, back.a[i] = 255.f;
+    if (back.a[i] < 0.f  )
+    {
+      back.d[i] =  1;
+      back.a[i] = 0.f;
+    }
+    if (back.a[i] > 255.f)
+    {
+      back.d[i] = -1;
+      back.a[i] = 255.f;
+    }
     back.a[i] += back.d[i] * back.s[i];
   }
 
   g2dClear(WHITE);
 
   g2dBeginQuads(img.back);
+  {
     g2dSetCropWH(BACK_W-1,BACK_H-1);
     // First
     g2dSetCropXY(0,0);
@@ -76,6 +83,7 @@ void drawMovingBackground()
     g2dSetCoordXY(0,G2D_SCR_H);
     g2dSetAlpha(255-back.a[3]);
     g2dAdd();
+  }
   g2dEnd();
 }
 
@@ -84,10 +92,21 @@ void drawMovingBackground()
 void setFadeMode(Fade* fade, short mode, short reset)
 {
   fade->mode = mode;
-  if (!reset) return;
+  if (!reset)
+  {
+    return;
+  }
 
-  if      (mode == FADE_OUT) fade->alpha = fade->max, fade->progress = 1.f;
-  else if (mode == FADE_IN ) fade->alpha = fade->min, fade->progress = 0.f;
+  if (mode == FADE_OUT)
+  {
+    fade->alpha = fade->max;
+    fade->progress = 1.f;
+  }
+  else if (mode == FADE_IN )
+  {
+    fade->alpha = fade->min;
+    fade->progress = 0.f;
+  }
 }
 
 
@@ -107,7 +126,10 @@ short getFadeState(Fade* fade)
 
 void waitFadeDone(Fade* fade)
 {
-  while (getFadeState(fade) != FADE_DONE) sceKernelDelayThread(1000);
+  while (getFadeState(fade) != FADE_DONE)
+  {
+    sceKernelDelayThread(1000);
+  }
 }
 
 
@@ -121,10 +143,12 @@ void drawFade(Fade* fade)
   if (fade->alpha != 0)
   {
     g2dBeginRects(NULL);
+    {
       g2dSetScaleWH(G2D_SCR_W,G2D_SCR_H);
       g2dSetColor(fade->color);
       g2dSetAlpha(fade->alpha);
       g2dAdd();
+    }
     g2dEnd();
   }
 }
@@ -195,7 +219,9 @@ int dispThread(SceSize args, void *argp)
     {
       g2dClear(WHITE);
       g2dBeginRects(img.end);
+      {
         g2dAdd();
+      }
       g2dEnd();
     }
     

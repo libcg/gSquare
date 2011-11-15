@@ -5,7 +5,6 @@
 // See LICENSE for more details.
 
 #include <pspkernel.h>
-#include <malloc.h>
 #include <math.h>
 #include <time.h>
 
@@ -287,15 +286,11 @@ void objCollisions(Object* obj)
   int i, j;
   
   // Get colliding objects (t0)
-  Object** col_list = malloc(COLLIDER_NBR * sizeof(Object*));
+  Object* col_list[COLLIDER_NBR];
   int col_n = getColliders(obj,col_list,COLLIDER_NBR);
   
   // No colliders, abort
-  if (col_n <= 0)
-  {
-    free(col_list);
-    return;
-  }
+  if (col_n <= 0) return;
 
   for (i=0; i!=3; i++)
   {
@@ -321,8 +316,6 @@ void objCollisions(Object* obj)
   {
     updatePosition(obj,t);
   }
-  
-  free(col_list);
 }
 
 

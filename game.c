@@ -7,7 +7,6 @@
 #include <pspkernel.h>
 #include <pspdisplay.h>
 #include <stdio.h>
-#include <malloc.h>
 #include <time.h>
 
 #include "common.h"
@@ -20,9 +19,9 @@
 #include "config.h"
 #include "language.h"
 
-Game game = {S,0,0.f,0.f,0,0,NULL,0};
+Game game = {S,0,0.f,0.f,0,0,{0},0,NULL};
 Pause pause = {0};
-Menu menu = {0,0,0,0,0.f,0.f,0.f,70.f,500.f,350.f};
+Menu menu = {0,0,0,0,0,0.f,0.f,0.f,70.f,500.f,350.f};
 State p_state;
 static time_t old_time = 0;
 
@@ -30,7 +29,6 @@ static time_t old_time = 0;
 
 void initGameState()
 {
-  game.state_stack = malloc(GAMESTATE_STACK_SIZE * sizeof(int));
   setMusic("audio/c418-sometimesimakevideogamemusic.mp3");
   #ifdef DEBUG
     setGameState(MENU);
