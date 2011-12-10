@@ -81,7 +81,7 @@ int PlayWav(int channel)
 	{
 		return PSPAALIB_ERROR_WAV_UNINITIALIZED_CHANNEL;
 	}
-	streamsWav[channel].paused=FALSE;
+	streamsWav[channel].paused=false;
 	streamsWav[channel].stopReason=PSPAALIB_STOP_NOT_STOPPED;
 	return PSPAALIB_SUCCESS;
 }
@@ -97,7 +97,7 @@ int StopWav(int channel)
 		return PSPAALIB_ERROR_WAV_UNINITIALIZED_CHANNEL;
 	}
 	RewindWav(channel);
-	streamsWav[channel].paused=TRUE;
+	streamsWav[channel].paused=true;
 	streamsWav[channel].stopReason=PSPAALIB_STOP_ON_REQUEST;
 	return PSPAALIB_SUCCESS;
 }
@@ -163,7 +163,7 @@ int GetBufferWav(short* buf,int length,float amp,int channel)
 		RewindWav(channel);
 		if (!streamsWav[channel].autoloop)
 		{
-			streamsWav[channel].paused=TRUE;
+			streamsWav[channel].paused=true;
 			streamsWav[channel].stopReason=PSPAALIB_STOP_END_OF_STREAM;
 			memset((char*)buf,0,4*length);
 			return PSPAALIB_SUCCESS;
@@ -320,8 +320,8 @@ int LoadWav(char* filename,int channel,bool loadToRam)
 	{
 		sceIoLseek(streamsWav[channel].file,streamsWav[channel].dataLocation,PSP_SEEK_SET);
 	}
-	streamsWav[channel].initialized=TRUE;
-	streamsWav[channel].paused=TRUE;
+	streamsWav[channel].initialized=true;
+	streamsWav[channel].paused=true;
 	streamsWav[channel].stopReason=PSPAALIB_STOP_JUST_LOADED;
 	return PSPAALIB_SUCCESS;
 }
@@ -338,7 +338,7 @@ int UnloadWav(int channel)
 		sceIoClose(streamsWav[channel].file);
 	}
 	free(streamsWav[channel].data);
-	streamsWav[channel].initialized=FALSE;
+	streamsWav[channel].initialized=false;
 	streamsWav[channel].stopReason=PSPAALIB_STOP_UNLOADED;
 	return PSPAALIB_SUCCESS;
 }

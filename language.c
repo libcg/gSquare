@@ -58,6 +58,7 @@ void loadLanguage()
   fscanf(file,"%[^\n]\n",text.menu.title[3]);
   fscanf(file,"%[^\n]\n",text.menu.story[0]);
   fscanf(file,"%[^\n]\n",text.menu.story[1]);
+  fscanf(file,"%[^\n]\n",text.menu.story[2]);
   fscanf(file,"%[^\n]\n",text.menu.config[0]);
   fscanf(file,"%[^\n]\n",text.menu.config[1]);
   fscanf(file,"%[^\n]\n",text.menu.config[2]);

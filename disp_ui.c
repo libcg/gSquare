@@ -293,7 +293,7 @@ void dispMenu()
           text_y = title_y[menu.mod_i] + 70.f;
     if (menu.mod_i == 0) // Story
     {
-      for (i=0; i!=2; i++)
+      for (i=0; i<3; i++)
       {
         intraFontSetStyle(font,1.f,WHITE,(i == menu.sub_i ? 0 : BLACK),
                           menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);
@@ -303,7 +303,7 @@ void dispMenu()
     }
     else if (menu.mod_i == 1) // Config
     {
-      for (i=0; i!=3; i++)
+      for (i=0; i<3; i++)
       {
         intraFontSetStyle(font,1.f,WHITE,(i == menu.sub_i ? 0 : BLACK),
                           menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);

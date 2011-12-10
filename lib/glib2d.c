@@ -11,9 +11,7 @@
 #include <pspdisplay.h>
 #include <pspgu.h>
 #include <vram.h>
-#include <stdio.h>
 #include <malloc.h>
-#include <string.h>
 #include <math.h>
 
 #ifdef USE_PNG
@@ -22,7 +20,6 @@
 
 #ifdef USE_JPEG
 #include <jpeglib.h>
-#include <jerror.h>
 #endif
 
 #define PSP_LINE_SIZE       (512)
@@ -31,6 +28,8 @@
 #define MALLOC_STEP         (128)
 #define TRANSFORM_STACK_MAX (64)
 #define SLICE_WIDTH         (64)
+#define M_180_PI            (57.29578f)
+#define M_PI_180            (0.017453292f)
 
 #define DEFAULT_SIZE       (10)
 #define DEFAULT_COORD_MODE (G2D_UP_LEFT)
@@ -44,7 +43,10 @@
 #define CURRENT_TRANSFORM transform_stack[transform_stack_size-1]
 #define I_OBJ obj_list[i]
 
-enum Obj_Types { RECTS, LINES, QUADS, POINTS };
+typedef enum
+{
+  RECTS, LINES, QUADS, POINTS
+} Obj_Type;
 
 typedef struct
 {
@@ -74,12 +76,12 @@ static int transform_stack_size;
 static float global_scale = 1.f;
 // * Object vars *
 static Object *obj_list = NULL, obj;
-static g2dEnum obj_type;
+static Obj_Type obj_type;
 static int obj_list_size;
 static bool obj_begin = false, obj_line_strip;
 static bool obj_use_z, obj_use_vert_color, obj_use_blend, obj_use_rot,
             obj_use_tex_linear, obj_use_tex_repeat, obj_use_int;
-static g2dEnum obj_coord_mode;
+static g2dCoord_Mode obj_coord_mode;
 static int obj_colors_count;
 static g2dImage* obj_tex;
 
@@ -195,23 +197,20 @@ void* _g2dSetVertex(void* vp, int i, float vx, float vy)
 }
 
 
-// Insertion sort, because it is a fast and _stable_ sort.
-void _g2dVertexSort()
+#ifdef USE_VFPU
+void vfpu_sincosf(float x, float* s, float* c)
 {
-  int i, j;
-  Object obj_tmp;
-  for (i=1; i<obj_list_size; i++)
-  {
-    j = i;
-    memcpy(&obj_tmp,obj_list+j,sizeof(Object));
-    while (j>0 && obj_list[j-1].z < obj_tmp.z)
-    {
-      memcpy(obj_list+j,obj_list+j-1,sizeof(Object));
-      j--;
-    }
-    memcpy(obj_list+j,&obj_tmp,sizeof(Object));
-  }
+  __asm__ volatile (
+    "mtv    %2, s000\n"          // s000 = x
+    "vcst.s s001, VFPU_2_PI\n"   // s001 = 2/pi
+    "vmul.s s000, s000, s001\n"  // s000 = s000*s001
+    "vrot.p c010, s000, [s,c]\n" // s010 = sinf(s000), s011 = cosf(s000)
+    "mfv    %0, s010\n"          // *s = s010
+    "mfv    %1, S011\n"          // *c = s011
+    : "=r"(*s), "=r"(*c) : "r"(x)
+  );
 }
+#endif
 
 // * Main functions *
 
@@ -264,13 +263,13 @@ void g2dBeginRects(g2dImage* tex)
 }
 
 
-void g2dBeginLines(g2dEnum line_mode)
+void g2dBeginLines(g2dLine_Mode mode)
 {
   if (obj_begin) return;
 
   obj_type = LINES;
   obj_tex = NULL;
-  obj_line_strip = (line_mode & G2D_STRIP);
+  obj_line_strip = (mode & G2D_STRIP);
   _g2dBeginCommon();
 }
 
@@ -297,9 +296,6 @@ void g2dBeginPoints()
 
 void _g2dEndRects()
 {
-  // Horror : we need to sort the vertices.
-  if (obj_use_z && obj_use_blend) _g2dVertexSort();
-
   // Define vertices properties
   int prim = (obj_use_rot ? GU_TRIANGLES : GU_SPRITES),
       v_obj_nbr = (obj_use_rot ? 6 : 2),
@@ -391,7 +387,7 @@ void _g2dEndLines()
   // Build the vertex list
   if (obj_line_strip)
   {
-    vi = _g2dSetVertex(vi,0,0.f,0.f); 
+    vi = _g2dSetVertex(vi,0,0.f,0.f);
     for (i=1; i<obj_list_size; i+=1)
     {
       vi = _g2dSetVertex(vi,i,0.f,0.f);
@@ -533,14 +529,14 @@ void g2dReset()
 }
 
 
-void g2dFlip(g2dEnum flip_mode)
+void g2dFlip(g2dFlip_Mode mode)
 {
   if (scissor) g2dResetScissor();
 
   sceGuFinish();
   sceGuSync(0,0);
-  if (flip_mode & G2D_VSYNC) sceDisplayWaitVblankStart();
-  
+  if (mode & G2D_VSYNC) sceDisplayWaitVblankStart();
+
   g2d_disp_buffer.data = g2d_draw_buffer.data;
   g2d_draw_buffer.data = vabsptr(sceGuSwapBuffers());
 
@@ -622,10 +618,10 @@ void g2dResetCoord()
 }
 
 
-void g2dSetCoordMode(g2dEnum coord_mode)
+void g2dSetCoordMode(g2dCoord_Mode mode)
 {
-  if (coord_mode < G2D_UP_LEFT || coord_mode > G2D_CENTER) return;
-  obj_coord_mode = coord_mode;
+  if (mode > G2D_CENTER) return;
+  obj_coord_mode = mode;
 }
 
 
@@ -663,7 +659,7 @@ void g2dSetCoordXYRelative(float x, float y)
     inc_y =  obj.rot_cos*y + obj.rot_sin*x;
   }
   obj.x += inc_x * global_scale;
-  obj.y += inc_y * global_scale;  
+  obj.y += inc_y * global_scale;
 }
 
 
@@ -700,7 +696,7 @@ void g2dResetScale()
     obj.scale_w = obj_tex->w;
     obj.scale_h = obj_tex->h;
   }
-  
+
   obj.scale_w *= global_scale;
   obj.scale_h *= global_scale;
 }
@@ -819,7 +815,7 @@ void g2dGetRotationRad(float* radians)
 
 void g2dGetRotation(float* degrees)
 {
-  if (degrees != NULL) *degrees = obj.rot * 180.f / GU_PI;
+  if (degrees != NULL) *degrees = obj.rot * M_180_PI;
 }
 
 
@@ -827,15 +823,18 @@ void g2dSetRotationRad(float radians)
 {
   if (radians == obj.rot) return;
   obj.rot = radians;
-  obj.rot_sin = sinf(radians);
-  obj.rot_cos = cosf(radians);
+  #ifdef USE_VFPU
+  vfpu_sincosf(radians, &obj.rot_sin, &obj.rot_cos);
+  #else
+  sincosf(radians, &obj.rot_sin, &obj.rot_cos);
+  #endif
   if (radians != 0.f) obj_use_rot = true;
 }
 
 
 void g2dSetRotation(float degrees)
 {
-  g2dSetRotationRad(degrees * GU_PI / 180.f);
+  g2dSetRotationRad(degrees * M_PI_180);
 }
 
 
@@ -847,7 +846,7 @@ void g2dSetRotationRadRelative(float radians)
 
 void g2dSetRotationRelative(float degrees)
 {
-  g2dSetRotationRadRelative(degrees * GU_PI / 180.f);
+  g2dSetRotationRadRelative(degrees * M_PI_180);
 }
 
 // * Crop functions *
@@ -976,7 +975,7 @@ g2dImage* _g2dTexCreate(int w, int h, bool can_blend)
 {
   g2dImage* tex = malloc(sizeof(g2dImage));
   if (tex == NULL) return NULL;
-    
+
   tex->tw = _getNextPower2(w);
   tex->th = _getNextPower2(h);
   tex->w = w;
@@ -984,13 +983,13 @@ g2dImage* _g2dTexCreate(int w, int h, bool can_blend)
   tex->ratio = (float)w / h;
   tex->swizzled = false;
   tex->can_blend = can_blend;
-  
+
   tex->data = malloc(tex->tw*tex->th*sizeof(g2dColor));
   if (tex->data == NULL) { free(tex); return NULL; }
   memset(tex->data,0,tex->tw*tex->th*sizeof(g2dColor));
-  
+
   return tex;
-} 
+}
 
 
 void g2dTexFree(g2dImage** tex)
@@ -1010,8 +1009,7 @@ g2dImage* _g2dTexLoadPNG(FILE* fp)
   unsigned int sig_read = 0;
   png_uint_32 width, height;
   int bit_depth, color_type, interlace_type;
-  unsigned int x, y;
-  u32* line;
+  u32 x, y, *line;
   png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
   png_set_error_fn(png_ptr,NULL,NULL,NULL);
   info_ptr = png_create_info_struct(png_ptr);
@@ -1039,7 +1037,7 @@ g2dImage* _g2dTexLoadPNG(FILE* fp)
   free(line);
   png_read_end(png_ptr, info_ptr);
   png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-  
+
   return tex;
 }
 #endif
@@ -1084,13 +1082,13 @@ g2dImage* _g2dTexLoadJPEG(FILE* fp)
   jpeg_finish_decompress(&dinfo);
   jpeg_destroy_decompress(&dinfo);
   free(line);
-  
+
   return tex;
 }
 #endif
 
 
-g2dImage* g2dTexLoad(char path[], g2dEnum tex_mode)
+g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
 {
   if (path == NULL) return NULL;
 
@@ -1121,7 +1119,7 @@ g2dImage* g2dTexLoad(char path[], g2dEnum tex_mode)
   if (tex->w > 512 || tex->h > 512) goto error;
 
   // Swizzling is useless with small textures.
-  if ((tex_mode & G2D_SWIZZLE) && (tex->w >= 16 || tex->h >= 16))
+  if ((mode & G2D_SWIZZLE) && (tex->w >= 16 || tex->h >= 16))
   {
     u8* tmp = malloc(tex->tw*tex->th*PIXEL_SIZE);
     _swizzle(tmp,(u8*)tex->data,tex->tw*PIXEL_SIZE,tex->th);
@@ -1133,7 +1131,7 @@ g2dImage* g2dTexLoad(char path[], g2dEnum tex_mode)
   else tex->swizzled = false;
 
   return tex;
-  
+
   // Load failure... abort
   error:
   if (fp != NULL) fclose(fp);

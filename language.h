@@ -13,7 +13,7 @@
 typedef struct
 {
   char title[MENU_TITLE_NBR][128];
-  char story[2][128];
+  char story[3][128];
   char config[3][128];
   char config_setting[3][128];
 } Menu_Text;

@@ -27,7 +27,8 @@ enum Obj_Properties
   CAN_BREAK = 256,
   INVINCIBLE = 512,
   AIR_RESISTANCE = 1024,
-  PLAYER = 2048
+  PLAYER = 2048,
+  TEXT = 4096
 };
 
 typedef struct

@@ -16,7 +16,7 @@
 #include "lua.h"
 #include "audio.h"
 
-Level lvl = {NULL,0,NULL,0,NULL,0,"","",0,0,0,0};
+Level lvl = {NULL,0,NULL,0,NULL,0,"","",0,0,0,0,""};
 
 void initObject()
 {

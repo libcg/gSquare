@@ -51,21 +51,11 @@
 #ifndef GLIB2D_H
 #define GLIB2D_H
 
-/**
- * \def false
- * \brief False boolean constant. 
- */ 
-/**
- * \def true
- * \brief True boolean constant.
- */ 
-/**
- * \typedef bool
- * \brief Boolean variable type.
- */ 
-#define false (0)
-#define true (!false)
-typedef char bool;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
 
 /**
  * \def USE_PNG
@@ -74,7 +64,7 @@ typedef char bool;
  * Otherwise, this part will be not compiled to gain some space.
  * Enable this to get PNG support, disable to avoid compilation errors
  * when libpng is not linked in the Makefile.
- */ 
+ */
 /**
  * \def USE_JPEG
  * \brief Choose if the JPEG support is enabled.
@@ -82,21 +72,30 @@ typedef char bool;
  * Otherwise, this part will be not compiled to gain some space.
  * Enable this to get JPEG support, disable to avoid compilation errors
  * when libjpeg is not linked in the Makefile.
- */ 
+ */
+/**
+ * \def USE_VFPU
+ * \brief Choose if the VFPU support is enabled.
+ *
+ * Otherwise, this part will be not compiled to use the standard math library.
+ * Enable this to greatly improve performance with 2d rotations. You SHOULD use
+ * PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU) to avoid crashes.
+ */
 #define USE_PNG
-#define USE_JPEG
+//#define USE_JPEG
+#define USE_VFPU
 
 /**
  * \def G2D_SCR_W
  * \brief Screen width constant, in pixels.
- */ 
+ */
 /**
  * \def G2D_SCR_H
  * \brief Screen height constant, in pixels.
- */ 
+ */
 /**
  * \def G2D_VOID
- * \brief Generic g2dEnum constant, equals to 0 (do nothing).
+ * \brief Generic constant, equals to 0 (do nothing).
  */
 #define G2D_SCR_W (480)
 #define G2D_SCR_H (272)
@@ -108,25 +107,25 @@ typedef char bool;
  *
  * This macro creates a g2dColor from 4 values, red, green, blue and alpha.
  * Input range is from 0 to 255.
- */ 
+ */
 #define G2D_RGBA(r,g,b,a) ((r)|((g)<<8)|((b)<<16)|((a)<<24))
 
 /**
  * \def G2D_GET_R(color)
  * \brief Get red channel value from a g2dColor.
- */ 
+ */
 /**
  * \def G2D_GET_G(color)
  * \brief Get green channel value from a g2dColor.
- */ 
+ */
 /**
  * \def G2D_GET_B(color)
  * \brief Get blue channel value from a g2dColor.
- */ 
+ */
 /**
  * \def G2D_GET_A(color)
  * \brief Get alpha channel value from a g2dColor.
- */ 
+ */
 #define G2D_GET_R(color) (((color)    ) & 0xFF)
 #define G2D_GET_G(color) (((color)>>8 ) & 0xFF)
 #define G2D_GET_B(color) (((color)>>16) & 0xFF)
@@ -137,8 +136,8 @@ typedef char bool;
  * \brief g2dColor modulation.
  *
  * This macro modulates the luminance & alpha of a g2dColor.
- * Input range is from 0 to 255. 
- */ 
+ * Input range is from 0 to 255.
+ */
 #define G2D_MODULATE(color,luminance,alpha) \
 G2D_RGBA((int)(luminance)*G2D_GET_R(color)/255, \
          (int)(luminance)*G2D_GET_G(color)/255, \
@@ -172,7 +171,7 @@ enum g2dColors
   WHITE        = 0xFFFFFFFF,
   LITEGRAY     = 0xFFBFBFBF,
   GRAY         = 0xFF7F7F7F,
-  DARKGRAY     = 0xFF3F3F3F,  
+  DARKGRAY     = 0xFF3F3F3F,
   BLACK        = 0xFF000000
 };
 
@@ -196,7 +195,7 @@ enum g2dColors
  *
  * Change flip properties.
  * Can only be used with g2dFlip.
- */ 
+ */
 /**
  * \enum g2dTex_Mode
  * \brief Texture modes enumeration.
@@ -204,27 +203,27 @@ enum g2dColors
  * Change texture properties.
  * Can only be used with g2dTexLoad.
  */
-enum g2dCoord_Mode
-{ 
+typedef enum
+{
   G2D_UP_LEFT,
-  G2D_UP_RIGHT, 
+  G2D_UP_RIGHT,
   G2D_DOWN_RIGHT,
   G2D_DOWN_LEFT,
   G2D_CENTER
-};
-enum g2dLine_Mode
-{ 
+} g2dCoord_Mode;
+typedef enum
+{
   G2D_STRIP = 1 /**< Make a line strip. */
-};
-enum g2dFlip_Mode
+} g2dLine_Mode;
+typedef enum
 {
   G2D_VSYNC = 1 /**< Limit the FPS to 60 (synchronized with the screen).
                      Better image quality and less power consumption. */
-};
-enum g2dTex_Mode
+} g2dFlip_Mode;
+typedef enum
 {
   G2D_SWIZZLE = 1 /**< Recommended. Use it to get *more* rendering speed. */
-};
+} g2dTex_Mode;
 
 /**
  * \var g2dAlpha
@@ -234,13 +233,8 @@ enum g2dTex_Mode
  * \var g2dColor
  * \brief Color type.
  */
-/**
- * \var g2dEnum
- * \brief Enumeration type.
- */
 typedef int g2dAlpha;
 typedef unsigned int g2dColor;
-typedef int g2dEnum;
 
 /**
  * \struct g2dImage
@@ -306,7 +300,7 @@ void g2dBeginRects(g2dImage* tex);
  * Two g2dAdd() calls per object.
  * Pass G2D_LINE_STRIP to make a line strip (two calls, then one per object).
  */
-void g2dBeginLines(g2dEnum line_mode);
+void g2dBeginLines(g2dLine_Mode mode);
 
 /**
  * \brief Begins quads rendering.
@@ -354,7 +348,7 @@ void g2dReset();
  * Renders the whole display list to the draw buffer.
  * Inverts framebuffers to display the whole thing.
  */
-void g2dFlip(g2dEnum flip_mode);
+void g2dFlip(g2dFlip_Mode mode);
 
 /**
  * \brief Pushes the current transformation & attribution to a new object.
@@ -402,7 +396,7 @@ void g2dTexFree(g2dImage** tex);
  * textures (useless on small textures), pass G2D_SWIZZLE to enable it.
  * Image support up to 512*512 only (hardware limitation).
  */
-g2dImage* g2dTexLoad(char path[], g2dEnum tex_mode);
+g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode);
 
 /**
  * \brief Resets the current coordinates.
@@ -419,7 +413,7 @@ void g2dResetCoord();
  * This function must be called during object rendering.
  * Defines where the coordinates correspond in the object.
  */
-void g2dSetCoordMode(g2dEnum coord_mode);
+void g2dSetCoordMode(g2dCoord_Mode mode);
 
 /**
  * \brief Gets the current position.
@@ -804,5 +798,9 @@ void g2dResetScissor();
  * Pixel draw will be skipped outside this rectangle.
  */
 void g2dSetScissor(int x, int y, int w, int h);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

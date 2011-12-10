@@ -188,7 +188,7 @@ int getColliders(Object* obj, Object** list, int size)
           luaCall(obj_j->type->touch_callback);
         }
         // Flying text
-        if (obj_j->text[0] != '\0')
+        if (obj_j->text[0] != '\0' && (obj_j->type->properties & TEXT))
         {
           game.flying_text = obj_j->text;
         }

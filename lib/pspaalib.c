@@ -54,10 +54,10 @@ int FreeHardwareChannel(int channel)
 			}
 			sceAudioChRelease(i);
 			hardwareChannels[i]=PSPAALIB_CHANNEL_NONE;
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 int GetRawBuffer(short* buf,int length,float amp,int channel)
@@ -148,7 +148,7 @@ int PlayThread(SceSize argsize, void* args)
 	mainBuf=malloc(4096);
 	backBuf=malloc(4096);
 	sceAudioChReserve(hardwareChannel,1024,PSP_AUDIO_FORMAT_STEREO);
-	while(TRUE)
+	while(true)
 	{
 		stopReason=AalibGetStopReason(channel);
 		if (!stopReason)
@@ -288,7 +288,7 @@ int AalibEnable(int channel,int effect)
 	{
 		return PSPAALIB_ERROR_INVALID_EFFECT;
 	}
-	channels[channel].effects[effect]=TRUE;
+	channels[channel].effects[effect]=true;
 	return PSPAALIB_SUCCESS;
 }
 
@@ -298,7 +298,7 @@ int AalibDisable(int channel,int effect)
 	{
 		return PSPAALIB_ERROR_INVALID_CHANNEL;
 	}
-	channels[channel].effects[effect]=FALSE;
+	channels[channel].effects[effect]=false;
 	return PSPAALIB_SUCCESS;
 }
 
@@ -308,7 +308,7 @@ int AalibUnload(int channel)
 	{
 		return PSPAALIB_ERROR_INVALID_CHANNEL;
 	}
-	channels[channel].initialized=FALSE;
+	channels[channel].initialized=false;
 	if ((PSPAALIB_CHANNEL_WAV_1<=channel)&&(channel<=PSPAALIB_CHANNEL_WAV_32))
 	{
 		return UnloadWav(channel-PSPAALIB_CHANNEL_WAV_1);
@@ -342,7 +342,7 @@ int AalibLoad(char* filename,int channel,bool loadToRam)
 	channels[channel].playSpeed=1.0f;
 	channels[channel].volume=(AalibVolume){1.0f,1.0f};
 	channels[channel].ampValue=1.0f;
-	channels[channel].initialized=TRUE;
+	channels[channel].initialized=true;
 	if ((PSPAALIB_CHANNEL_WAV_1<=channel)&&(channel<=PSPAALIB_CHANNEL_WAV_32))
 	{
 		return LoadWav(filename,channel-PSPAALIB_CHANNEL_WAV_1,loadToRam);

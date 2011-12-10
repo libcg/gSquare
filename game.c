@@ -360,7 +360,7 @@ void gameMenu()
       if (menu.mod_i == 0) // Story
       {
         if (menu.sub_i < 0) menu.sub_i = 2;
-        if (menu.sub_i >= 2) menu.sub_i = 0;
+        if (menu.sub_i > 2) menu.sub_i = 0;
         
         if (buttonJustPressed(PSP_CTRL_CROSS))
         {
@@ -370,6 +370,10 @@ void gameMenu()
           if (menu.sub_i == 0)
           {
             strncpy(lvl.next,saved_lvl,512);
+          }
+          if (menu.sub_i == 2)
+          {
+            strncpy(lvl.next,"select.lua",512);
           }
         }
         if (buttonJustPressed(PSP_CTRL_CIRCLE))

@@ -155,7 +155,7 @@ void drawFade(Fade* fade)
 
 // Common
 
-g2dImage* loadImage(char path[], g2dEnum tex_mode)
+g2dImage* loadImage(char path[], int tex_mode)
 {
   g2dImage* tex = g2dTexLoad(path,tex_mode);
   if (tex == NULL) throwException("Unable to load the texture (%s)\n",path);

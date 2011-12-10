@@ -310,6 +310,15 @@ int luaVarObjReg(lua_State* L)
   return 1;
 }
 
+int luaVarObjText(lua_State* L)
+{
+  int n_arg = lua_gettop(L);
+  LUA_EXCEPTION(n_arg != 0,EXCEPTION_ARG)
+  
+  lua_pushstring(L,obj_ext->text);
+  return 1;
+}
+
 int luaLevelText(lua_State* L)
 {
   LUA_EXCEPTION(lua_gettop(L) != 1,EXCEPTION_ARG)
@@ -410,6 +419,7 @@ void luaRegister()
   lua_register(lua_state,"varObjState",luaVarObjState);
   lua_register(lua_state,"varObjDeath",luaVarObjDeath);
   lua_register(lua_state,"varObjReg",luaVarObjReg);
+  lua_register(lua_state,"varObjText",luaVarObjText);
   lua_register(lua_state,"levelText",luaLevelText);
   // Audio
   lua_register(lua_state,"setMusic",luaSetMusic);

@@ -87,7 +87,7 @@ int PlaySceMp3(int channel)
 	{
 		return PSPAALIB_ERROR_SCEMP3_UNINITIALIZED_CHANNEL;
 	}
-	streamsSceMp3[channel].paused=FALSE;
+	streamsSceMp3[channel].paused=false;
 	streamsSceMp3[channel].stopReason=PSPAALIB_STOP_NOT_STOPPED;
 	return PSPAALIB_SUCCESS;
 }
@@ -103,7 +103,7 @@ int StopSceMp3(int channel)
 		return PSPAALIB_ERROR_SCEMP3_UNINITIALIZED_CHANNEL;
 	}
 	RewindSceMp3(channel);
-	streamsSceMp3[channel].paused=TRUE;
+	streamsSceMp3[channel].paused=true;
 	streamsSceMp3[channel].stopReason=PSPAALIB_STOP_ON_REQUEST;
 	return PSPAALIB_SUCCESS;
 }
@@ -149,7 +149,7 @@ void FillBuffer(int channel)
 	{
 		if (!streamsSceMp3[channel].autoloop)
 		{
-			streamsSceMp3[channel].paused=TRUE;
+			streamsSceMp3[channel].paused=true;
 			streamsSceMp3[channel].stopReason=PSPAALIB_STOP_END_OF_STREAM;
 		}
 	}
@@ -256,8 +256,8 @@ int LoadSceMp3(char* filename,int channel)
 		free(streamsSceMp3[channel].pcmBuf);
 		return PSPAALIB_ERROR_SCEMP3_INIT;
 	}
-	streamsSceMp3[channel].initialized=TRUE;
-	streamsSceMp3[channel].paused=TRUE;
+	streamsSceMp3[channel].initialized=true;
+	streamsSceMp3[channel].paused=true;
 	streamsSceMp3[channel].stopReason=PSPAALIB_STOP_JUST_LOADED;
 	return PSPAALIB_SUCCESS;
 }
@@ -277,8 +277,8 @@ int UnloadSceMp3(int channel)
 	sceIoClose(streamsSceMp3[channel].file);
 	free(streamsSceMp3[channel].mp3Buf);
 	free(streamsSceMp3[channel].pcmBuf);
-	streamsSceMp3[channel].initialized=FALSE;
-	streamsSceMp3[channel].paused=TRUE;
+	streamsSceMp3[channel].initialized=false;
+	streamsSceMp3[channel].paused=true;
 	streamsSceMp3[channel].stopReason=PSPAALIB_STOP_UNLOADED;
 	return PSPAALIB_SUCCESS;
 }

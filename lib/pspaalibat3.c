@@ -79,7 +79,7 @@ int PlayAt3(int channel)
 	{
 		return PSPAALIB_ERROR_AT3_UNINITIALIZED_CHANNEL;
 	}
-	streamsAt3[channel].paused=FALSE;
+	streamsAt3[channel].paused=false;
 	streamsAt3[channel].stopReason=PSPAALIB_STOP_NOT_STOPPED;
 	return PSPAALIB_SUCCESS;
 }
@@ -95,7 +95,7 @@ int StopAt3(int channel)
 		return PSPAALIB_ERROR_AT3_UNINITIALIZED_CHANNEL;
 	}
 	RewindAt3(channel);
-	streamsAt3[channel].paused=TRUE;
+	streamsAt3[channel].paused=true;
 	streamsAt3[channel].stopReason=PSPAALIB_STOP_ON_REQUEST;
 	return PSPAALIB_SUCCESS;
 }
@@ -149,7 +149,7 @@ int GetBufferAt3(short* buf,int length,float amp,int channel)
 		{
 			if (!streamsAt3[channel].autoloop)
 			{
-				streamsAt3[channel].paused=TRUE;
+				streamsAt3[channel].paused=true;
 				streamsAt3[channel].stopReason=PSPAALIB_STOP_END_OF_STREAM;
 				memset(buf,0,byteLength);
 				return PSPAALIB_WARNING_END_OF_STREAM_REACHED;
@@ -202,9 +202,9 @@ int LoadAt3(char* filename,int channel)
 		return PSPAALIB_ERROR_AT3_GET_ID;
 	}
 	streamsAt3[channel].bufSize=0;
-	streamsAt3[channel].paused=TRUE;
-	streamsAt3[channel].autoloop=FALSE;
-	streamsAt3[channel].initialized=TRUE;
+	streamsAt3[channel].paused=true;
+	streamsAt3[channel].autoloop=false;
+	streamsAt3[channel].initialized=true;
 	streamsAt3[channel].stopReason=PSPAALIB_STOP_JUST_LOADED;
 	return PSPAALIB_SUCCESS;
 }
@@ -220,11 +220,11 @@ int UnloadAt3(int channel)
 	{
 		return PSPAALIB_SUCCESS;
 	}
-	streamsAt3[channel].paused=TRUE;
+	streamsAt3[channel].paused=true;
 	streamsAt3[channel].stopReason=PSPAALIB_STOP_UNLOADED;
 	free(streamsAt3[channel].data);
 	free(streamsAt3[channel].buf);
-	streamsAt3[channel].initialized=FALSE;
+	streamsAt3[channel].initialized=false;
 	return PSPAALIB_SUCCESS;
 }
 

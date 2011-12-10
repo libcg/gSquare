@@ -80,7 +80,7 @@ int OggCallbackSeek(void *ch,ogg_int64_t offset,int position)
 	{
 		if (!streamsOgg[*channel].autoloop)
 		{
-			streamsOgg[*channel].paused=TRUE;
+			streamsOgg[*channel].paused=true;
 			streamsOgg[*channel].stopReason=PSPAALIB_STOP_END_OF_STREAM;
 		}
 	}
@@ -114,7 +114,7 @@ int OggCallbackClose(void *ch)
 	if (streamsOgg[*channel].loadToRam)
 	{
 		free(streamsOgg[*channel].data);
-		return TRUE;
+		return true;
 	}
 	else
 	{
@@ -172,7 +172,7 @@ int PlayOgg(int channel)
 	{
 		return PSPAALIB_ERROR_OGG_UNINITIALIZED_CHANNEL;
 	}
-	streamsOgg[channel].paused=FALSE;
+	streamsOgg[channel].paused=false;
 	streamsOgg[channel].stopReason=PSPAALIB_STOP_NOT_STOPPED;
 	return PSPAALIB_SUCCESS;
 }
@@ -188,7 +188,7 @@ int StopOgg(int channel)
 		return PSPAALIB_ERROR_OGG_UNINITIALIZED_CHANNEL;
 	}
 	RewindOgg(channel);
-	streamsOgg[channel].paused=TRUE;
+	streamsOgg[channel].paused=true;
 	streamsOgg[channel].stopReason=PSPAALIB_STOP_ON_REQUEST;
 	return PSPAALIB_SUCCESS;
 }
@@ -224,7 +224,7 @@ int SeekOgg(int channel,int time)
 		return PSPAALIB_ERROR_OGG_UNINITIALIZED_CHANNEL;
 	}
 	bool tempPause=streamsOgg[channel].paused;
-	streamsOgg[channel].paused=TRUE;
+	streamsOgg[channel].paused=true;
 	ov_pcm_seek(&(streamsOgg[channel].oggVorbisFile),time*44100);
 	streamsOgg[channel].paused=tempPause;
 	return PSPAALIB_SUCCESS;
@@ -252,8 +252,8 @@ int GetBufferOgg(short* buf,int length,float amp,int channel)
 		{
 			if (!streamsOgg[channel].autoloop)
 			{
-				streamsOgg[channel].paused=TRUE;
-				streamsOgg[channel].outputInProgress=FALSE;
+				streamsOgg[channel].paused=true;
+				streamsOgg[channel].outputInProgress=false;
 				streamsOgg[channel].stopReason=PSPAALIB_STOP_END_OF_STREAM;
 				return PSPAALIB_WARNING_END_OF_STREAM_REACHED;
 			}
@@ -269,7 +269,7 @@ int GetBufferOgg(short* buf,int length,float amp,int channel)
 	}
 	streamsOgg[channel].bufLength-=byteLength;
 	memmove(streamsOgg[channel].buf,streamsOgg[channel].buf+byteLength,streamsOgg[channel].bufLength);
-	streamsOgg[channel].outputInProgress=FALSE;
+	streamsOgg[channel].outputInProgress=false;
 	return PSPAALIB_SUCCESS;
 }
 
@@ -283,7 +283,7 @@ int LoadOgg(char* filename,int channel,bool loadToRam)
 	{
 		UnloadOgg(channel);
 	}
-	loadToRam=FALSE;//////Something wrong with the seek/read function.Can't rewind when on ram.
+	loadToRam=false;//////Something wrong with the seek/read function.Can't rewind when on ram.
 	streamsOgg[channel].file=sceIoOpen(filename,PSP_O_RDONLY,0777);
 	if (!streamsOgg[channel].file)
 	{
@@ -315,8 +315,8 @@ int LoadOgg(char* filename,int channel,bool loadToRam)
 		sceIoRead(streamsOgg[channel].file,streamsOgg[channel].data,streamsOgg[channel].dataSize);
 	}
 	streamsOgg[channel].bufLength=0;
-	streamsOgg[channel].paused=TRUE;
-	streamsOgg[channel].initialized=TRUE;
+	streamsOgg[channel].paused=true;
+	streamsOgg[channel].initialized=true;
 	streamsOgg[channel].stopReason=PSPAALIB_STOP_JUST_LOADED;
 	return PSPAALIB_SUCCESS;
 }
@@ -332,7 +332,7 @@ int UnloadOgg(int channel)
 	{
 		return PSPAALIB_SUCCESS;
 	}
-	streamsOgg[channel].paused=TRUE;	
+	streamsOgg[channel].paused=true;	
 	while (streamsOgg[channel].outputInProgress)
 	{
 		sceKernelDelayThread(10000);
@@ -340,6 +340,6 @@ int UnloadOgg(int channel)
 	ov_clear(&(streamsOgg[channel].oggVorbisFile));
 	sceIoClose(streamsOgg[channel].file);
 	streamsOgg[channel].stopReason=PSPAALIB_STOP_UNLOADED;
-	streamsOgg[channel].initialized=FALSE;
+	streamsOgg[channel].initialized=false;
 	return PSPAALIB_SUCCESS;
 }

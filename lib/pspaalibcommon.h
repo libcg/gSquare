@@ -23,10 +23,7 @@
 #include <pspatrac3.h>
 #include <tremor/ivorbiscodec.h>
 #include <tremor/ivorbisfile.h>
-
-#define bool int
-#define FALSE 0
-#define TRUE !FALSE
+#include <stdbool.h>
 
 #define PI 3.14159f
 
