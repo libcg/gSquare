@@ -136,7 +136,7 @@ void playSound(const char* name)
   #ifdef DEBUG
     return;
   #endif
-  if (cfg.sound_vol == 0) return;
+  if	 (cfg.sound_vol == 0) return;
   
   AalibVolume vol = {global_volume * (cfg.sound_vol / 100.f),
                      global_volume * (cfg.sound_vol / 100.f)};
@@ -158,7 +158,7 @@ void clearSound()
   {
     AalibStop(SOUND_CHANNEL+sound_nbr);
     AalibUnload(SOUND_CHANNEL+sound_nbr);    
-  } 
+  }
 }
 
 // General audio

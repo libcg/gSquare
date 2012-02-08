@@ -414,24 +414,4 @@ void physics()
   }
 }
 
-
-/*void explode(Object* obj)
-{
-  Object* obj_i;
-  int i;
-  for (i=0, obj_i = lvl.obj_list; i<lvl.obj_nbr; i++, obj_i++)
-  {
-    if (obj == obj_i) continue;
-    
-    float dist_x = (obj->x + obj->w/2.f) -  (obj_i->x + obj_i->w/2.f),
-          dist_y = (obj->y + obj->h/2.f) -  (obj_i->y + obj_i->h/2.f),
-          dist = gvfpu_sqrt(dist_x*dist_x + dist_y*dist_y);
-    
-    if (dist < 100.f)
-    {
-      if (!deleteObject(obj_i - lvl.obj_list)) obj_i--;
-    }
-  }
-}*/
-
 // EOF

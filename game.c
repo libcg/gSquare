@@ -384,7 +384,7 @@ void gameMenu()
       else if (menu.mod_i == 1) // Options
       {
         if (menu.sub_i < 0) menu.sub_i = 3;
-        if (menu.sub_i >= 3) menu.sub_i = 0;
+        if (menu.sub_i > 3) menu.sub_i = 0;
 
         if (buttonJustPressed(PSP_CTRL_LEFT))
         {

@@ -461,7 +461,7 @@ void luaDoFile(const char* path)
 
 void initLua()
 {
-  lua_state = lua_open();
+  lua_state = luaL_newstate();
   luaL_openlibs(lua_state);
   luaRegister();
 }
