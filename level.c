@@ -28,6 +28,7 @@ void initObject()
   lvl.limit_y0 = 0;
   lvl.limit_y1 = 0;
   createObject(0.f,0.f,0.f,0.f,0,P_SIZE,P_SIZE); // Player
+  game.g_lock = false; // Gravity not locked by default.
 }
 
 
