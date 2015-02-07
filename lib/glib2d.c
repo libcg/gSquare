@@ -815,45 +815,28 @@ void g2dTexFree(g2dImage** tex)
   *tex = NULL;
 }
 
-
-g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
+static g2dImage* _g2dTexFromSDLSurface(SDL_Surface* surface)
 {
-  if (path == NULL) return NULL;
-
-  if (!start) _g2dStart();
-  g2dImage* tex = (g2dImage*)malloc(sizeof(g2dImage));
-  SDL_Surface *surface = NULL;
   SDL_Surface *gl_surface = NULL;
-  Uint32 rmask, gmask, bmask, amask;
 
-  surface = IMG_Load(path);
-  if (surface == NULL) return NULL;
+  if (!surface) return NULL;
+  if (!start) _g2dStart();
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-  rmask = 0xff000000;
-  gmask = 0x00ff0000;
-  bmask = 0x0000ff00;
-  amask = 0x000000ff;
-#else
-  rmask = 0x000000ff;
-  gmask = 0x0000ff00;
-  bmask = 0x00ff0000;
-  amask = 0xff000000;
-#endif
+  g2dImage* tex = (g2dImage*)malloc(sizeof(g2dImage));
+  if (!tex) return NULL;
 
   SDL_PixelFormat format = *(surface->format);
   format.BitsPerPixel = 32;
   format.BytesPerPixel = 4;
-  format.Rmask = rmask;
-  format.Gmask = gmask;
-  format.Bmask = bmask;
-  format.Amask = amask;
+  format.Rmask = 0x000000ff;
+  format.Gmask = 0x0000ff00;
+  format.Bmask = 0x00ff0000;
+  format.Amask = 0xff000000;
 
-  gl_surface = SDL_ConvertSurface(surface,&format,SDL_SWSURFACE);
-
-  tex->w = gl_surface->w;
-  tex->h = gl_surface->h;
-  tex->can_blend = strstr(path, ".png");
+  gl_surface = SDL_ConvertSurface(surface,&format,0);
+  tex->w = gl_surface->w + 1;
+  tex->h = gl_surface->h + 1;
+  tex->can_blend = 1;
 
   glGenTextures(1, &tex->id);
   glBindTexture(GL_TEXTURE_2D, tex->id);
@@ -867,6 +850,25 @@ g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
   SDL_FreeSurface(surface);
 
   return tex;
+}
+
+g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
+{
+  if (!path) return NULL;
+
+  return _g2dTexFromSDLSurface(IMG_Load(path));
+}
+
+g2dImage* g2dTexFromFont(TTF_Font* font, char text[], g2dColor color)
+{
+  if (!font) return NULL;
+
+  SDL_Color sdl_color;
+  sdl_color.r = G2D_GET_R(color);
+  sdl_color.g = G2D_GET_G(color);
+  sdl_color.b = G2D_GET_B(color);
+
+  return _g2dTexFromSDLSurface(TTF_RenderText_Blended(font, text, sdl_color));
 }
 
 // * Scissor functions *

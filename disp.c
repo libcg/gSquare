@@ -14,6 +14,7 @@
 #include "game.h"
 #include "common.h"
 
+TTF_Font *font, *bigfont, *itlfont;
 Images img;
 Fade main_fade = {FADE_OUT,255.f,3.5f,255,0,0.f,BLACK};
 Background back;
@@ -168,8 +169,14 @@ int dispThread(void* args)
 {
   img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
   img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
-  img.gsquare = loadImage("./graphics/gsquare.png",G2D_SWIZZLE);
-  img.banner = loadImage("./graphics/genesis.png",G2D_SWIZZLE);
+  img.gsquare = loadImage("graphics/gsquare.png",G2D_SWIZZLE);
+  img.banner = loadImage("graphics/genesis.png",G2D_SWIZZLE);
+
+  TTF_Init();
+  font = TTF_OpenFont("fonts/Cantarell-Bold.ttf",24);
+  bigfont = TTF_OpenFont("fonts/Cantarell-Bold.ttf",36);
+  itlfont = TTF_OpenFont("fonts/Cantarell-Oblique.ttf",36);
+  if (!font || !itlfont) throwException("Couldn't open font: %s\n",TTF_GetError());
 
   initBackground();
   

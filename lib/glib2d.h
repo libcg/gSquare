@@ -55,6 +55,7 @@
 extern "C" {
 #endif
 
+#include <SDL_ttf.h>
 #include <GL/gl.h>
 #include <stdbool.h>
 
@@ -397,6 +398,15 @@ void g2dTexFree(g2dImage** tex);
  * Image support up to 512*512 only (hardware limitation).
  */
 g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode);
+
+/**
+ * \brief Generate a texture from a font.
+ * @param font Font to use.
+ * @param text Text string to print.
+ * @param color Text color to print.
+ * @returns Pointer to the texture.
+ */
+g2dImage* g2dTexFromFont(TTF_Font* font, char text[], g2dColor color);
 
 /**
  * \brief Resets the current coordinates.

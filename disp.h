@@ -7,6 +7,7 @@
 #ifndef DISP_H
 #define DISP_H
 
+#include <SDL_ttf.h>
 #include "lib/glib2d.h"
 
 #define BACK_W 30
@@ -57,6 +58,7 @@ typedef struct
   float zoom_target, zoom;
 } Camera;
 
+extern TTF_Font *font, *bigfont, *itlfont;
 extern Fade main_fade;
 extern Fade ui_fade;
 extern Camera cam;

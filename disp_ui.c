@@ -17,7 +17,7 @@
 
 Fade ui_fade = {FADE_OUT,0.f,3.5f,255,0,0.f,BLACK};
 g2dColor timer_back_color = WHITE;
-float timer_size = 1.f, gsquare_size = 1.f;
+float timer_size = 1.f;
 int dcount = 0;
 
 void setTimerAspect(float size, g2dColor color)
@@ -122,7 +122,8 @@ void drawUI()
 
 void dispgSquare()
 {
-  gsquare_size /= 1.0002f;
+  static float gsquare_size = 1.4f;
+
   g2dBeginRects(img.gsquare);
   {
     g2dSetCoordMode(G2D_CENTER);
@@ -131,8 +132,24 @@ void dispgSquare()
     g2dAdd();
   }
   g2dEnd();
-  
-  // TODO authors, website
+
+  gsquare_size /= 1.0004f;
+
+  g2dBeginRects(g2dTexFromFont(font,text.authors,WHITE));
+  {
+    g2dSetCoordMode(G2D_CENTER);
+    g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-70);
+    g2dAdd();
+  }
+  g2dEnd();
+
+  g2dBeginRects(g2dTexFromFont(font,text.website,WHITE));
+  {
+    g2dSetCoordMode(G2D_CENTER);
+    g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-35);
+    g2dAdd();
+  }
+  g2dEnd();
 }
 
 
