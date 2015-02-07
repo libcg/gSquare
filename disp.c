@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <malloc.h>
-#include <SDL/SDL_timer.h>
-#include <SDL/SDL_image.h>
+#include <SDL_timer.h>
+#include <SDL_image.h>
 
 #include "disp.h"
 #include "game.h"

@@ -240,8 +240,6 @@ void dispMenu()
   // Draw section text
   if (menu.state != 0)
   {
-    float text_x = title_x[menu.mod_i],
-          text_y = title_y[menu.mod_i] + 70.f;
     if (menu.mod_i == 0) // Story
     {
       for (i=0; i<3; i++)

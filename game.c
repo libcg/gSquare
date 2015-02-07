@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <time.h>
-#include <SDL/SDL_timer.h>
-#include <SDL/SDL_thread.h>
+#include <SDL_timer.h>
+#include <SDL_thread.h>
 
 #include "common.h"
 #include "game.h"
@@ -120,9 +120,10 @@ void gameControls()
     // Change gravity dir
     if (!game.g_lock)
     {
-      int g_inc = buttonJustPressed(SDLK_x) -
-                  buttonJustPressed(SDLK_v) +
-                  2 * (buttonJustPressed(SDLK_x) && buttonJustPressed(SDLK_v));
+      int g_inc = buttonJustPressed(SDL_SCANCODE_A) -
+                  buttonJustPressed(SDL_SCANCODE_D) +
+                  2 * (buttonJustPressed(SDL_SCANCODE_A) &&
+                       buttonJustPressed(SDL_SCANCODE_D));
       game.g_dir += g_inc;
     }
     setCameraRot(180 + game.g_dir * 90);
@@ -132,12 +133,12 @@ void gameControls()
     game.g_y = (g_dir_mod == S) - (g_dir_mod == N);
     
     // Square move
-    float dir = buttonPressed(SDLK_RIGHT) - buttonPressed(SDLK_LEFT);
+    float dir = buttonPressed(SDL_SCANCODE_RIGHT) - buttonPressed(SDL_SCANCODE_LEFT);
     P_OBJ.vx += game.g_y * P_ACCEL * dir;
     P_OBJ.vy -= game.g_x * P_ACCEL * dir;
                                    
     // Square jump
-    if (buttonPressed(SDLK_c))
+    if (buttonPressed(SDL_SCANCODE_S))
     {
       // Impulse
       if (game.g_x) P_OBJ.vx += OBJ_JUMP * (-P_OBJ.collide_x);
@@ -153,11 +154,11 @@ void gameControls()
   }
   
   #ifdef DEBUG
-    if (buttonJustPressed(SDLK_w))
+    if (buttonJustPressed(SDL_SCANCODE_W))
     {
       resetLevel();
     }
-    if (buttonJustPressed(SDLK_x))
+    if (buttonJustPressed(SDL_SCANCODE_X))
     {
       nextLevel();
     }
@@ -167,14 +168,14 @@ void gameControls()
   switch (getGameState())
   {
     case INGAME:
-      if (buttonJustPressed(SDLK_ESCAPE))
+      if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
     case OUT_OF_BOUNDS:
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -182,7 +183,7 @@ void gameControls()
       }
     break;
     case TIME_OVER:
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -190,7 +191,7 @@ void gameControls()
       }
     break;
     case WIN:
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         save();
         waitFadeDone(&ui_fade);
@@ -210,7 +211,7 @@ void gameControls()
     case DEATH:
       if (lvl.obj_nbr == 0) break;
       P_OBJ.state = 1;
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -219,12 +220,12 @@ void gameControls()
       }
     break;
     case PAUSE:
-      pause.i += buttonJustPressed(SDLK_UP) -
-                 buttonJustPressed(SDLK_DOWN);
+      pause.i += buttonJustPressed(SDL_SCANCODE_UP) -
+                 buttonJustPressed(SDL_SCANCODE_DOWN);
       if (pause.i < 0) pause.i += PAUSE_CHOICE_NBR;
       else if (pause.i >= PAUSE_CHOICE_NBR) pause.i -= PAUSE_CHOICE_NBR;
       
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         popGameState();
         if (pause.i == 1) resetPlayerState();
@@ -331,14 +332,14 @@ void gameMenu()
     
     if (menu.state == 0) // Where Bluz can rotate
     {
-      int i_inc = buttonJustPressed(SDLK_LEFT) -
-                  buttonJustPressed(SDLK_RIGHT);
+      int i_inc = buttonJustPressed(SDL_SCANCODE_LEFT) -
+                  buttonJustPressed(SDL_SCANCODE_RIGHT);
       menu.i += i_inc;
       menu.rot_target = -menu.i * 90;
       menu.mod_i = menu.i % MENU_TITLE_NBR;
       if (menu.mod_i < 0) menu.mod_i += MENU_TITLE_NBR;
       
-      if (buttonJustPressed(SDLK_RETURN))
+      if (buttonJustPressed(SDL_SCANCODE_RETURN))
       {
         menu.sub_i = 0;
         
@@ -358,15 +359,15 @@ void gameMenu()
     }
     else if (menu.state == 1) // Bluz is on top
     {
-      menu.sub_i += buttonJustPressed(SDLK_DOWN) -
-                    buttonJustPressed(SDLK_UP);
+      menu.sub_i += buttonJustPressed(SDL_SCANCODE_DOWN) -
+                    buttonJustPressed(SDL_SCANCODE_UP);
       
       if (menu.mod_i == 0) // Story
       {
         if (menu.sub_i < 0) menu.sub_i = 2;
         if (menu.sub_i > 2) menu.sub_i = 0;
         
-        if (buttonJustPressed(SDLK_RETURN))
+        if (buttonJustPressed(SDL_SCANCODE_RETURN))
         {
           play = 1;
           menu.state = 2;
@@ -380,7 +381,7 @@ void gameMenu()
             strncpy(lvl.next,"select.lua",512);
           }
         }
-        if (buttonJustPressed(SDLK_ESCAPE))
+        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
         }
@@ -390,7 +391,7 @@ void gameMenu()
         if (menu.sub_i < 0) menu.sub_i = 3;
         if (menu.sub_i > 3) menu.sub_i = 0;
 
-        if (buttonJustPressed(SDLK_LEFT))
+        if (buttonJustPressed(SDL_SCANCODE_LEFT))
         {
           switch (menu.sub_i)
           {
@@ -411,7 +412,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(SDLK_RIGHT))
+        if (buttonJustPressed(SDL_SCANCODE_RIGHT))
         {
           switch (menu.sub_i)
           {
@@ -432,7 +433,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(SDLK_ESCAPE))
+        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
           configSave();
@@ -440,7 +441,7 @@ void gameMenu()
       }
       else if (menu.mod_i == 2) // Credits
       {
-        if (buttonJustPressed(SDLK_ESCAPE))
+        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
         }
@@ -510,8 +511,7 @@ int gameThread(void* args)
 void initGame()
 {
   // Start game thread
-  SDL_Thread* thid;
-  thid = SDL_CreateThread(gameThread, NULL);
+  SDL_CreateThread(gameThread, "game_thread", NULL);
 }
 
 // EOF

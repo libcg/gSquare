@@ -5,22 +5,21 @@
 // See LICENSE for more details.
 
 #include "controls.h"
-#include <SDL/SDL.h>
-#include <SDL/SDL_events.h>
-#include <SDL/SDL_keyboard.h>
+#include <SDL_events.h>
 #include <string.h>
 
-unsigned char oldKey[SDLK_LAST] = {0}, key[SDLK_LAST] = {0};
+static char curKey[SDL_NUM_SCANCODES] = {0};
+static char oldKey[SDL_NUM_SCANCODES] = {0};
 
 int buttonPressed(unsigned int btn)
 {
-  return (key[btn] ? 1 : 0);
+  return !!curKey[btn];
 }
 
 
 int buttonWasPressed(unsigned int btn)
 {
-  return (oldKey[btn] ? 1 : 0);
+  return !!oldKey[btn];
 }
 
 
@@ -38,8 +37,9 @@ int buttonJustReleased(unsigned int btn)
 
 void updateControls()
 {
-  memcpy(oldKey, key, SDLK_LAST);
+  memcpy(oldKey, curKey, sizeof(oldKey));
 
+  // TODO move this to main.c
   SDL_Event event;
   while(SDL_PollEvent(&event))
   {
@@ -49,11 +49,11 @@ void updateControls()
     }
     else if (event.type == SDL_KEYDOWN)
     {
-      key[event.key.keysym.sym] = 1;
+      curKey[event.key.keysym.scancode] = 1;
     }
     else if (event.type == SDL_KEYUP)
     {
-      key[event.key.keysym.sym] = 0;
+      curKey[event.key.keysym.scancode] = 0;
     }
   }
 }

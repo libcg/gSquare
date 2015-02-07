@@ -6,8 +6,8 @@ OBJS = \
     game.o game_physics.o\
     lib/glib2d.o
 
-CFLAGS = $(shell sdl-config --cflags) -Wall -O2
-LDFLAGS = $(shell sdl-config --libs) -lSDL_image -lGL -lpng -ljpeg -lm -llua
+CFLAGS = $(shell sdl2-config --cflags) -Wall -O2
+LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lGL -lpng -ljpeg -lm -llua
 
 all: gsquare
 

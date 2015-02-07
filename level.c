@@ -8,7 +8,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <math.h>
-#include <SDL/SDL_timer.h>
+#include <SDL_timer.h>
 
 #include "level.h"
 #include "disp.h"

@@ -7,7 +7,7 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
-#include <SDL/SDL_keysym.h>
+#include <SDL_scancode.h>
 
 int buttonPressed(unsigned int btn);
 int buttonWasPressed(unsigned int btn);

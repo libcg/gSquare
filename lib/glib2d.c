@@ -13,8 +13,8 @@
 #include <GL/gl.h>
 #endif
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL_video.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -76,6 +76,8 @@ typedef struct
 
 
 // * Main vars *
+static SDL_Window *window = NULL;
+static SDL_GLContext glctx;
 static bool init = false, start = false, zclear = true, scissor = false;
 static Transform transform_stack[TRANSFORM_STACK_MAX];
 static int transform_stack_size;
@@ -98,17 +100,22 @@ void _g2dInit()
 {
   // Setup SDL
   SDL_Init(SDL_INIT_VIDEO);
+
+  window = SDL_CreateWindow(
+    "gLib2D - gSquare",
+    SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
+    G2D_SCR_W,G2D_SCR_H,
+    SDL_WINDOW_OPENGL
+  );
+
+  glctx = SDL_GL_CreateContext(window);
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
-  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL,1);
-  if (!SDL_VideoModeOK(G2D_SCR_W,G2D_SCR_H,32,SDL_OPENGL)) return;
-  SDL_SetVideoMode(G2D_SCR_W,G2D_SCR_H,32,
-                   SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE);
-  SDL_WM_SetCaption("gLib2D",NULL);
+  SDL_GL_SetSwapInterval(1);
 
   // Setup OpenGL
   glMatrixMode(GL_PROJECTION);
@@ -402,10 +409,7 @@ void g2dFlip(g2dFlip_Mode mode)
   if (scissor) g2dResetScissor();
 
   glFinish();
-  SDL_GL_SwapBuffers();
-#ifdef __WIN32__
-  SDL_Delay(1000/60);
-#endif
+  SDL_GL_SwapWindow(window);
 
   start = false;
 }
