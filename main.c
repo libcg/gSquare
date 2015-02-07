@@ -4,10 +4,9 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <SDL_events.h>
+#include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "common.h"
 #include "level.h"
@@ -22,7 +21,16 @@ int exit_state = 0;
 
 void throwException(const char* err, ...)
 {
-  fprintf(stderr, "%s",err);
+  char buf[1024];
+  va_list args;
+
+  va_start(args,err);
+  vsnprintf(buf,sizeof(buf),err,args);
+  va_end(args);
+
+  fprintf(stderr,"%s",buf);
+  SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"Exception",buf,NULL);
+
   exit(1);
 }
 
