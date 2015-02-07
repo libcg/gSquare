@@ -6,8 +6,8 @@ OBJS = \
     game.o game_physics.o\
     lib/glib2d.o
 
-CFLAGS = -Wall -02
-LDFLAGS = -lSDL -lSDL_image -lSDL_ttf -lGL -lpng -ljpeg -lm -llua
+CFLAGS = $(shell sdl-config --cflags) -Wall -O2
+LDFLAGS = $(shell sdl-config --libs) -lSDL_image -lGL -lpng -ljpeg -lm -llua
 
 all: gsquare
 
@@ -15,7 +15,7 @@ gsquare: $(OBJS)
 	gcc -o game/$(BIN) $^ $(LDFLAGS)
 
 %.o: %.c
-	gcc -o $@ -c $^
+	gcc -o $@ -c $^ $(CFLAGS)
 
 run: gsquare
 	cd game && ./$(BIN)
