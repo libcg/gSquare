@@ -166,6 +166,11 @@ g2dImage* loadImage(char path[], g2dTex_Mode mode)
 
 int dispThread(void* args)
 {
+  img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
+  img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
+  img.gsquare = loadImage("./graphics/gsquare.png",G2D_SWIZZLE);
+  img.banner = loadImage("./graphics/genesis.png",G2D_SWIZZLE);
+
   initBackground();
   
   while (exit_state != EXCEPTION)
@@ -223,16 +228,8 @@ int dispThread(void* args)
 
 void initDisp()
 {
-  // Load images
-  IMG_Init(IMG_INIT_PNG);
-  img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
-  img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
-  img.gsquare = loadImage("./graphics/gsquare.png",G2D_SWIZZLE);
-  img.banner = loadImage("./graphics/genesis.png",G2D_SWIZZLE);
-  // Font init
-  // TODO
-  // Start display thread
-  dispThread(NULL);
+  // Start disp thread
+  SDL_CreateThread(dispThread, "disp_thread", NULL);
 }
 
 // EOF

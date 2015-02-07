@@ -5,55 +5,38 @@
 // See LICENSE for more details.
 
 #include "controls.h"
-#include <SDL_events.h>
+#include <SDL_keyboard.h>
 #include <string.h>
 
-static char curKey[SDL_NUM_SCANCODES] = {0};
-static char oldKey[SDL_NUM_SCANCODES] = {0};
+static char curButton[SDL_NUM_SCANCODES] = {0};
+static char oldButton[SDL_NUM_SCANCODES] = {0};
 
-int buttonPressed(unsigned int btn)
+int ctrlPressed(int btn)
 {
-  return !!curKey[btn];
+  return !!curButton[btn];
 }
 
 
-int buttonWasPressed(unsigned int btn)
+int ctrlWasPressed(int btn)
 {
-  return !!oldKey[btn];
+  return !!oldButton[btn];
 }
 
 
-int buttonJustPressed(unsigned int btn)
+int ctrlJustPressed(int btn)
 {
-  return buttonPressed(btn) && (!buttonWasPressed(btn));
+  return ctrlPressed(btn) && (!ctrlWasPressed(btn));
 }
 
 
-int buttonJustReleased(unsigned int btn)
+int ctrlJustReleased(int btn)
 {
-  return !buttonPressed(btn) && buttonWasPressed(btn);
+  return !ctrlPressed(btn) && ctrlWasPressed(btn);
 }
 
 
-void updateControls()
+void ctrlNextFrame()
 {
-  memcpy(oldKey, curKey, sizeof(oldKey));
-
-  // TODO move this to main.c
-  SDL_Event event;
-  while(SDL_PollEvent(&event))
-  {
-    if (event.type == SDL_QUIT)
-    {
-      exit(0);
-    }
-    else if (event.type == SDL_KEYDOWN)
-    {
-      curKey[event.key.keysym.scancode] = 1;
-    }
-    else if (event.type == SDL_KEYUP)
-    {
-      curKey[event.key.keysym.scancode] = 0;
-    }
-  }
+  memcpy(oldButton, curButton, sizeof(oldButton));
+  memcpy(curButton, SDL_GetKeyboardState(NULL), sizeof(curButton));
 }

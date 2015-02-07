@@ -9,10 +9,10 @@
 
 #include <SDL_scancode.h>
 
-int buttonPressed(unsigned int btn);
-int buttonWasPressed(unsigned int btn);
-int buttonJustPressed(unsigned int btn);
-int buttonJustReleased(unsigned int btn);
-void updateControls();
+int ctrlPressed(int btn);
+int ctrlWasPressed(int btn);
+int ctrlJustPressed(int btn);
+int ctrlJustReleased(int btn);
+void ctrlNextFrame();
 
 #endif

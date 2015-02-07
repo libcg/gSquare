@@ -113,17 +113,17 @@ void resetPlayerState()
 
 void gameControls()
 {
-  updateControls();
+  ctrlNextFrame();
   
   if (lvl.obj_nbr != 0 && getGameState() == INGAME)
   {
     // Change gravity dir
     if (!game.g_lock)
     {
-      int g_inc = buttonJustPressed(SDL_SCANCODE_A) -
-                  buttonJustPressed(SDL_SCANCODE_D) +
-                  2 * (buttonJustPressed(SDL_SCANCODE_A) &&
-                       buttonJustPressed(SDL_SCANCODE_D));
+      int g_inc = ctrlJustPressed(SDL_SCANCODE_A) -
+                  ctrlJustPressed(SDL_SCANCODE_D) +
+                  2 * (ctrlJustPressed(SDL_SCANCODE_A) &&
+                       ctrlJustPressed(SDL_SCANCODE_D));
       game.g_dir += g_inc;
     }
     setCameraRot(180 + game.g_dir * 90);
@@ -133,12 +133,12 @@ void gameControls()
     game.g_y = (g_dir_mod == S) - (g_dir_mod == N);
     
     // Square move
-    float dir = buttonPressed(SDL_SCANCODE_RIGHT) - buttonPressed(SDL_SCANCODE_LEFT);
+    float dir = ctrlPressed(SDL_SCANCODE_RIGHT) - ctrlPressed(SDL_SCANCODE_LEFT);
     P_OBJ.vx += game.g_y * P_ACCEL * dir;
     P_OBJ.vy -= game.g_x * P_ACCEL * dir;
                                    
     // Square jump
-    if (buttonPressed(SDL_SCANCODE_S))
+    if (ctrlPressed(SDL_SCANCODE_S))
     {
       // Impulse
       if (game.g_x) P_OBJ.vx += OBJ_JUMP * (-P_OBJ.collide_x);
@@ -154,11 +154,11 @@ void gameControls()
   }
   
   #ifdef DEBUG
-    if (buttonJustPressed(SDL_SCANCODE_W))
+    if (ctrlJustPressed(SDL_SCANCODE_W))
     {
       resetLevel();
     }
-    if (buttonJustPressed(SDL_SCANCODE_X))
+    if (ctrlJustPressed(SDL_SCANCODE_X))
     {
       nextLevel();
     }
@@ -168,14 +168,14 @@ void gameControls()
   switch (getGameState())
   {
     case INGAME:
-      if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
+      if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
     case OUT_OF_BOUNDS:
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -183,7 +183,7 @@ void gameControls()
       }
     break;
     case TIME_OVER:
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -191,7 +191,7 @@ void gameControls()
       }
     break;
     case WIN:
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         save();
         waitFadeDone(&ui_fade);
@@ -211,7 +211,7 @@ void gameControls()
     case DEATH:
       if (lvl.obj_nbr == 0) break;
       P_OBJ.state = 1;
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -220,12 +220,12 @@ void gameControls()
       }
     break;
     case PAUSE:
-      pause.i += buttonJustPressed(SDL_SCANCODE_UP) -
-                 buttonJustPressed(SDL_SCANCODE_DOWN);
+      pause.i += ctrlJustPressed(SDL_SCANCODE_UP) -
+                 ctrlJustPressed(SDL_SCANCODE_DOWN);
       if (pause.i < 0) pause.i += PAUSE_CHOICE_NBR;
       else if (pause.i >= PAUSE_CHOICE_NBR) pause.i -= PAUSE_CHOICE_NBR;
       
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         popGameState();
         if (pause.i == 1) resetPlayerState();
@@ -328,18 +328,18 @@ void gameMenu()
   int play = 0;
   while (!play)
   {
-    updateControls();
+    ctrlNextFrame();
     
     if (menu.state == 0) // Where Bluz can rotate
     {
-      int i_inc = buttonJustPressed(SDL_SCANCODE_LEFT) -
-                  buttonJustPressed(SDL_SCANCODE_RIGHT);
+      int i_inc = ctrlJustPressed(SDL_SCANCODE_LEFT) -
+                  ctrlJustPressed(SDL_SCANCODE_RIGHT);
       menu.i += i_inc;
       menu.rot_target = -menu.i * 90;
       menu.mod_i = menu.i % MENU_TITLE_NBR;
       if (menu.mod_i < 0) menu.mod_i += MENU_TITLE_NBR;
       
-      if (buttonJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
         menu.sub_i = 0;
         
@@ -359,15 +359,15 @@ void gameMenu()
     }
     else if (menu.state == 1) // Bluz is on top
     {
-      menu.sub_i += buttonJustPressed(SDL_SCANCODE_DOWN) -
-                    buttonJustPressed(SDL_SCANCODE_UP);
+      menu.sub_i += ctrlJustPressed(SDL_SCANCODE_DOWN) -
+                    ctrlJustPressed(SDL_SCANCODE_UP);
       
       if (menu.mod_i == 0) // Story
       {
         if (menu.sub_i < 0) menu.sub_i = 2;
         if (menu.sub_i > 2) menu.sub_i = 0;
         
-        if (buttonJustPressed(SDL_SCANCODE_RETURN))
+        if (ctrlJustPressed(SDL_SCANCODE_RETURN))
         {
           play = 1;
           menu.state = 2;
@@ -381,7 +381,7 @@ void gameMenu()
             strncpy(lvl.next,"select.lua",512);
           }
         }
-        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
         }
@@ -391,7 +391,7 @@ void gameMenu()
         if (menu.sub_i < 0) menu.sub_i = 3;
         if (menu.sub_i > 3) menu.sub_i = 0;
 
-        if (buttonJustPressed(SDL_SCANCODE_LEFT))
+        if (ctrlJustPressed(SDL_SCANCODE_LEFT))
         {
           switch (menu.sub_i)
           {
@@ -412,7 +412,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(SDL_SCANCODE_RIGHT))
+        if (ctrlJustPressed(SDL_SCANCODE_RIGHT))
         {
           switch (menu.sub_i)
           {
@@ -433,7 +433,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
           configSave();
@@ -441,7 +441,7 @@ void gameMenu()
       }
       else if (menu.mod_i == 2) // Credits
       {
-        if (buttonJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
         {
           menu.state = 0;
         }
