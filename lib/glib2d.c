@@ -7,11 +7,17 @@
 
 #include "glib2d.h"
 
-#include <pspkernel.h>
-#include <pspdisplay.h>
-#include <pspgu.h>
-#include <vram.h>
+#if defined(__MACOSX__)
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <stdio.h>
 #include <malloc.h>
+#include <string.h>
 #include <math.h>
 
 #ifdef USE_PNG
@@ -20,6 +26,7 @@
 
 #ifdef USE_JPEG
 #include <jpeglib.h>
+#include <jerror.h>
 #endif
 
 #define PSP_LINE_SIZE       (512)
@@ -69,7 +76,6 @@ typedef struct
 
 
 // * Main vars *
-static int* list;
 static bool init = false, start = false, zclear = true, scissor = false;
 static Transform transform_stack[TRANSFORM_STACK_MAX];
 static int transform_stack_size;
@@ -79,60 +85,45 @@ static Object *obj_list = NULL, obj;
 static Obj_Type obj_type;
 static int obj_list_size;
 static bool obj_begin = false, obj_line_strip;
-static bool obj_use_z, obj_use_vert_color, obj_use_blend, obj_use_rot,
+static bool obj_use_z, obj_use_blend, obj_use_rot,
             obj_use_tex_linear, obj_use_tex_repeat, obj_use_int;
 static g2dCoord_Mode obj_coord_mode;
 static int obj_colors_count;
 static g2dImage* obj_tex;
 
-g2dImage g2d_draw_buffer = { 512, 512, G2D_SCR_W, G2D_SCR_H,
-                             (float)G2D_SCR_W/G2D_SCR_H, false, false,
-                             (g2dColor*)FRAMEBUFFER_SIZE },
-         g2d_disp_buffer = { 512, 512, G2D_SCR_W, G2D_SCR_H,
-                             (float)G2D_SCR_W/G2D_SCR_H, false, false,
-                             (g2dColor*)0 };
-
 // * Internal functions *
+
 
 void _g2dInit()
 {
-  // Display list allocation
-  list = malloc(256*1024);
+  // Setup SDL
+  SDL_Init(SDL_INIT_VIDEO);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL,1);
+  if (!SDL_VideoModeOK(G2D_SCR_W,G2D_SCR_H,32,SDL_OPENGL)) return;
+  SDL_SetVideoMode(G2D_SCR_W,G2D_SCR_H,32,
+                   SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE);
+  SDL_WM_SetCaption("gLib2D",NULL);
 
-  // Init & setup GU
-  sceGuInit();
-  sceGuStart(GU_DIRECT,list);
-
-  sceGuDrawBuffer(GU_PSM_8888,g2d_draw_buffer.data,PSP_LINE_SIZE);
-  sceGuDispBuffer(G2D_SCR_W,G2D_SCR_H,g2d_disp_buffer.data,PSP_LINE_SIZE);
-  sceGuDepthBuffer((void*)(FRAMEBUFFER_SIZE*2),PSP_LINE_SIZE);
-  sceGuOffset(2048-(G2D_SCR_W/2),2048-(G2D_SCR_H/2));
-  sceGuViewport(2048,2048,G2D_SCR_W,G2D_SCR_H);
-
-  g2d_draw_buffer.data = vabsptr(g2d_draw_buffer.data);
-  g2d_disp_buffer.data = vabsptr(g2d_disp_buffer.data);
+  // Setup OpenGL
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0,G2D_SCR_W,G2D_SCR_H,0,0,1);
+  glMatrixMode(GL_MODELVIEW);
 
   g2dResetScissor();
-  sceGuDepthRange(65535,0);
-  sceGuClearDepth(65535);
-  sceGuAlphaFunc(GU_GREATER,0,0xff);
-  sceGuDepthFunc(GU_LEQUAL);
-  sceGuBlendFunc(GU_ADD,GU_SRC_ALPHA,GU_ONE_MINUS_SRC_ALPHA,0,0);
-  sceGuTexFunc(GU_TFX_MODULATE,GU_TCC_RGBA);
-  sceGuTexFilter(GU_LINEAR,GU_LINEAR);
-  sceGuShadeModel(GU_SMOOTH);
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-  sceGuDisable(GU_CULL_FACE);
-  sceGuDisable(GU_CLIP_PLANES);
-  sceGuDisable(GU_DITHER);
-  sceGuEnable(GU_ALPHA_TEST);
-  sceGuEnable(GU_SCISSOR_TEST);
-  sceGuEnable(GU_BLEND);
-
-  sceGuFinish();
-  sceGuSync(0,0);
-  sceDisplayWaitVblankStart();
-  sceGuDisplay(GU_TRUE);
+  glEnable(GL_BLEND);
+  glEnable(GL_SCISSOR_TEST);
+  glDepthFunc(GL_GEQUAL);
+  glDepthRange(0,65535);
+  glClearDepth(0);
 
   init = true;
 }
@@ -142,75 +133,46 @@ void _g2dStart()
 {
   if (!init) _g2dInit();
 
-  sceKernelDcacheWritebackAll();
-  sceGuStart(GU_DIRECT,list);
   start = true;
 }
 
 
-// Vertex order: [texture uv] [color] [vertex]
-void* _g2dSetVertex(void* vp, int i, float vx, float vy)
+void _g2dSetVertex(int i, float vx, float vy)
 {
-  short* v_p_short = vp;
-  g2dColor* v_p_color;
-  float* v_p_float;
-
   // Texture
   if (obj_tex != NULL)
   {
-    *(v_p_short++) = I_OBJ.crop_x + vx * I_OBJ.crop_w;
-    *(v_p_short++) = I_OBJ.crop_y + vy * I_OBJ.crop_h;
+    glTexCoord2d((I_OBJ.crop_x + vx * I_OBJ.crop_w) / obj_tex->w,
+                 (I_OBJ.crop_y + vy * I_OBJ.crop_h) / obj_tex->h);
   }
 
   // Color
-  v_p_color = (g2dColor*)v_p_short;
-
-  if (obj_use_vert_color)
-  {
-    *(v_p_color++) = I_OBJ.color;
-  }
+  glColor4f(G2D_GET_R(I_OBJ.color)/255.f,
+            G2D_GET_G(I_OBJ.color)/255.f,
+            G2D_GET_B(I_OBJ.color)/255.f,
+            G2D_GET_A(I_OBJ.color)/255.f);
 
   // Coord
-  v_p_float = (float*)v_p_color;
-
-  v_p_float[0] = I_OBJ.x + (obj_type == RECTS ? vx * I_OBJ.scale_w : 0.f);
-  v_p_float[1] = I_OBJ.y + (obj_type == RECTS ? vy * I_OBJ.scale_h : 0.f);
+  float x = I_OBJ.x + (obj_type == RECTS ? vx * I_OBJ.scale_w : 0.f);
+  float y = I_OBJ.y + (obj_type == RECTS ? vy * I_OBJ.scale_h : 0.f);
+  float z = I_OBJ.z;
 
   // Then apply the rotation
   if (obj_use_rot && obj_type == RECTS)
   {
-    float tx = v_p_float[0]-I_OBJ.rot_x, ty = v_p_float[1]-I_OBJ.rot_y;
-    v_p_float[0] = I_OBJ.rot_x - I_OBJ.rot_sin*ty + I_OBJ.rot_cos*tx,
-    v_p_float[1] = I_OBJ.rot_y + I_OBJ.rot_cos*ty + I_OBJ.rot_sin*tx;
+    float tx = x-I_OBJ.rot_x, ty = y-I_OBJ.rot_y;
+    x = I_OBJ.rot_x - I_OBJ.rot_sin*ty + I_OBJ.rot_cos*tx,
+    y = I_OBJ.rot_y + I_OBJ.rot_cos*ty + I_OBJ.rot_sin*tx;
   }
 
   if (obj_use_int)
   {
-    v_p_float[0] = floorf(v_p_float[0]);
-    v_p_float[1] = floorf(v_p_float[1]);
+    x = floorf(x);
+    y = floorf(y);
   }
-  v_p_float[2] = I_OBJ.z;
 
-  v_p_float += 3;
-
-  return (void*)v_p_float;
+  glVertex3f(x,y,z);
 }
-
-
-#ifdef USE_VFPU
-void vfpu_sincosf(float x, float* s, float* c)
-{
-  __asm__ volatile (
-    "mtv    %2, s000\n"          // s000 = x
-    "vcst.s s001, VFPU_2_PI\n"   // s001 = 2/pi
-    "vmul.s s000, s000, s001\n"  // s000 = s000*s001
-    "vrot.p c010, s000, [s,c]\n" // s010 = sinf(s000), s011 = cosf(s000)
-    "mfv    %0, s010\n"          // *s = s010
-    "mfv    %1, S011\n"          // *c = s011
-    : "=r"(*s), "=r"(*c) : "r"(x)
-  );
-}
-#endif
 
 // * Main functions *
 
@@ -218,9 +180,9 @@ void g2dClear(g2dColor color)
 {
   if (!start) _g2dStart();
 
-  sceGuClearColor(color);
-  sceGuClear(GU_COLOR_BUFFER_BIT | GU_FAST_CLEAR_BIT
-             | (zclear ? GU_DEPTH_BUFFER_BIT : 0));
+  glClearColor(G2D_GET_R(color)/255.f,G2D_GET_G(color)/255.f,
+               G2D_GET_B(color)/255.f,G2D_GET_A(color)/255.f);
+  glClear(GL_COLOR_BUFFER_BIT | (zclear ? GL_DEPTH_BUFFER_BIT : 0));
   zclear = false;
 }
 
@@ -229,7 +191,7 @@ void g2dClearZ()
 {
   if (!start) _g2dStart();
 
-  sceGuClear(GU_DEPTH_BUFFER_BIT | GU_FAST_CLEAR_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT);
   zclear = true;
 }
 
@@ -239,10 +201,9 @@ void _g2dBeginCommon()
   if (!start) _g2dStart();
 
   obj_list_size = 0;
-  obj_list = realloc(obj_list,MALLOC_STEP * sizeof(Object));
+  obj_list = (Object*)realloc(obj_list,MALLOC_STEP * sizeof(Object));
 
   obj_use_z = false;
-  obj_use_vert_color = false;
   obj_use_blend = false;
   obj_use_rot = false;
   obj_use_int = false;
@@ -296,180 +257,87 @@ void g2dBeginPoints()
 
 void _g2dEndRects()
 {
-  // Define vertices properties
-  int prim = (obj_use_rot ? GU_TRIANGLES : GU_SPRITES),
-      v_obj_nbr = (obj_use_rot ? 6 : 2),
-      v_nbr,
-      v_coord_size = 3,
-      v_tex_size = (obj_tex != NULL ? 2 : 0),
-      v_color_size = (obj_use_vert_color ? 1 : 0),
-      v_size = v_tex_size * sizeof(short) +
-               v_color_size * sizeof(g2dColor) +
-               v_coord_size * sizeof(float),
-      v_type = GU_VERTEX_32BITF | GU_TRANSFORM_2D,
-      n_slices = -1, i;
+  glBegin(GL_TRIANGLES);
 
-  if (obj_tex != NULL)    v_type |= GU_TEXTURE_16BIT;
-  if (obj_use_vert_color) v_type |= GU_COLOR_8888;
-
-  // Count how many vertices to allocate.
-  if (obj_tex == NULL || obj_use_rot) // No slicing
-  {
-    v_nbr = v_obj_nbr * obj_list_size;
-  }
-  else // Can use texture slicing for tremendous performance :)
-  {
-    for (n_slices=0, i=0; i!=obj_list_size; i++)
-    {
-      n_slices += (int)(I_OBJ.crop_w/SLICE_WIDTH)+1;
-    }
-    v_nbr = v_obj_nbr * n_slices;
-  }
-
-  // Allocate vertex list memory
-  void *v = sceGuGetMemory(v_nbr * v_size), *vi = v;
-
-  // Build the vertex list
+  // Add each object
+  int i;
   for (i=0; i<obj_list_size; i+=1)
   {
-    if (!obj_use_rot)
-    {
-      if (obj_tex == NULL)
-      {
-        vi = _g2dSetVertex(vi,i,0.f,0.f);
-        vi = _g2dSetVertex(vi,i,1.f,1.f);
-      }
-      else // Use texture slicing
-      {
-        float u, step = (float)SLICE_WIDTH/I_OBJ.crop_w;
-        for (u=0.f; u<1.f; u+=step)
-        {
-          vi = _g2dSetVertex(vi,i,u,0.f);
-          vi = _g2dSetVertex(vi,i,((u+step) > 1.f ? 1.f : u+step),1.f);
-        }
-      }
-    }
-    else // Rotation : draw 2 triangles per obj
-    {
-      vi = _g2dSetVertex(vi,i,0.f,0.f);
-      vi = _g2dSetVertex(vi,i,1.f,0.f);
-      vi = _g2dSetVertex(vi,i,0.f,1.f);
-      vi = _g2dSetVertex(vi,i,0.f,1.f);
-      vi = _g2dSetVertex(vi,i,1.f,0.f);
-      vi = _g2dSetVertex(vi,i,1.f,1.f);
-    }
+    _g2dSetVertex(i,0.f,0.f);
+    _g2dSetVertex(i,1.f,0.f);
+    _g2dSetVertex(i,0.f,1.f);
+    _g2dSetVertex(i,0.f,1.f);
+    _g2dSetVertex(i,1.f,0.f);
+    _g2dSetVertex(i,1.f,1.f);
   }
 
   // Then put it in the display list.
-  sceGuDrawArray(prim,v_type,v_nbr,NULL,v);
+  glEnd();
 }
 
 
 void _g2dEndLines()
 {
-  // Define vertices properties
-  int prim = (obj_line_strip ? GU_LINE_STRIP : GU_LINES),
-      v_obj_nbr = (obj_line_strip ? 1 : 2),
-      v_nbr = v_obj_nbr * (obj_line_strip ? obj_list_size
-                                          : obj_list_size / 2),
-      v_coord_size = 3,
-      v_color_size = (obj_use_vert_color ? 1 : 0),
-      v_size = v_color_size * sizeof(g2dColor) +
-               v_coord_size * sizeof(float),
-      v_type = GU_VERTEX_32BITF | GU_TRANSFORM_2D,
-      i;
+  glBegin(obj_line_strip ? GL_LINE_STRIP : GL_LINES);
 
-  if (obj_use_vert_color) v_type |= GU_COLOR_8888;
-
-  // Allocate vertex list memory
-  void *v = sceGuGetMemory(v_nbr * v_size), *vi = v;
-
-  // Build the vertex list
+  // Add each object
+  int i;
   if (obj_line_strip)
   {
-    vi = _g2dSetVertex(vi,0,0.f,0.f);
+    _g2dSetVertex(0,0.f,0.f);
     for (i=1; i<obj_list_size; i+=1)
     {
-      vi = _g2dSetVertex(vi,i,0.f,0.f);
+      _g2dSetVertex(i,0.f,0.f);
     }
   }
   else
   {
     for (i=0; i+1<obj_list_size; i+=2)
     {
-      vi = _g2dSetVertex(vi,i  ,0.f,0.f);
-      vi = _g2dSetVertex(vi,i+1,0.f,0.f);
+      _g2dSetVertex(i  ,0.f,0.f);
+      _g2dSetVertex(i+1,0.f,0.f);
     }
   }
 
   // Then put it in the display list.
-  sceGuDrawArray(prim,v_type,v_nbr,NULL,v);
+  glEnd();
 }
 
 
 void _g2dEndQuads()
 {
-  // Define vertices properties
-  int prim = GU_TRIANGLES,
-      v_obj_nbr = 6,
-      v_nbr = v_obj_nbr * (obj_list_size / 4),
-      v_coord_size = 3,
-      v_tex_size = (obj_tex != NULL ? 2 : 0),
-      v_color_size = (obj_use_vert_color ? 1 : 0),
-      v_size = v_tex_size * sizeof(short) +
-               v_color_size * sizeof(g2dColor) +
-               v_coord_size * sizeof(float),
-      v_type = GU_VERTEX_32BITF | GU_TRANSFORM_2D,
-      i;
+  glBegin(GL_TRIANGLES);
 
-  if (obj_tex != NULL)    v_type |= GU_TEXTURE_16BIT;
-  if (obj_use_vert_color) v_type |= GU_COLOR_8888;
-
-  // Allocate vertex list memory
-  void *v = sceGuGetMemory(v_nbr * v_size), *vi = v;
-
-  // Build the vertex list
+  // Add each object
+  int i;
   for (i=0; i+3<obj_list_size; i+=4)
   {
-    vi = _g2dSetVertex(vi,i  ,0.f,0.f);
-    vi = _g2dSetVertex(vi,i+1,1.f,0.f);
-    vi = _g2dSetVertex(vi,i+3,0.f,1.f);
-    vi = _g2dSetVertex(vi,i+3,0.f,1.f);
-    vi = _g2dSetVertex(vi,i+1,1.f,0.f);
-    vi = _g2dSetVertex(vi,i+2,1.f,1.f);
+    _g2dSetVertex(i  ,0.f,0.f);
+    _g2dSetVertex(i+1,1.f,0.f);
+    _g2dSetVertex(i+3,0.f,1.f);
+    _g2dSetVertex(i+3,0.f,1.f);
+    _g2dSetVertex(i+1,1.f,0.f);
+    _g2dSetVertex(i+2,1.f,1.f);
   }
 
   // Then put it in the display list.
-  sceGuDrawArray(prim,v_type,v_nbr,NULL,v);
+  glEnd();
 }
 
 
 void _g2dEndPoints()
 {
-  // Define vertices properties
-  int prim = GU_POINTS,
-      v_obj_nbr = 1,
-      v_nbr = v_obj_nbr * obj_list_size,
-      v_coord_size = 3,
-      v_color_size = (obj_use_vert_color ? 1 : 0),
-      v_size = v_color_size * sizeof(g2dColor) +
-               v_coord_size * sizeof(float),
-      v_type = GU_VERTEX_32BITF | GU_TRANSFORM_2D,
-      i;
+  glBegin(GL_POINTS);
 
-  if (obj_use_vert_color) v_type |= GU_COLOR_8888;
-
-  // Allocate vertex list memory
-  void *v = sceGuGetMemory(v_nbr * v_size), *vi = v;
-
-  // Build the vertex list
+  // Add each object
+  int i;
   for (i=0; i<obj_list_size; i+=1)
   {
-    vi = _g2dSetVertex(vi,i,0.f,0.f);
+    _g2dSetVertex(i,0.f,0.f);
   }
 
   // Then put it in the display list.
-  sceGuDrawArray(prim,v_type,v_nbr,NULL,v);
+  glEnd();
 }
 
 
@@ -481,24 +349,24 @@ void g2dEnd()
     return;
   }
 
-  // Manage pspgu extensions
-  if (obj_use_z)          sceGuEnable(GU_DEPTH_TEST);
-  else                    sceGuDisable(GU_DEPTH_TEST);
-  if (obj_use_blend)      sceGuEnable(GU_BLEND);
-  else                    sceGuDisable(GU_BLEND);
-  if (obj_use_vert_color) sceGuColor(WHITE);
-  else                    sceGuColor(obj_list[0].color);
-  if (obj_tex == NULL)    sceGuDisable(GU_TEXTURE_2D);
+  // Manage extensions
+  if (obj_use_z)          glEnable(GL_DEPTH_TEST);
+  else                    glDisable(GL_DEPTH_TEST);
+  if (obj_use_blend)      glEnable(GL_BLEND);
+  else                    glDisable(GL_BLEND);
+  if (obj_tex == NULL)    glDisable(GL_TEXTURE_2D);
   else
   {
-    sceGuEnable(GU_TEXTURE_2D);
-    if (obj_use_tex_linear) sceGuTexFilter(GU_LINEAR,GU_LINEAR);
-    else                    sceGuTexFilter(GU_NEAREST,GU_NEAREST);
-    if (obj_use_tex_repeat) sceGuTexWrap(GU_REPEAT,GU_REPEAT);
-    else                    sceGuTexWrap(GU_CLAMP,GU_CLAMP);
-    // Load texture
-    sceGuTexMode(GU_PSM_8888,0,0,obj_tex->swizzled);
-    sceGuTexImage(0,obj_tex->tw,obj_tex->th,obj_tex->tw,obj_tex->data);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,obj_tex->id);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,
+                    obj_use_tex_linear ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,
+                    obj_use_tex_linear ? GL_LINEAR : GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,
+                    obj_use_tex_linear ? GL_REPEAT : GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,
+                    obj_use_tex_linear ? GL_REPEAT : GL_CLAMP);
   }
 
   switch (obj_type)
@@ -509,8 +377,8 @@ void g2dEnd()
     case POINTS: _g2dEndPoints(); break;
   }
 
-  sceGuColor(WHITE);
-  sceGuEnable(GU_BLEND);
+  glColor3f(1.f,1.f,1.f);
+  glEnable(GL_BLEND);
 
   obj_begin = false;
   if (obj_use_z) zclear = true;
@@ -533,12 +401,11 @@ void g2dFlip(g2dFlip_Mode mode)
 {
   if (scissor) g2dResetScissor();
 
-  sceGuFinish();
-  sceGuSync(0,0);
-  if (mode & G2D_VSYNC) sceDisplayWaitVblankStart();
-
-  g2d_disp_buffer.data = g2d_draw_buffer.data;
-  g2d_draw_buffer.data = vabsptr(sceGuSwapBuffers());
+  glFinish();
+  SDL_GL_SwapBuffers();
+#ifdef __WIN32__
+  SDL_Delay(1000/60);
+#endif
 
   start = false;
 }
@@ -777,7 +644,6 @@ void g2dGetAlpha(g2dAlpha* alpha)
 void g2dSetColor(g2dColor color)
 {
   obj.color = color;
-  if (++obj_colors_count > 1) obj_use_vert_color = true;
   if (G2D_GET_A(obj.color) < 255) obj_use_blend = true;
 }
 
@@ -787,7 +653,6 @@ void g2dSetAlpha(g2dAlpha alpha)
   if (alpha < 0) alpha = 0;
   if (alpha > 255) alpha = 255;
   obj.alpha = alpha;
-  if (++obj_colors_count > 1) obj_use_vert_color = true;
   if (obj.alpha < 255) obj_use_blend = true;
 }
 
@@ -823,11 +688,8 @@ void g2dSetRotationRad(float radians)
 {
   if (radians == obj.rot) return;
   obj.rot = radians;
-  #ifdef USE_VFPU
-  vfpu_sincosf(radians, &obj.rot_sin, &obj.rot_cos);
-  #else
-  sincosf(radians, &obj.rot_sin, &obj.rot_cos);
-  #endif
+  obj.rot_sin = sinf(radians);
+  obj.rot_cos = cosf(radians);
   if (radians != 0.f) obj_use_rot = true;
 }
 
@@ -940,203 +802,67 @@ void g2dSetTexLinear(bool use)
 
 // * Texture management *
 
-int _getNextPower2(int n)
-{
-  int p=1;
-  while ((p <<= 1) < n);
-  return p;
-}
-
-
-void _swizzle(unsigned char *dest, unsigned char *source, int width, int height)
-{
-  int i, j;
-  int rowblocks = (width / 16);
-  int rowblocks_add = (rowblocks-1) * 128;
-  unsigned int block_address = 0;
-  unsigned int *img = (unsigned int*)source;
-  for (j = 0; j < height; j++, block_address += 16)
-  {
-    unsigned int *block = (unsigned int*)(dest + block_address);
-    for (i = 0; i < rowblocks; i++)
-    {
-      *block++ = *img++;
-      *block++ = *img++;
-      *block++ = *img++;
-      *block++ = *img++;
-      block += 28;
-    }
-    if ((j & 0x7) == 0x7) block_address += rowblocks_add;
-  }
-}
-
-
-g2dImage* _g2dTexCreate(int w, int h, bool can_blend)
-{
-  g2dImage* tex = malloc(sizeof(g2dImage));
-  if (tex == NULL) return NULL;
-
-  tex->tw = _getNextPower2(w);
-  tex->th = _getNextPower2(h);
-  tex->w = w;
-  tex->h = h;
-  tex->ratio = (float)w / h;
-  tex->swizzled = false;
-  tex->can_blend = can_blend;
-
-  tex->data = malloc(tex->tw*tex->th*sizeof(g2dColor));
-  if (tex->data == NULL) { free(tex); return NULL; }
-  memset(tex->data,0,tex->tw*tex->th*sizeof(g2dColor));
-
-  return tex;
-}
-
-
 void g2dTexFree(g2dImage** tex)
 {
   if (tex == NULL) return;
-  free((*tex)->data);
-  free((*tex));
+  if (*tex == NULL) return;
+  glDeleteTextures(1,&(*tex)->id);
+  free(*tex);
   *tex = NULL;
 }
-
-
-#ifdef USE_PNG
-g2dImage* _g2dTexLoadPNG(FILE* fp)
-{
-  png_structp png_ptr;
-  png_infop info_ptr;
-  unsigned int sig_read = 0;
-  png_uint_32 width, height;
-  int bit_depth, color_type, interlace_type;
-  u32 x, y, *line;
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,NULL,NULL,NULL);
-  png_set_error_fn(png_ptr,NULL,NULL,NULL);
-  info_ptr = png_create_info_struct(png_ptr);
-  png_init_io(png_ptr,fp);
-  png_set_sig_bytes(png_ptr,sig_read);
-  png_read_info(png_ptr,info_ptr);
-  png_get_IHDR(png_ptr,info_ptr,&width,&height,&bit_depth,&color_type,
-                                &interlace_type,NULL,NULL);
-  png_set_strip_16(png_ptr);
-  png_set_packing(png_ptr);
-  if (color_type == PNG_COLOR_TYPE_PALETTE)
-    png_set_palette_to_rgb(png_ptr);
-  if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
-    png_set_tRNS_to_alpha(png_ptr);
-  png_set_filler(png_ptr, 0xff, PNG_FILLER_AFTER);
-  g2dImage* tex = _g2dTexCreate(width,height,true);
-  line = malloc(width * 4);
-  for (y = 0; y < height; y++) {
-    png_read_row(png_ptr, (u8*) line, NULL);
-    for (x = 0; x < width; x++) {
-      u32 color = line[x];
-      tex->data[x + y * tex->tw] =  color;
-    }
-  }
-  free(line);
-  png_read_end(png_ptr, info_ptr);
-  png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-
-  return tex;
-}
-#endif
-
-
-#ifdef USE_JPEG
-g2dImage* _g2dTexLoadJPEG(FILE* fp)
-{
-  struct jpeg_decompress_struct dinfo;
-  struct jpeg_error_mgr jerr;
-  dinfo.err = jpeg_std_error(&jerr);
-  jpeg_create_decompress(&dinfo);
-  jpeg_stdio_src(&dinfo, fp);
-  jpeg_read_header(&dinfo, TRUE);
-  int width = dinfo.image_width;
-  int height = dinfo.image_height;
-  jpeg_start_decompress(&dinfo);
-  g2dImage* tex = _g2dTexCreate(width,height,false);
-  u8* line = (u8*) malloc(width * 3);
-  if (dinfo.jpeg_color_space == JCS_GRAYSCALE) {
-    while (dinfo.output_scanline < dinfo.output_height) {
-      int y = dinfo.output_scanline, x;
-      jpeg_read_scanlines(&dinfo, &line, 1);
-      for (x = 0; x < width; x++) {
-        g2dColor c = line[x];
-        tex->data[x + tex->tw * y] = c | (c << 8) | (c << 16) | 0xff000000;
-      }
-    }
-  } else {
-    while (dinfo.output_scanline < dinfo.output_height) {
-      int y = dinfo.output_scanline, x;
-      jpeg_read_scanlines(&dinfo, &line, 1);
-      u8* linePointer = line;
-      for (x = 0; x < width; x++) {
-        g2dColor c = *(linePointer++);
-        c |= (*(linePointer++)) << 8;
-        c |= (*(linePointer++)) << 16;
-        tex->data[x + tex->tw * y] = c | 0xff000000;
-      }
-    }
-  }
-  jpeg_finish_decompress(&dinfo);
-  jpeg_destroy_decompress(&dinfo);
-  free(line);
-
-  return tex;
-}
-#endif
 
 
 g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
 {
   if (path == NULL) return NULL;
 
-  g2dImage* tex = NULL;
-  FILE* fp = NULL;
-  if ((fp = fopen(path,"rb")) == NULL) goto error;
+  if (!start) _g2dStart();
+  g2dImage* tex = (g2dImage*)malloc(sizeof(g2dImage));
+  SDL_Surface *surface = NULL;
+  SDL_Surface *gl_surface = NULL;
+  Uint32 rmask, gmask, bmask, amask;
 
-  #ifdef USE_PNG
-  if (strstr(path,".png") != NULL)
-  {
-    tex = _g2dTexLoadPNG(fp);
-  }
-  #endif
-  #ifdef USE_JPEG
-  if (strstr(path,".jpg")  != NULL ||
-      strstr(path,".jpeg") != NULL )
-  {
-    tex = _g2dTexLoadJPEG(fp);
-  }
-  #endif
-  if (tex == NULL) goto error;
+  surface = IMG_Load(path);
+  if (surface == NULL) return NULL;
 
-  fclose(fp);
-  fp = NULL;
-  sceKernelDcacheWritebackAll();
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+  rmask = 0xff000000;
+  gmask = 0x00ff0000;
+  bmask = 0x0000ff00;
+  amask = 0x000000ff;
+#else
+  rmask = 0x000000ff;
+  gmask = 0x0000ff00;
+  bmask = 0x00ff0000;
+  amask = 0xff000000;
+#endif
 
-  // The PSP can't draw 512*512+ textures.
-  if (tex->w > 512 || tex->h > 512) goto error;
+  SDL_PixelFormat format = *(surface->format);
+  format.BitsPerPixel = 32;
+  format.BytesPerPixel = 4;
+  format.Rmask = rmask;
+  format.Gmask = gmask;
+  format.Bmask = bmask;
+  format.Amask = amask;
 
-  // Swizzling is useless with small textures.
-  if ((mode & G2D_SWIZZLE) && (tex->w >= 16 || tex->h >= 16))
-  {
-    u8* tmp = malloc(tex->tw*tex->th*PIXEL_SIZE);
-    _swizzle(tmp,(u8*)tex->data,tex->tw*PIXEL_SIZE,tex->th);
-    free(tex->data);
-    tex->data = (g2dColor*)tmp;
-    tex->swizzled = true;
-    sceKernelDcacheWritebackAll();
-  }
-  else tex->swizzled = false;
+  gl_surface = SDL_ConvertSurface(surface,&format,SDL_SWSURFACE);
+
+  tex->w = gl_surface->w;
+  tex->h = gl_surface->h;
+  tex->can_blend = strstr(path, ".png");
+
+  glGenTextures(1, &tex->id);
+  glBindTexture(GL_TEXTURE_2D, tex->id);
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, gl_surface->w,
+               gl_surface->h, 0, GL_RGBA,GL_UNSIGNED_BYTE,
+               gl_surface->pixels);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+
+  SDL_FreeSurface(gl_surface);
+  SDL_FreeSurface(surface);
 
   return tex;
-
-  // Load failure... abort
-  error:
-  if (fp != NULL) fclose(fp);
-  g2dTexFree(&tex);
-  return NULL;
 }
 
 // * Scissor functions *
@@ -1150,7 +876,7 @@ void g2dResetScissor()
 
 void g2dSetScissor(int x, int y, int w, int h)
 {
-  sceGuScissor(x,y,x+w,y+h);
+  glScissor(x,G2D_SCR_H-y-h,w,h);
   scissor = true;
 }
 

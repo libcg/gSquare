@@ -55,6 +55,7 @@
 extern "C" {
 #endif
 
+#include <GL/gl.h>
 #include <stdbool.h>
 
 /**
@@ -82,8 +83,7 @@ extern "C" {
  * PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU) to avoid crashes.
  */
 #define USE_PNG
-//#define USE_JPEG
-#define USE_VFPU
+#define USE_JPEG
 
 /**
  * \def G2D_SCR_W
@@ -97,8 +97,8 @@ extern "C" {
  * \def G2D_VOID
  * \brief Generic constant, equals to 0 (do nothing).
  */
-#define G2D_SCR_W (480)
-#define G2D_SCR_H (272)
+#define G2D_SCR_W (2*480)
+#define G2D_SCR_H (2*272)
 #define G2D_VOID 0
 
 /**
@@ -249,7 +249,7 @@ typedef struct
   float ratio;    /**< Width/height ratio. */
   bool swizzled;  /**< Is the texture swizzled ? */
   bool can_blend; /**< Can the texture blend ? */
-  g2dColor* data; /**< Pointer to raw data. */
+  GLuint id;      /**< Image id. */
 } g2dImage;
 
 /**

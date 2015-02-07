@@ -4,7 +4,6 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspkernel.h>
 #include <string.h>
 #include <lua.h>
 #include <lualib.h>

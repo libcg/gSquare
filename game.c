@@ -4,10 +4,11 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspkernel.h>
-#include <pspdisplay.h>
 #include <stdio.h>
+#include <malloc.h>
 #include <time.h>
+#include <SDL/SDL_timer.h>
+#include <SDL/SDL_thread.h>
 
 #include "common.h"
 #include "game.h"
@@ -119,9 +120,9 @@ void gameControls()
     // Change gravity dir
     if (!game.g_lock)
     {
-      int g_inc = buttonJustPressed(PSP_CTRL_LTRIGGER) -
-                  buttonJustPressed(PSP_CTRL_RTRIGGER) +
-                  2 * buttonJustPressed(PSP_CTRL_LTRIGGER | PSP_CTRL_RTRIGGER);
+      int g_inc = buttonJustPressed(SDLK_x) -
+                  buttonJustPressed(SDLK_v) +
+                  2 * (buttonJustPressed(SDLK_x) && buttonJustPressed(SDLK_v));
       game.g_dir += g_inc;
     }
     setCameraRot(180 + game.g_dir * 90);
@@ -131,16 +132,12 @@ void gameControls()
     game.g_y = (g_dir_mod == S) - (g_dir_mod == N);
     
     // Square move
-    float dir = buttonPressed(PSP_CTRL_RIGHT) - buttonPressed(PSP_CTRL_LEFT);
-    if (getPad()->Lx < 127-15 || getPad()->Lx > 127+15)
-    {
-      dir = (getPad()->Lx - 127) / 127.f;
-    }
+    float dir = buttonPressed(SDLK_RIGHT) - buttonPressed(SDLK_LEFT);
     P_OBJ.vx += game.g_y * P_ACCEL * dir;
     P_OBJ.vy -= game.g_x * P_ACCEL * dir;
                                    
     // Square jump
-    if (buttonPressed(PSP_CTRL_CROSS))
+    if (buttonPressed(SDLK_c))
     {
       // Impulse
       if (game.g_x) P_OBJ.vx += OBJ_JUMP * (-P_OBJ.collide_x);
@@ -156,11 +153,11 @@ void gameControls()
   }
   
   #ifdef DEBUG
-    if (buttonJustPressed(PSP_CTRL_SQUARE))
+    if (buttonJustPressed(SDLK_w))
     {
       resetLevel();
     }
-    if (buttonJustPressed(PSP_CTRL_TRIANGLE))
+    if (buttonJustPressed(SDLK_x))
     {
       nextLevel();
     }
@@ -170,14 +167,14 @@ void gameControls()
   switch (getGameState())
   {
     case INGAME:
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_ESCAPE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
     case OUT_OF_BOUNDS:
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -185,7 +182,7 @@ void gameControls()
       }
     break;
     case TIME_OVER:
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -193,7 +190,7 @@ void gameControls()
       }
     break;
     case WIN:
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         save();
         waitFadeDone(&ui_fade);
@@ -213,7 +210,7 @@ void gameControls()
     case DEATH:
       if (lvl.obj_nbr == 0) break;
       P_OBJ.state = 1;
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         cam.active = 1;
         popGameState();
@@ -222,12 +219,12 @@ void gameControls()
       }
     break;
     case PAUSE:
-      pause.i += buttonJustPressed(PSP_CTRL_UP) -
-                 buttonJustPressed(PSP_CTRL_DOWN);
+      pause.i += buttonJustPressed(SDLK_UP) -
+                 buttonJustPressed(SDLK_DOWN);
       if (pause.i < 0) pause.i += PAUSE_CHOICE_NBR;
       else if (pause.i >= PAUSE_CHOICE_NBR) pause.i -= PAUSE_CHOICE_NBR;
       
-      if (buttonJustPressed(PSP_CTRL_START))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         popGameState();
         if (pause.i == 1) resetPlayerState();
@@ -281,7 +278,7 @@ void gamegSquare()
   setFadeMode(&main_fade,FADE_OUT,0);
   waitFadeDone(&main_fade);
 
-  sceKernelDelayThread(3000000);
+  SDL_Delay(3000);
 
   setFadeMode(&main_fade,FADE_IN,0);
   waitFadeDone(&main_fade);
@@ -295,13 +292,13 @@ void gameBANNER()
   setFadeMode(&main_fade,FADE_OUT,0);
   waitFadeDone(&main_fade);
 
-  sceKernelDelayThread(3000000);
+  SDL_Delay(3000);
 
   setFadeMode(&main_fade,FADE_IN,0);
   waitFadeDone(&main_fade);
 
   setGameState(MENU);
-  sceKernelDelayThread(50000);
+  SDL_Delay(50);
   g2dTexFree(&img.banner);
 }
 
@@ -327,14 +324,14 @@ void gameMenu()
     
     if (menu.state == 0) // Where Bluz can rotate
     {
-      int i_inc = buttonJustPressed(PSP_CTRL_LTRIGGER) -
-                  buttonJustPressed(PSP_CTRL_RTRIGGER);
+      int i_inc = buttonJustPressed(SDLK_LEFT) -
+                  buttonJustPressed(SDLK_RIGHT);
       menu.i += i_inc;
       menu.rot_target = -menu.i * 90;
       menu.mod_i = menu.i % MENU_TITLE_NBR;
       if (menu.mod_i < 0) menu.mod_i += MENU_TITLE_NBR;
       
-      if (buttonJustPressed(PSP_CTRL_CROSS))
+      if (buttonJustPressed(SDLK_RETURN))
       {
         menu.sub_i = 0;
         
@@ -348,21 +345,21 @@ void gameMenu()
           setMusic("!");
           setFadeMode(&main_fade,FADE_IN,false);
           waitFadeDone(&main_fade);
-          sceKernelExitGame();
+          exit(0);
         }
       }
     }
     else if (menu.state == 1) // Bluz is on top
     {
-      menu.sub_i += buttonJustPressed(PSP_CTRL_DOWN) -
-                    buttonJustPressed(PSP_CTRL_UP);
+      menu.sub_i += buttonJustPressed(SDLK_DOWN) -
+                    buttonJustPressed(SDLK_UP);
       
       if (menu.mod_i == 0) // Story
       {
         if (menu.sub_i < 0) menu.sub_i = 2;
         if (menu.sub_i > 2) menu.sub_i = 0;
         
-        if (buttonJustPressed(PSP_CTRL_CROSS))
+        if (buttonJustPressed(SDLK_RETURN))
         {
           play = 1;
           menu.state = 2;
@@ -376,7 +373,7 @@ void gameMenu()
             strncpy(lvl.next,"select.lua",512);
           }
         }
-        if (buttonJustPressed(PSP_CTRL_CIRCLE))
+        if (buttonJustPressed(SDLK_ESCAPE))
         {
           menu.state = 0;
         }
@@ -386,7 +383,7 @@ void gameMenu()
         if (menu.sub_i < 0) menu.sub_i = 3;
         if (menu.sub_i > 3) menu.sub_i = 0;
 
-        if (buttonJustPressed(PSP_CTRL_LEFT))
+        if (buttonJustPressed(SDLK_LEFT))
         {
           switch (menu.sub_i)
           {
@@ -407,7 +404,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(PSP_CTRL_RIGHT))
+        if (buttonJustPressed(SDLK_RIGHT))
         {
           switch (menu.sub_i)
           {
@@ -428,7 +425,7 @@ void gameMenu()
             break;
           }
         }
-        if (buttonJustPressed(PSP_CTRL_CIRCLE))
+        if (buttonJustPressed(SDLK_ESCAPE))
         {
           menu.state = 0;
           configSave();
@@ -436,14 +433,14 @@ void gameMenu()
       }
       else if (menu.mod_i == 2) // Credits
       {
-        if (buttonJustPressed(PSP_CTRL_CIRCLE))
+        if (buttonJustPressed(SDLK_ESCAPE))
         {
           menu.state = 0;
         }
       }
     }
     
-    sceKernelDelayThread(1000);
+    SDL_Delay(1);
   }
 
   main_fade.color = WHITE;
@@ -459,11 +456,9 @@ void gameMenu()
 }
 
 
-int gameThread(SceSize args, void *argp)
+int gameThread(void* args)
 {
-  sceIoChdir(cwd);
   initGameState();
-  sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
 
   while (!exit_state)
   {
@@ -493,13 +488,12 @@ int gameThread(SceSize args, void *argp)
       }
     }
 
-    sceDisplayWaitVblankStart();
+    SDL_Delay(1000/FPS); // FIXME
   }
   
   if (exit_state != EXCEPTION)
   {
-    sceKernelDelayThread(2000000);
-    sceKernelExitGame();
+    exit(0);
   }
   
   return 0;
@@ -509,16 +503,8 @@ int gameThread(SceSize args, void *argp)
 void initGame()
 {
   // Start game thread
-  SceUID thid = sceKernelCreateThread("game_thread",gameThread,0x11,0x10000,
-                                      THREAD_ATTR_USER | THREAD_ATTR_VFPU,0);
-  if (thid < 0)
-  {
-    throwException("Can't create the game thread\n");
-  }
-  if (sceKernelStartThread(thid,0,0))
-  {
-    throwException("Can't start the game thread\n");
-  }
+  SDL_Thread* thid;
+  thid = SDL_CreateThread(gameThread, NULL);
 }
 
 // EOF

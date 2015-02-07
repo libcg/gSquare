@@ -8,7 +8,6 @@
 #define DISP_H
 
 #include "lib/glib2d.h"
-#include "lib/intraFont.h"
 
 #define BACK_W 30
 #define BACK_H 17
@@ -58,8 +57,6 @@ typedef struct
   float zoom_target, zoom;
 } Camera;
 
-extern g2dImage rendertarget;
-extern intraFont *font, *bigfont, *seriffont;
 extern Fade main_fade;
 extern Fade ui_fade;
 extern Camera cam;

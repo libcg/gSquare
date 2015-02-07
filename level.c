@@ -4,11 +4,11 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspkernel.h>
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
 #include <math.h>
+#include <SDL/SDL_timer.h>
 
 #include "level.h"
 #include "disp.h"
@@ -220,7 +220,7 @@ void nextLevel()
     setGameState(END);
     img.end = g2dTexLoad("./graphics/end.png",0);
     setFadeMode(&main_fade,FADE_OUT,1);
-    sceKernelDelayThread(10000000);
+    SDL_Delay(10000);
     main_fade.color = BLACK;
     setFadeMode(&main_fade,FADE_IN,0);
     exit_state = 1;
@@ -228,7 +228,7 @@ void nextLevel()
   }
   else
   {
-    sceKernelDelayThread(1000);
+    SDL_Delay(1);
     strcpy(lvl.actual,lvl.next);
     luaDoFile(lvl.next); 
     lvl.title[0] = '!';   
@@ -239,7 +239,7 @@ void nextLevel()
       setMusic("!");
       main_fade.color = WHITE;
       setFadeMode(&main_fade,FADE_OUT,0);
-      sceKernelDelayThread(2000000);
+      SDL_Delay(2000);
       setFadeMode(&main_fade,FADE_IN,0);
       waitFadeDone(&main_fade);
       setFadeMode(&main_fade,FADE_OUT,0);

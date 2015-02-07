@@ -4,15 +4,16 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspkernel.h>
-#include <pspdebug.h>
 #include <stdlib.h>
 #include <time.h>
+#include <malloc.h>
+#include <SDL/SDL_timer.h>
+#include <SDL/SDL_image.h>
 
 #include "disp.h"
 #include "game.h"
+#include "common.h"
 
-intraFont *font, *bigfont, *seriffont;
 Images img;
 Fade main_fade = {FADE_OUT,255.f,3.5f,255,0,0.f,BLACK};
 Background back;
@@ -128,7 +129,7 @@ void waitFadeDone(Fade* fade)
 {
   while (getFadeState(fade) != FADE_DONE)
   {
-    sceKernelDelayThread(1000);
+    SDL_Delay(1);
   }
 }
 
@@ -155,28 +156,16 @@ void drawFade(Fade* fade)
 
 // Common
 
-g2dImage* loadImage(char path[], int tex_mode)
+g2dImage* loadImage(char path[], g2dTex_Mode mode)
 {
-  g2dImage* tex = g2dTexLoad(path,tex_mode);
-  if (tex == NULL) throwException("Unable to load the texture (%s)\n",path);
+  g2dImage* tex = g2dTexLoad(path,mode);
+  if (tex == NULL) throwException(IMG_GetError());
   return tex;
 }
 
 
-void dispException()
+int dispThread(void* args)
 {
-  // BSOD ! HAHAHA
-  pspDebugScreenInit();
-  pspDebugScreenSetBackColor(BLUE);
-  pspDebugScreenSetTextColor(WHITE);
-  pspDebugScreenClear();
-  pspDebugScreenPrintf(exit_err);
-}
-
-
-int dispThread(SceSize args, void *argp)
-{
-  sceIoChdir(cwd);
   initBackground();
   
   while (exit_state != EXCEPTION)
@@ -212,8 +201,7 @@ int dispThread(SceSize args, void *argp)
     if (checkGameState(LEVEL_TITLE))
     {
       g2dClear(WHITE);
-      intraFontSetStyle(seriffont,1.f,BLACK,0,0,INTRAFONT_ALIGN_CENTER);
-      intraFontPrint(seriffont,G2D_SCR_W/2,G2D_SCR_H/2,lvl.title);
+      // TODO: title
     }
     if (checkGameState(END))
     {
@@ -229,8 +217,6 @@ int dispThread(SceSize args, void *argp)
     g2dFlip(G2D_VSYNC);
   }
   
-  if (exit_state == EXCEPTION) dispException();
-  
   return 0;
 }
 
@@ -238,29 +224,15 @@ int dispThread(SceSize args, void *argp)
 void initDisp()
 {
   // Load images
+  IMG_Init(IMG_INIT_PNG);
   img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
   img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
   img.gsquare = loadImage("./graphics/gsquare.png",G2D_SWIZZLE);
   img.banner = loadImage("./graphics/genesis.png",G2D_SWIZZLE);
-  // Init libraries
-  intraFontInit();
-  font = intraFontLoad("flash0:/font/ltn8.pgf",INTRAFONT_CACHE_MED);
-  bigfont = intraFontLoad("flash0:/font/ltn0.pgf",INTRAFONT_CACHE_MED);
-  seriffont = intraFontLoad("flash0:/font/ltn1.pgf",INTRAFONT_CACHE_MED);
-  intraFontSetEncoding(font,INTRAFONT_STRING_UTF8);
-  intraFontSetEncoding(bigfont,INTRAFONT_STRING_UTF8);
-  intraFontSetEncoding(seriffont,INTRAFONT_STRING_UTF8);
+  // Font init
+  // TODO
   // Start display thread
-  SceUID thid = sceKernelCreateThread("disp_thread",dispThread,0x10,0x1000,
-                                      THREAD_ATTR_USER | THREAD_ATTR_VFPU,0);
-  if (thid < 0)
-  {
-    throwException("Can't create the display thread\n");
-  }
-  if (sceKernelStartThread(thid,0,0))
-  {
-    throwException("Can't start the display thread\n");
-  }
+  dispThread(NULL);
 }
 
 // EOF

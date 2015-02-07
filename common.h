@@ -17,8 +17,6 @@
 #define ERROR_LEN 2048
 
 extern int exit_state;
-extern char exit_err[ERROR_LEN];
-extern char cwd[512];
 
 #define BASIC_SIZE 16
 #define AIR_FRICTION 1.008f

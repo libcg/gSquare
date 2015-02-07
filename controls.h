@@ -7,14 +7,12 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
-#include <pspctrl.h>
+#include <SDL/SDL_keysym.h>
 
 int buttonPressed(unsigned int btn);
 int buttonWasPressed(unsigned int btn);
 int buttonJustPressed(unsigned int btn);
 int buttonJustReleased(unsigned int btn);
 void updateControls();
-SceCtrlData* getPad();
-SceCtrlData* getOldPad();
 
 #endif

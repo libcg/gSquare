@@ -4,7 +4,6 @@
 // This work is licensed under the Creative Commons BY-NC-SA 3.0 Unported License.
 // See LICENSE for more details.
 
-#include <pspkernel.h>
 #include <stdio.h>
 #include "game.h"
 #include "disp.h"
@@ -15,8 +14,6 @@
 #include "language.h"
 
 #include "lib/glib2d.h"
-#include "lib/pspaalib.h"
-#include "lib/intraFont.h"
 
 Fade ui_fade = {FADE_OUT,0.f,3.5f,255,0,0.f,BLACK};
 g2dColor timer_back_color = WHITE;
@@ -50,26 +47,9 @@ void drawUI()
   {
     ui_fade.mode = FADE_OUT;
     cam.zoom_target = 1.6f;
-    // Timer
-    intraFontSetStyle(bigfont,timer_size,BLACK,timer_back_color,0.f,
-                      INTRAFONT_ALIGN_CENTER);
-    intraFontPrintf(bigfont,G2D_SCR_W/2,20,"%.2d:%.2d",
-                    game.time_elapsed/60,game.time_elapsed%60);
-    // L/R indicator
-    short l = buttonPressed(PSP_CTRL_LTRIGGER) && !game.g_lock,
-          r = buttonPressed(PSP_CTRL_RTRIGGER) && !game.g_lock;
-    intraFontSetStyle(font,1.1f,(game.g_lock ? GRAY : BLACK),
-                      (l ? RED : 0),0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(font,15,15,"<L");
-    intraFontSetStyle(font,1.1f,(game.g_lock ? GRAY : BLACK),
-                      (r ? RED : 0),0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(font,G2D_SCR_W-15,15,"R>");
-    // Flying text     
-    if (game.flying_text != NULL)
-    {
-      intraFontSetStyle(font,0.9f,BLACK,AZURE,0.f,INTRAFONT_ALIGN_CENTER);
-      intraFontPrintf(font,G2D_SCR_W/2,260,"%s",game.flying_text);
-    }
+    // Timer TODO
+    // L/R indicator TODO
+    // Flying text TODO
   }
   else if (getGameState() == WIN)
   {
@@ -77,13 +57,10 @@ void drawUI()
     ui_fade.max = 255;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 3.f;
-    intraFontSetStyle(bigfont,0.9f,BLACK,0,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.win);
+    // TODO title
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      intraFontSetStyle(font,1.f,G2D_MODULATE(BLACK,255,255*dcount/DCOUNT_MAX),0,
-                        0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.next_level);
+      // TODO next level
     }
   }
   else if (getGameState() == TIME_OVER)
@@ -92,13 +69,10 @@ void drawUI()
     ui_fade.max = 255;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    intraFontSetStyle(bigfont,0.9f,WHITE,0,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.time_over);
+    // TODO title
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
-                        0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
+      // TODO respawn
     }
   }
   else if (getGameState() == OUT_OF_BOUNDS)
@@ -107,13 +81,10 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.out_bounds);
+    // TODO title
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
-                        0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
+      // TODO respawn
     }
   }
   else if (getGameState() == DEATH)
@@ -122,13 +93,10 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.death);
+    // TODO title
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),0,
-                        0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrint(font,G2D_SCR_W-5,G2D_SCR_H-5,text.game.respawn);
+      // TODO respawn
     }
   }
   else if (getGameState() == PAUSE)
@@ -137,21 +105,15 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 0.85f;
-    intraFontSetStyle(bigfont,0.9f,WHITE,BLACK,0.f,INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W/2,G2D_SCR_H/2,text.game.pause);
+    // TODO title
     
     int i;
     for (i=0; i!=PAUSE_CHOICE_NBR; i++)
     {
-      intraFontSetStyle(font,1.f,WHITE,(pause.i == i ? 0 : BLACK),
-                        0.f,INTRAFONT_ALIGN_RIGHT);
-      intraFontPrintf(font,G2D_SCR_W-15,G2D_SCR_H-5-15*i,
-                      text.game.pause_choice[i]);
+      // TODO menu
       if (pause.i == i && dcount < DCOUNT_MAX * 5 / 6)
       {
-        intraFontSetStyle(font,1.f,G2D_MODULATE(WHITE,255,255*dcount/DCOUNT_MAX),
-                          0,0.f,INTRAFONT_ALIGN_RIGHT);
-        intraFontPrintf(font,G2D_SCR_W-5,G2D_SCR_H-5-15*i,"<");
+        // TODO menu selector
       }
     }
   }
@@ -161,7 +123,6 @@ void drawUI()
 void dispgSquare()
 {
   gsquare_size /= 1.0002f;
-  
   g2dBeginRects(img.gsquare);
   {
     g2dSetCoordMode(G2D_CENTER);
@@ -171,9 +132,7 @@ void dispgSquare()
   }
   g2dEnd();
   
-  intraFontSetStyle(font,1.f,WHITE,0,0.f,INTRAFONT_ALIGN_CENTER);
-  intraFontPrint(font,480/2,240,text.authors);
-  intraFontPrint(font,480/2,262,text.website);
+  // TODO authors, website
 }
 
 
@@ -181,6 +140,8 @@ void dispBanner()
 {
   g2dBeginRects(img.banner);
   {
+    g2dSetTexLinear(false);
+    g2dSetScaleWH(G2D_SCR_W,G2D_SCR_H);
     g2dAdd();
   }
   g2dEnd();
@@ -191,18 +152,18 @@ void dispMenu()
 {
   if (menu.state == 0)
   {
-    menu.square_y_target = 370.f;
-    menu.logo_y_target = 70.f; 
+    menu.square_y_target = G2D_SCR_H+100.f;
+    menu.logo_y_target = 150.f;
   }
   else if (menu.state == 1)
   {
-    menu.square_y_target = 190.f;
-    menu.logo_y_target = -30.f; 
+    menu.square_y_target = 320.f;
+    menu.logo_y_target = 0.f;
   }
   else
   {
-    menu.square_y_target = -250.f;
-    menu.logo_y_target = -100.f; 
+    menu.square_y_target = -300.f;
+    menu.logo_y_target = -100.f;
   }
 
   menu.rot += (menu.rot_target-menu.rot) * CAM_ROT_SPEED;
@@ -234,7 +195,6 @@ void dispMenu()
   {
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCoordXY(G2D_SCR_W/2,menu.logo_y);
-    g2dSetScale(0.8f,0.8f);
     g2dAdd();
   }
   g2dEnd();
@@ -242,14 +202,7 @@ void dispMenu()
   // L/R indicator
   if (menu.state == 0)
   {
-    intraFontSetStyle(bigfont,1.f,BLACK,
-                      (buttonPressed(PSP_CTRL_LTRIGGER) ? RED : 0),0.f,
-                      INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,25,G2D_SCR_H-25,"<L");
-    intraFontSetStyle(bigfont,1.f,BLACK,
-                      (buttonPressed(PSP_CTRL_RTRIGGER) ? RED : 0),0.f,
-                      INTRAFONT_ALIGN_CENTER);
-    intraFontPrint(bigfont,G2D_SCR_W-25,G2D_SCR_H-25,"R>");
+    // TODO
   }
 
   g2dBeginRects(img.tileset);
@@ -258,7 +211,7 @@ void dispMenu()
     g2dSetTexLinear(false);
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCropWH(12,12);
-    g2dSetScaleWH(350,350);
+    g2dSetScaleWH(500,500);
     g2dSetCoordXY(G2D_SCR_W/2,menu.square_y);
     g2dSetRotation(menu.rot);
     g2dAdd();
@@ -280,9 +233,7 @@ void dispMenu()
   {
     if (i == menu.mod_i)
     {
-      intraFontSetStyle(bigfont,1.f,WHITE,BLACK,menu.rot+menu.mod_i*90,
-                        INTRAFONT_ALIGN_CENTER);
-      intraFontPrint(bigfont,title_x[i],title_y[i],text.menu.title[i]);
+      // TODO
     }
   }
   
@@ -295,28 +246,19 @@ void dispMenu()
     {
       for (i=0; i<3; i++)
       {
-        intraFontSetStyle(font,1.f,WHITE,(i == menu.sub_i ? 0 : BLACK),
-                          menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);
-        intraFontPrintf(font,text_x,text_y+i*30,
-                        (i==menu.sub_i ? "> %s <" : "%s"),text.menu.story[i]);
+        // TODO
       }
     }
     else if (menu.mod_i == 1) // Config
     {
       for (i=0; i<3; i++)
       {
-        intraFontSetStyle(font,1.f,WHITE,(i == menu.sub_i ? 0 : BLACK),
-                          menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);
-        intraFontPrintf(font,text_x,text_y+i*30,
-                        (i==menu.sub_i ? "< %s %s >" : "%s %s"),
-                        text.menu.config[i],text.menu.config_setting[i]);
+        // TODO
       }
     }
     else if (menu.mod_i == 2) // Credits
     {
-      intraFontSetStyle(font,1.f,WHITE,0,
-                        menu.rot+menu.mod_i*90,INTRAFONT_ALIGN_CENTER);
-      intraFontPrint(font,text_x,text_y-40.f,text.credits);
+      // TODO
     }
   }
 }
