@@ -7,7 +7,7 @@ OBJS = \
     lib/glib2d.o
 
 CFLAGS = $(shell sdl2-config --cflags) -Wall -O2
-LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lGL -lpng -ljpeg -lm -llua
+LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lGL -lpng -ljpeg -lm -llua
 
 all: gsquare
 
