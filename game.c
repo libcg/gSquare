@@ -313,6 +313,13 @@ void gameMenu()
     if (fscanf(fp,"%s",buffer) > 0) strcpy(saved_lvl,buffer);
     fclose(fp);
   }
+  else
+  {
+    strcpy(saved_lvl,"./levels/easy1.lua");
+    fp = fopen("save","w");
+    fprintf(fp,"%s",saved_lvl);
+    fclose(fp);
+  }
   
   setFadeMode(&main_fade,FADE_OUT,0);
   waitFadeDone(&main_fade);
