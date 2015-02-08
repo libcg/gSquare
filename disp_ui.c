@@ -46,10 +46,37 @@ void drawUI()
   if (getGameState() == INGAME)
   {
     ui_fade.mode = FADE_OUT;
-    cam.zoom_target = 1.6f;
-    // Timer TODO
-    // L/R indicator TODO
-    // Flying text TODO
+    cam.zoom_target = 1.8f;
+    // Timer
+    char timer_text[32];
+    sprintf(timer_text,"%.2d:%.2d",game.time_elapsed/60,game.time_elapsed%60);
+    g2dBeginRects(g2dTexFromFont(bigfont,timer_text,WHITE));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetColor(timer_back_color);
+      g2dSetCoordXY(G2D_SCR_W/2,20);
+      g2dSetScaleWHRelative(5,5);
+      g2dAdd();
+      g2dSetColor(BLACK);
+      g2dResetScale();
+      g2dAdd();
+    }
+    g2dEnd();
+    // Flying text
+    if (game.flying_text != NULL)
+    {
+      g2dBeginRects(g2dTexFromFont(font,game.flying_text,WHITE));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(G2D_SCR_W/2 + 1,G2D_SCR_H-20);
+        g2dSetColor(AZURE);
+        g2dAdd();
+        g2dSetCoordXYRelative(-2,-2);
+        g2dSetColor(BLACK);
+        g2dAdd();
+      }
+      g2dEnd();
+    }
   }
   else if (getGameState() == WIN)
   {
@@ -57,10 +84,25 @@ void drawUI()
     ui_fade.max = 255;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 3.f;
-    // TODO title
+    g2dBeginRects(g2dTexFromFont(bigfont,text.game.win,BLACK));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dSetScaleRelative(0.9f,0.9f);
+      g2dAdd();
+    }
+    g2dEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      // TODO next level
+      g2dBeginRects(g2dTexFromFont(font,text.game.next_level,BLACK));
+      {
+        g2dSetCoordMode(G2D_DOWN_RIGHT);
+        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dSetAlpha(255*dcount/DCOUNT_MAX);
+        g2dSetScaleRelative(0.9f,0.9f);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
   else if (getGameState() == TIME_OVER)
@@ -69,10 +111,25 @@ void drawUI()
     ui_fade.max = 255;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    // TODO title
+    g2dBeginRects(g2dTexFromFont(bigfont,text.game.time_over,WHITE));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dSetScaleRelative(0.9f,0.9f);
+      g2dAdd();
+    }
+    g2dEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      // TODO respawn
+      g2dBeginRects(g2dTexFromFont(font,text.game.respawn,WHITE));
+      {
+        g2dSetCoordMode(G2D_DOWN_RIGHT);
+        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dSetAlpha(255*dcount/DCOUNT_MAX);
+        g2dSetScaleRelative(0.9f,0.9f);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
   else if (getGameState() == OUT_OF_BOUNDS)
@@ -81,10 +138,25 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    // TODO title
+    g2dBeginRects(g2dTexFromFont(bigfont,text.game.out_bounds,WHITE));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dSetScaleRelative(0.9f,0.9f);
+      g2dAdd();
+    }
+    g2dEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      // TODO respawn
+      g2dBeginRects(g2dTexFromFont(font,text.game.respawn,WHITE));
+      {
+        g2dSetCoordMode(G2D_DOWN_RIGHT);
+        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dSetAlpha(255*dcount/DCOUNT_MAX);
+        g2dSetScaleRelative(0.9f,0.9f);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
   else if (getGameState() == DEATH)
@@ -93,10 +165,25 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
-    // TODO title
+    g2dBeginRects(g2dTexFromFont(bigfont,text.game.death,WHITE));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dSetScaleRelative(0.9f,0.9f);
+      g2dAdd();
+    }
+    g2dEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
     {
-      // TODO respawn
+      g2dBeginRects(g2dTexFromFont(font,text.game.respawn,WHITE));
+      {
+        g2dSetCoordMode(G2D_DOWN_RIGHT);
+        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dSetAlpha(255*dcount/DCOUNT_MAX);
+        g2dSetScaleRelative(0.9f,0.9f);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
   else if (getGameState() == PAUSE)
@@ -105,16 +192,26 @@ void drawUI()
     ui_fade.max = 127;
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 0.85f;
-    // TODO title
-    
+    g2dBeginRects(g2dTexFromFont(bigfont,text.game.pause,WHITE));
+    {
+      g2dSetCoordMode(G2D_CENTER);
+      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dSetScaleRelative(0.9f,0.9f);
+      g2dAdd();
+    }
+    g2dEnd();
+
     int i;
     for (i=0; i!=PAUSE_CHOICE_NBR; i++)
     {
-      // TODO menu
-      if (pause.i == i && dcount < DCOUNT_MAX * 5 / 6)
+      g2dBeginRects(g2dTexFromFont(font,text.game.pause_choice[i],WHITE));
       {
-        // TODO menu selector
+        g2dSetCoordMode(G2D_DOWN_RIGHT);
+        g2dSetCoordXY(G2D_SCR_W-15,G2D_SCR_H-5-25*i);
+        g2dSetAlpha(127+(pause.i==i ? dcount*127/DCOUNT_MAX : 0));
+        g2dAdd();
       }
+      g2dEnd();
     }
   }
 }
@@ -219,7 +316,22 @@ void dispMenu()
   // L/R indicator
   if (menu.state == 0)
   {
-    // TODO
+      g2dBeginRects(g2dTexFromFont(font,"<",BLACK));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(G2D_SCR_W/8,G2D_SCR_H-70);
+        g2dSetAlpha(ctrlPressed(SDL_SCANCODE_LEFT) ? 255 : 127);
+        g2dAdd();
+      }
+      g2dEnd();
+      g2dBeginRects(g2dTexFromFont(font,">",BLACK));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(7*G2D_SCR_W/8,G2D_SCR_H-70);
+        g2dSetAlpha(ctrlPressed(SDL_SCANCODE_RIGHT) ? 255 : 127);
+        g2dAdd();
+      }
+      g2dEnd();
   }
 
   g2dBeginRects(img.tileset);
@@ -238,7 +350,7 @@ void dispMenu()
     {
       g2dPush();
       g2dSetRotationRelative(i*90);
-      g2dSetCoordXYRelative(0,-155);
+      g2dSetCoordXYRelative(0,-233);
       g2dGetCoordXYZ(&title_x[i],&title_y[i],NULL);
       g2dPop();
     }
@@ -250,30 +362,66 @@ void dispMenu()
   {
     if (i == menu.mod_i)
     {
-      // TODO
+      g2dBeginRects(g2dTexFromFont(bigfont,text.menu.title[i],WHITE));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(title_x[i],title_y[i]);
+        g2dSetRotation(menu.rot+menu.mod_i*90);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
   
   // Draw section text
   if (menu.state != 0)
   {
+    float text_x = title_x[menu.mod_i],
+    text_y = title_y[menu.mod_i] + 70.f;
     if (menu.mod_i == 0) // Story
     {
       for (i=0; i<3; i++)
       {
-        // TODO
+        char sub_text[128];
+        sprintf(sub_text,(menu.sub_i==i ? "> %s <" : "%s"),text.menu.story[i]);
+        g2dBeginRects(g2dTexFromFont(font,sub_text,WHITE));
+        {
+          g2dSetCoordMode(G2D_CENTER);
+          g2dSetCoordXY(text_x,text_y+i*40);
+          g2dSetRotation(menu.rot+menu.mod_i*90);
+          if (menu.sub_i!=i) g2dSetAlpha(127);
+          g2dAdd();
+        }
+        g2dEnd();
       }
     }
     else if (menu.mod_i == 1) // Config
     {
       for (i=0; i<3; i++)
       {
-        // TODO
+        char sub_text[128];
+        sprintf(sub_text,(menu.sub_i==i ? "< %s %s >" : "%s %s"),text.menu.config[i],text.menu.config_setting[i]);
+        g2dBeginRects(g2dTexFromFont(font,sub_text,WHITE));
+        {
+          g2dSetCoordMode(G2D_CENTER);
+          g2dSetCoordXY(text_x,text_y+i*40);
+          g2dSetRotation(menu.rot+menu.mod_i*90);
+          if (menu.sub_i!=i) g2dSetAlpha(127);
+          g2dAdd();
+        }
+        g2dEnd();
       }
     }
     else if (menu.mod_i == 2) // Credits
     {
-      // TODO
+      g2dBeginRects(g2dTexFromFont(font,text.credits,WHITE));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(text_x,text_y-30);
+        g2dSetRotation(menu.rot+menu.mod_i*90);
+        g2dAdd();
+      }
+      g2dEnd();
     }
   }
 }

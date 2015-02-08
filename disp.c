@@ -213,7 +213,13 @@ int dispThread(void* args)
     if (checkGameState(LEVEL_TITLE))
     {
       g2dClear(WHITE);
-      // TODO: title
+      g2dBeginRects(g2dTexFromFont(itlfont,lvl.title,BLACK));
+      {
+        g2dSetCoordMode(G2D_CENTER);
+        g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+        g2dAdd();
+      }
+      g2dEnd();
     }
     if (checkGameState(END))
     {

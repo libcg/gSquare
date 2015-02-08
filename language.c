@@ -82,7 +82,7 @@ me\n\nUsing :\nGraphics library - gLib2D by Geecko\nFont library - intraFont-G \
 by BenHur\nAudio library - aalib by Arshia001\nPSPSDK - ps2dev.org\n\nThanks to\
 :\nFrench PSP community (PSP-Gen, XtreamLua)\nSony for his marvellous developme\
 nt platform");
-  strcpy(text.authors,"Presented by meastnt and Geecko");
+  strcpy(text.authors,"Presented by @meastnt and @libcg");
   strcpy(text.website,"http://sites.google.com/site/gsquarecenter");
   sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
   sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol); 
