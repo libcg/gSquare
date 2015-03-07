@@ -166,8 +166,11 @@ int deleteObject(int obj_id)
   // This object is the player
   if (obj_id == P_ID)
   {
-    cam.active = 0;
-    if (getGameState() == INGAME) pushGameState(DEATH);
+    if (getGameState() == INGAME)
+    {
+      playSound("death");
+      pushGameState(LOSE);
+    }
     return 1;
   }
 

@@ -54,7 +54,7 @@ void drawUI()
                               (int)((255-G2D_GET_B(timer_back_color))*TIMER_SIZE_SPEED),
                               255);
 
-  if (getGameState() == INGAME)
+  if (getGameState() == INGAME || getGameState() == LOSE)
   {
     ui_fade.mode = FADE_OUT;
     cam.zoom_target = 1.8f;
@@ -123,60 +123,6 @@ void drawUI()
     ui_fade.mode = FADE_IN;
     cam.zoom_target = 1.f;
     g2dBeginRects(g2dTexFromFont(bigfont,text.game.time_over,WHITE));
-    {
-      g2dSetCoordMode(G2D_CENTER);
-      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
-      g2dSetScaleRelative(0.9f,0.9f);
-      g2dAdd();
-    }
-    g2dEnd();
-    if (dcount < DCOUNT_MAX * 5 / 6)
-    {
-      g2dBeginRects(g2dTexFromFont(font,text.game.respawn,WHITE));
-      {
-        g2dSetCoordMode(G2D_DOWN_RIGHT);
-        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
-        g2dSetAlpha(255*dcount/DCOUNT_MAX);
-        g2dSetScaleRelative(0.9f,0.9f);
-        g2dAdd();
-      }
-      g2dEnd();
-    }
-  }
-  else if (getGameState() == OUT_OF_BOUNDS)
-  {
-    ui_fade.color = BLACK;
-    ui_fade.max = 127;
-    ui_fade.mode = FADE_IN;
-    cam.zoom_target = 1.f;
-    g2dBeginRects(g2dTexFromFont(bigfont,text.game.out_bounds,WHITE));
-    {
-      g2dSetCoordMode(G2D_CENTER);
-      g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
-      g2dSetScaleRelative(0.9f,0.9f);
-      g2dAdd();
-    }
-    g2dEnd();
-    if (dcount < DCOUNT_MAX * 5 / 6)
-    {
-      g2dBeginRects(g2dTexFromFont(font,text.game.respawn,WHITE));
-      {
-        g2dSetCoordMode(G2D_DOWN_RIGHT);
-        g2dSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
-        g2dSetAlpha(255*dcount/DCOUNT_MAX);
-        g2dSetScaleRelative(0.9f,0.9f);
-        g2dAdd();
-      }
-      g2dEnd();
-    }
-  }
-  else if (getGameState() == DEATH)
-  {
-    ui_fade.color = BLACK;
-    ui_fade.max = 127;
-    ui_fade.mode = FADE_IN;
-    cam.zoom_target = 1.f;
-    g2dBeginRects(g2dTexFromFont(bigfont,text.game.death,WHITE));
     {
       g2dSetCoordMode(G2D_CENTER);
       g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);

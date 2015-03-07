@@ -28,9 +28,27 @@
 #define MENU_TITLE_NBR 4
 #define PAUSE_CHOICE_NBR 4
 
-enum Game_States { INGAME, DEATH, WIN, TIME_OVER, OUT_OF_BOUNDS,
-                   PAUSE, GSQUARE, BANNER, MENU, LEVEL_TITLE, END};
-enum Gravity_Dir { N, E, S, W};
+enum Game_States
+{
+  INGAME,
+  LOSE,
+  WIN,
+  TIME_OVER,
+  PAUSE,
+  GSQUARE,
+  BANNER,
+  MENU,
+  LEVEL_TITLE,
+  END
+};
+
+enum Gravity_Dir
+{
+  N,
+  E,
+  S,
+  W
+};
 
 typedef struct
 {

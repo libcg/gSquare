@@ -54,14 +54,7 @@ void pushGameState(int state)
 {
   if (game.state_stack_size >= GAMESTATE_STACK_SIZE) return;
   if (getGameState() == state) return;
-  
-  switch (state)
-  {
-    case DEATH:
-      playSound("death");
-    break;
-  }
-  
+
   game.state_stack[game.state_stack_size++] = state;
 }
 
@@ -69,6 +62,7 @@ void pushGameState(int state)
 void popGameState()
 {
   if (game.state_stack_size <= 0) return;
+
   game.state_stack_size--;
 }
 
@@ -124,6 +118,8 @@ void resetPlayerState()
 
 void gameControls()
 {
+  static int lose_cnt = 0;
+
   ctrlNextFrame();
   
   if (lvl.obj_nbr != 0 && getGameState() == INGAME)
@@ -179,24 +175,18 @@ void gameControls()
   switch (getGameState())
   {
     case INGAME:
+      P_OBJ.state = 0;
+      cam.active = 1;
+      lose_cnt = 0;
       if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
-    case OUT_OF_BOUNDS:
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
-      {
-        cam.active = 1;
-        popGameState();
-        resetPlayerState();
-      }
-    break;
     case TIME_OVER:
       if (ctrlJustPressed(SDL_SCANCODE_RETURN))
       {
-        cam.active = 1;
         popGameState();
         resetLevel();
       }
@@ -206,7 +196,6 @@ void gameControls()
       {
         save();
         waitFadeDone(&ui_fade);
-        cam.active = 1;
         game.g_lock = 0;
         nextLevel();
         if (exit_state == 1) break;
@@ -219,15 +208,18 @@ void gameControls()
         }
       }
     break;
-    case DEATH:
-      if (lvl.obj_nbr == 0) break;
+    case LOSE:
       P_OBJ.state = 1;
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+      cam.active = 0;
+      if (lose_cnt++ == 40)
       {
-        cam.active = 1;
-        popGameState();
         resetPlayerState();
-        P_OBJ.state = 0;
+        popGameState();
+      }
+      else if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+      {
+        pause.i = 0;
+        pushGameState(PAUSE);
       }
     break;
     case PAUSE:
@@ -280,7 +272,7 @@ void checkBounds()
       P_OBJ.y+P_OBJ.type->tex_h > lvl.limit_y1)
   {
     cam.active = 0;
-    pushGameState(OUT_OF_BOUNDS);
+    pushGameState(LOSE);
   }
 }
 

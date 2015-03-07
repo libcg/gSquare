@@ -83,8 +83,6 @@ void loadLanguage()
   fscanf(file,"%[^\n]\n",text.game.next_level);
   fscanf(file,"%[^\n]\n",text.game.time_over);
   fscanf(file,"%[^\n]\n",text.game.respawn);
-  fscanf(file,"%[^\n]\n",text.game.out_bounds);
-  fscanf(file,"%[^\n]\n",text.game.death);
   
   strcpy(text.credits,
 "gSquare\n\nBy meastnt and Geecko\nDesign by Maxime Brugnon and CaptainKill\nMu\
