@@ -1,4 +1,5 @@
-BIN = gsquare
+BIN = gsquare.exe
+CROSS ?= 
 
 OBJS = \
     main.o level.o controls.o language.o audio.o config.o lua.o\
@@ -13,13 +14,13 @@ LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf\
 all: gsquare
 
 gsquare: $(OBJS)
-	gcc -o game/$(BIN) $^ $(LDFLAGS)
+	$(CROSS)gcc -o game/$(BIN) $^ $(LDFLAGS)
 
 %.o: %.c
-	gcc -o $@ -c $^ $(CFLAGS)
+	$(CROSS)gcc -o $@ -c $^ $(CFLAGS)
 
 run: gsquare
 	cd game && ./$(BIN)
 
 clean:
-	rm -f *.o $(BIN)
+	rm -f *.o game/$(BIN)

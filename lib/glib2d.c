@@ -880,7 +880,7 @@ g2dImage* g2dTexFromFont(TTF_Font* font, char text[], g2dColor color)
   sdl_color.g = G2D_GET_G(color);
   sdl_color.b = G2D_GET_B(color);
 
-  return _g2dTexFromSDLSurface(TTF_RenderText_Blended(font, text, sdl_color));
+  return _g2dTexFromSDLSurface(TTF_RenderUTF8_Blended(font, text, sdl_color));
 }
 
 // * Scissor functions *
