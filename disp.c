@@ -176,8 +176,10 @@ g2dImage* loadImage(char path[], g2dTex_Mode mode)
 }
 
 
-int dispThread(void* args)
+int dispThread(void* p)
 {
+  SDL_mutex *mutex = (SDL_mutex *)p;
+
   img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
   img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
   img.gsquare = loadImage("graphics/gsquare.png",G2D_SWIZZLE);
@@ -216,10 +218,14 @@ int dispThread(void* args)
     }
     if (checkGameState(INGAME))
     {
+      SDL_LockMutex(mutex);
+
       drawMovingBackground();
       camera();
       drawLevel();
       drawUI();
+
+      SDL_UnlockMutex(mutex);
     }
     if (checkGameState(LEVEL_TITLE))
     {
@@ -250,10 +256,10 @@ int dispThread(void* args)
 }
 
 
-void initDisp()
+void initDisp(SDL_mutex *mutex)
 {
   // Start disp thread
-  SDL_CreateThread(dispThread, "disp_thread", NULL);
+  SDL_CreateThread(dispThread, "disp_thread", (void *)mutex);
 }
 
 // EOF

@@ -467,8 +467,9 @@ void gameMenu()
 }
 
 
-int gameThread(void* args)
+int gameThread(void* p)
 {
+  SDL_mutex *mutex = (SDL_mutex *)p;
   initGameState();
 
   while (!exit_state)
@@ -490,7 +491,11 @@ int gameThread(void* args)
       gameControls();
       if (getGameState() != PAUSE)
       {
+        SDL_LockMutex(mutex);
+
         physics(); // and player controls
+
+        SDL_UnlockMutex(mutex);
       }
       if (getGameState() == INGAME)
       {
@@ -511,10 +516,10 @@ int gameThread(void* args)
 }
 
 
-void initGame()
+void initGame(SDL_mutex *mutex)
 {
   // Start game thread
-  SDL_CreateThread(gameThread, "game_thread", NULL);
+  SDL_CreateThread(gameThread, "game_thread", (void *)mutex);
 }
 
 // EOF

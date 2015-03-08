@@ -48,13 +48,18 @@ void throwException(const char* err, ...)
 int main(int argc, char* argv[])
 {
   SDL_Event event;
+  SDL_mutex *mutex;
+
+  mutex = SDL_CreateMutex();
+  if (!mutex)
+    throwException("Couldn't create mutex");
 
   configLoad();
   initLanguage();
   initAudio();
   initLua();
-  initGame();
-  initDisp();
+  initGame(mutex);
+  initDisp(mutex);
 
   while (!exit_state)
   {
@@ -68,6 +73,8 @@ int main(int argc, char* argv[])
       }
     }
   }
+
+  SDL_DestroyMutex(mutex);
 
   return 0;
 }

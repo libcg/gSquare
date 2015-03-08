@@ -18,6 +18,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <SDL.h>
 #include "level.h"
 
 #define GAMESTATE_STACK_SIZE 64
@@ -90,7 +91,7 @@ void popGameState();
 void setGameState(int state);
 int checkGameState(int state);
 int getGameState();
-void initGame();
+void initGame(SDL_mutex *mutex);
 void setPlayerState(float x, float y, int g_dir);
 void resetPlayerState();
 
