@@ -156,13 +156,13 @@ void _g2dStart()
 }
 
 
-void _g2dSetVertex(int i, float vx, float vy)
+void _g2dSetVertex(int i, int vx, int vy)
 {
   // Texture
   if (obj_tex != NULL)
   {
-    glTexCoord2d((I_OBJ.crop_x + vx * I_OBJ.crop_w) / obj_tex->w,
-                 (I_OBJ.crop_y + vy * I_OBJ.crop_h) / obj_tex->h);
+    glTexCoord2f((float)(I_OBJ.crop_x + vx * I_OBJ.crop_w) / obj_tex->w,
+                 (float)(I_OBJ.crop_y + vy * I_OBJ.crop_h) / obj_tex->h);
   }
 
   // Color
@@ -282,12 +282,12 @@ void _g2dEndRects()
   int i;
   for (i=0; i<obj_list_size; i+=1)
   {
-    _g2dSetVertex(i,0.f,0.f);
-    _g2dSetVertex(i,1.f,0.f);
-    _g2dSetVertex(i,0.f,1.f);
-    _g2dSetVertex(i,0.f,1.f);
-    _g2dSetVertex(i,1.f,0.f);
-    _g2dSetVertex(i,1.f,1.f);
+    _g2dSetVertex(i,0,0);
+    _g2dSetVertex(i,1,0);
+    _g2dSetVertex(i,0,1);
+    _g2dSetVertex(i,0,1);
+    _g2dSetVertex(i,1,0);
+    _g2dSetVertex(i,1,1);
   }
 
   // Then put it in the display list.
@@ -303,18 +303,18 @@ void _g2dEndLines()
   int i;
   if (obj_line_strip)
   {
-    _g2dSetVertex(0,0.f,0.f);
+    _g2dSetVertex(0,0,0);
     for (i=1; i<obj_list_size; i+=1)
     {
-      _g2dSetVertex(i,0.f,0.f);
+      _g2dSetVertex(i,0,0);
     }
   }
   else
   {
     for (i=0; i+1<obj_list_size; i+=2)
     {
-      _g2dSetVertex(i  ,0.f,0.f);
-      _g2dSetVertex(i+1,0.f,0.f);
+      _g2dSetVertex(i  ,0,0);
+      _g2dSetVertex(i+1,0,0);
     }
   }
 
@@ -331,12 +331,12 @@ void _g2dEndQuads()
   int i;
   for (i=0; i+3<obj_list_size; i+=4)
   {
-    _g2dSetVertex(i  ,0.f,0.f);
-    _g2dSetVertex(i+1,1.f,0.f);
-    _g2dSetVertex(i+3,0.f,1.f);
-    _g2dSetVertex(i+3,0.f,1.f);
-    _g2dSetVertex(i+1,1.f,0.f);
-    _g2dSetVertex(i+2,1.f,1.f);
+    _g2dSetVertex(i  ,0,0);
+    _g2dSetVertex(i+1,1,0);
+    _g2dSetVertex(i+3,0,1);
+    _g2dSetVertex(i+3,0,1);
+    _g2dSetVertex(i+1,1,0);
+    _g2dSetVertex(i+2,1,1);
   }
 
   // Then put it in the display list.
@@ -352,7 +352,7 @@ void _g2dEndPoints()
   int i;
   for (i=0; i<obj_list_size; i+=1)
   {
-    _g2dSetVertex(i,0.f,0.f);
+    _g2dSetVertex(i,0,0);
   }
 
   // Then put it in the display list.
@@ -382,10 +382,8 @@ void g2dEnd()
                     obj_use_tex_linear ? GL_LINEAR : GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,
                     obj_use_tex_linear ? GL_LINEAR : GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,
-                    obj_use_tex_linear ? GL_REPEAT : GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,
-                    obj_use_tex_linear ? GL_REPEAT : GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
 
   switch (obj_type)
@@ -846,8 +844,8 @@ static g2dImage* _g2dTexFromSDLSurface(SDL_Surface* surface)
   format.Amask = 0xff000000;
 
   gl_surface = SDL_ConvertSurface(surface,&format,0);
-  tex->w = gl_surface->w + 1;
-  tex->h = gl_surface->h + 1;
+  tex->w = gl_surface->w;
+  tex->h = gl_surface->h;
   tex->can_blend = 1;
 
   glGenTextures(1, &tex->id);

@@ -24,7 +24,6 @@
 #include "lib/glib2d.h"
 
 Camera cam = {1,0.f,0.f,0.f,0.f,1.f,1.f,1.f,1.f};
-static float shadow_x = 0;
 
 void setCameraRot(int rot)
 {
@@ -92,9 +91,11 @@ int isVisible(Object* obj)
 
 void drawLevel()
 {
+  static float shadow_x = 0.f;
+  int i;
+
   shadow_x += SHADOW_SPEED;
 
-  int i, ty;
   g2dBeginRects(img.tileset);
   {
     g2dPop();
@@ -104,46 +105,49 @@ void drawLevel()
     g2dSetCoordInteger(true);
     
     // Objects
-    Object* obj_i = lvl.obj_list;
-    for (i=0; i!=lvl.obj_nbr; i++, obj_i++)
+    for (i=0; i!=lvl.obj_nbr; i++)
     {
+      Object *obj = &lvl.obj_list[i];
+
       g2dPush();
-      g2dSetCoordXYRelative(obj_i->x,obj_i->y);
-      
-      if (isVisible(obj_i))
+      g2dSetCoordXYRelative(obj->x,obj->y);
+
+      if (isVisible(obj))
       {
-        g2dSetScaleWH(obj_i->w,obj_i->h);
-        g2dSetCropWH(obj_i->type->tex_w,obj_i->type->tex_h);
-        ty = obj_i->type->tex_y + (obj_i->type->tex_h+1) * obj_i->state;
-        g2dSetCropXY(obj_i->type->tex_x,ty);
+        g2dSetScaleWH(obj->w,obj->h);
+        g2dSetCropWH(obj->type->tex_w,obj->type->tex_h);
+        g2dSetCropXY(obj->type->tex_x,
+                     obj->type->tex_y + (obj->type->tex_h+1) * obj->state);
         g2dSetColor(G2D_MODULATE(WHITE,
-                    255+30*(-1+sinf(shadow_x+obj_i->x/50.f+obj_i->y/120.f)),
+                    255+30*(-1+sinf(shadow_x+obj->x/50.f+obj->y/120.f)),
                     255));
         g2dAdd();
       }
-      
+
       g2dPop();
     }
     
     // Rays
     if (lvl.ray_list != NULL)
     {
-      Ray* ray_i = lvl.ray_list;
-      for (i=0; i!=lvl.ray_nbr; i++, ray_i++)
+      for (i=0; i!=lvl.ray_nbr; i++)
       {
-        if (ray_i->dir == 0)
+        Ray *ray = &lvl.ray_list[i];
+
+        if (ray->dir == 0)
           g2dSetCoordMode(G2D_DOWN_LEFT);
-        else if (ray_i->dir == 3)
+        else if (ray->dir == 3)
           g2dSetCoordMode(G2D_UP_RIGHT);
         else
-          g2dSetCoordMode(G2D_UP_LEFT);        
+          g2dSetCoordMode(G2D_UP_LEFT);
+
         g2dPush();
-        g2dSetCoordXYRelative(ray_i->x,ray_i->y);
-        g2dSetScaleWH(ray_i->w,ray_i->h);
-        g2dSetCropWH((ray_i->dir%2 == 0) ? ray_i->type->tex_w : 1.f,
-                     (ray_i->dir%2 == 1) ? ray_i->type->tex_h : 1.f);
-        ty = ray_i->type->tex_y + ray_i->type->tex_h * (ray_i->dir%2 == 0);
-        g2dSetCropXY(ray_i->type->tex_x,ty);
+        g2dSetCoordXYRelative(ray->x,ray->y);
+        g2dSetScaleWH(ray->w,ray->h);
+        g2dSetCropWH(ray->type->tex_w, ray->type->tex_h);
+        g2dSetCropXY(ray->type->tex_x,
+                     ray->type->tex_y + ray->type->tex_h * (ray->dir%2 == 0));
+        g2dSetColor(WHITE);
         g2dAdd();
         g2dPop();
       } 
