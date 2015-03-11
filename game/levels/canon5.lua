@@ -62,7 +62,7 @@ function setLevel()
   createObjectAligned(16*7,16*3,0,0,9,16)
   local t1 = {
   "Marshmallow cannons would be funnier.",
-  "Des canons en marshmallow seraient plus drôles." }
+  "Des canons en guimauve seraient plus drôles." }
   objectText(t1[getLanguageID()+1])
     
   -- Init Canons

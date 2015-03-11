@@ -1,8 +1,8 @@
 function getInfo()
   -- Title
   local title = {
-  "Day 41.\n\nYou found Rose !",
-  "Jour 41.\n\nVous avez trouvé Rose !" }
+  "Day 41.\n\nYou found Rose!",
+  "Jour 41.\n\nVous avez trouvé Rose!" }
   levelText(title[getLanguageID()+1])
 end
 
@@ -67,7 +67,7 @@ function setLevel()
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*38,16*15,0,0,9,16)
   local t2 = {
-  "I'm coming to save you !",
-  "J'arrive pour te secourir !" }
+  "I'm coming to save you!",
+  "J'arrive pour te secourir!" }
   objectText(t2[getLanguageID()+1])
 end

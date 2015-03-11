@@ -56,17 +56,17 @@ function setLevel()
   -- Init checkpoints
 	createObjectAligned(16*2,16*6,0,0,9,16)
   local t1 = {
-  "It seems that I've lost my power because of this block.",
-  "J'ai apparemment perdu mon pouvoir à cause de ce bloc." }
+  "It seems that I've lost my power.",
+  "Je crois que j'ai perdu mon pouvoir." }
   objectText(t1[getLanguageID()+1])
 	createObjectAligned(16*5,16*6,0,0,9,16)
   local t2 = {
-  "What's this kind of block ?",
-  "Quel est ce type de bloc ?" }
+  "What is this?",
+  "Qu'est ce que c'est?" }
   objectText(t2[getLanguageID()+1])
 	createObjectAligned(16*30,16*6,0,0,9,16)
   local t3 = {
-  "My power is back !",
-  "Mon pouvoir est de retour !" }
+  "My power is back!",
+  "Mon pouvoir est de retour!" }
   objectText(t3[getLanguageID()+1])
 end

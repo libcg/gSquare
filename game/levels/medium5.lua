@@ -63,7 +63,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*12,16*16,0,0,9,16)
   local t1 = {
-  "I'm feeling like ice climbers.",
-  "Je me sens tel un alpiniste." }
+  "I'm feeling like a mountaineer.",
+  "Je me sens comme un alpiniste." }
   objectText(t1[getLanguageID()+1])
 end

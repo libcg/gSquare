@@ -1,8 +1,8 @@
 function getInfo()
   -- Title
   local title = {
-  "Day 20.\n\nSome cannons to add a touch of fun !",
-  "Jour 20.\n\nQuelques canons pour s'amuser un peu !" }
+  "Day 20.\n\nSome cannons to bring some fun!",
+  "Jour 20.\n\nQuelques canons pour s'amuser un peu!" }
   levelText(title[getLanguageID()+1])
 end
 
@@ -66,18 +66,18 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*3,16*15,0,0,9,16)
   local t1 = {
-  "It seems dangerous too ...",
-  "Ca a l'air dangereux aussi ..." }
+  "It looks dangerous...",
+  "Ça a l'air dangereux..." }
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*14,16*18,0,0,9,16)
   local t2 = {
-  "Yeah ! I love music !",
-  "Yeah ! J'adore la musique !" }
+  "Yeah! I love music!",
+  "Yeah! J'adore la musique!" }
   objectText(t2[getLanguageID()+1])
   createObjectAligned(16*32,16*0,0,0,9,16)
   local t3 = {
-  "Mi Mi Fa Sol, Sol Fa Mi Re, Do Do Re Mi, Mi Re ... ",
-  "Mi Mi Fa Sol, Sol Fa Mi Re, Do Do Re Mi, Mi Re ... " }
+  "Mi Mi Fa Sol, Sol Fa Mi Re, Do Do Re Mi, Mi Re... ",
+  "Mi Mi Fa Sol, Sol Fa Mi Ré, Do Do Ré Mi, Mi Ré... " }
   objectText(t3[getLanguageID()+1])
 
   

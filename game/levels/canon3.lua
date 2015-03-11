@@ -1,7 +1,7 @@
 function getInfo()
   -- Title
   local title = {
-  "Day 22.\n\nBreathe a little",
+  "Day 22.\n\nTake a breathe",
   "Jour 22.\n\nRespirez un coup" }
   levelText(title[getLanguageID()+1])
 end
@@ -61,7 +61,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*14,16*5,0,0,9,16)
   local t1 = {
-  "And I thought I saw the worst ...",
+  "And I thought I saw the worst...",
   "Et dire que je pensais avoir vu le pire..." }
   objectText(t1[getLanguageID()+1])
     

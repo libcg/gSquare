@@ -62,7 +62,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*6,16*6,0,0,a,16)
   local t1 = {
-  "Oh... The outside. It's great to go out a little !",
-  "Oh... l'extérieur. C'est super de pouvoir sortir un peu !" }
+  "It's great to go out a little!",
+  "C'est super de pouvoir sortir un peu!" }
   objectText(t1[getLanguageID()+1])
 end

@@ -1,8 +1,8 @@
 function getInfo()
   -- Title
   local title = {
-  "Day 27.\n\nHey, don't you like cannons ?",
-  "Jour 27.\n\nN'aimez-vous pas les canons ?" }
+  "Day 27.\n\nDon't you like cannons?",
+  "Jour 27.\n\nN'aimez-vous pas les canons?" }
   levelText(title[getLanguageID()+1])
 end
 
@@ -59,8 +59,8 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*16,16*1,0,0,9,16)
   local t1 = {
-  "Why so much hatefulness ? I'm a gentle square, you know.",
-  "Pourquoi tant de haine ? Je suis un gentil carré, vous savez." }
+  "Why so much hate? I'm a nice square, you know.",
+  "Pourquoi tant de haine? Je suis un gentil carré, vous savez." }
   objectText(t1[getLanguageID()+1])
   
   -- Init canons

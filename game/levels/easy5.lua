@@ -61,7 +61,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*1,16*1,0,0,9,16)
   local t1 = {
-  "What's this place ? I never saw that before...",
-  "Quel est cet endroit ? Je n'ai jamais vu ça avant..." }
+  "What's this place? I never saw that before...",
+  "Quel est cet endroit? Je n'ai jamais vu ça avant..." }
   objectText(t1[getLanguageID()+1])
 end

@@ -59,7 +59,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*10,16*10,0,0,9,16)
   local t1 = {
-  "I think I've got to go to the right. But what does mean right here ?",
-  "Je pense que je dois aller à droite. Mais où est la droite ici ?" }
+  "I think I've got to go to the right. But where is the right here?",
+  "Je crois que je dois aller à droite. Mais où est la droite ici?" }
   objectText(t1[getLanguageID()+1])
 end

@@ -57,8 +57,8 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*18,16*5,0,0,9,16)
   local t1 = {
-  "I think I won't be able to do this more than three times ...",
-  "Pas possible de le faire plus de trois fois ..." }
+  "No way I'll do this more than three times...",
+  "Pas possible de le faire plus de trois fois..." }
   objectText(t1[getLanguageID()+1])
   
   -- Init canons

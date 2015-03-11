@@ -62,7 +62,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*1,16*15,0,0,9,16)
   local t1 = {
-  "Am I getting closer or not ? I'm lost again ...",
-  "Suis-je en train d'approcher ou non ? Je suis encore perdu ..." }
+  "Am I getting closer or not? I'm lost again...",
+  "Suis-je en train de progresser ou non? Je suis encore perdu..." }
   objectText(t1[getLanguageID()+1])
 end

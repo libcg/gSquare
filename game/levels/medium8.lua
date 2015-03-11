@@ -80,12 +80,12 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*6,16*19,0,0,9,16)
   local t1 = {
-  "Getting higher more than ever !",
-  "Allant plus haut que jamais !" }
+  "Getting higher!",
+  "Aller plus haut!" }
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*11,16*14,0,0,8,16)
   local t2 = {
-  "Why all this black squares are here ?",
-  "Pourquoi tous ces carrés noirs sont ici ?" }
+  "Why are all these dark squares here?",
+  "Pourquoi tous ces carrés sombres sont ici?" }
   objectText(t2[getLanguageID()+1])
 end

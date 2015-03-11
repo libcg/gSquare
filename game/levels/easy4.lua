@@ -75,13 +75,13 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*2,16*1,0,0,9,16)
   local t1 = {
-  "Ohoh. A new type of block.. seems breakable. Which way to choose ?",
-  "Ohoh. Un nouveau type de bloc.. cassable. Quelle voie choisir ?" }
+  "Oh. It seems breakable. Which way to go?",
+  "Oh. Cela a l'air cassable. Quelle voie choisir?" }
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*14,16*1,0,0,9,16)
   local t2 = {
-  "I can't go too far, otherwise I will fall in the endless void... Scary.",
-  "Je ne peux pas aller trop loin, sinon je vais tomber dans l'infini..." }
+  "I can't go too far, otherwise I will fall in the void... Scary.",
+  "Je ne peux pas aller trop loin, sinon je vais tomber dans le vide..." }
   objectText(t2[getLanguageID()+1])
 end
 

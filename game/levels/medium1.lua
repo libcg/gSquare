@@ -61,12 +61,12 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*14,16*6,0,0,8,16)
   local t1 = {
-  "Let's go ! I've got to save Rose !",
-  "C'est parti ! Je dois sauver Rose !" }
+  "Let's go! I've got to save Rose!",
+  "C'est parti! Je dois sauver Rose!" }
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*15,16*15,0,0,a,16)
   local t1 = {
-  "So much blocks to break, so little time.",
+  "So many blocks to break, so little time.",
   "Tellement de blocs à casser, si peu de temps." }
   objectText(t1[getLanguageID()+1])
 end

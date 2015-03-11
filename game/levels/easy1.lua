@@ -61,8 +61,8 @@ function setLevel()
   -- Checkpoints
   createObjectAligned(16*1,16*1,0,0,9,16)
   local t1 = {
-  "Hello ! I can move using the directional arrows.",
-  "Bonjour ! Je peux bouger en utilisant les flèches directionnelles." }
+  "Hello! I can move using the directional arrows.",
+  "Bonjour! Je peux bouger en utilisant les flèches directionnelles." }
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*2,16*9,0,0,9,16)
   local t2 = {
@@ -81,33 +81,33 @@ function setLevel()
   objectText(t4[getLanguageID()+1])
   createObjectAligned(16*2,16*15,0,0,9,16)
   local t5 = {
-  "Black squares are naughty ! They can kill me ! I have to avoid them.",
-  "Les carrés noirs sont dangereux ! Je dois les éviter." }
+  "Dark squares are dangerous! I have to avoid them.",
+  "Les carrés sombres sont dangereux! Je dois les éviter." }
   objectText(t5[getLanguageID()+1])
   createObjectAligned(16*25,16*15,0,0,9,16)
   local t6 = {
-  "Purple squares can help me to jump much higher !",
-  "Les carrés violets me font sauter beaucoup plus haut !" }
+  "Purple squares can help me jump much higher!",
+  "Les carrés violets me font sauter beaucoup plus haut!" }
   objectText(t6[getLanguageID()+1])
   createObjectAligned(16*25,16*3,0,0,9,16)
   local t7 = {
-  "In case of trouble, simply take a break by pressing Start.",
+  "If you are stuck, take a break by pressing Start.",
   "En cas de problème, faites une pause en appuyant sur Start." }
   objectText(t7[getLanguageID()+1])
   createObjectAligned(16*15,16*8,0,0,9,16)
   local t8 = {
-  "I have the ability to control the gravity ! Press L or R button to try.",
-  "Je peux contrôler la gravité ! Appuyez sur L ou R pour essayer." }
+  "I have the ability to control the gravity! Press L or R button to try.",
+  "Je peux contrôler la gravité! Appuyez sur L ou R pour essayer." }
   objectText(t8[getLanguageID()+1])
   createObjectAligned(16*22,16*4,0,0,9,16)
   local t9 = {
   "This bigger coin there makes me go to the next level.",
-  "La plus grosse pièce ici me permet d'aller au niveau suivant." }
+  "La plus grosse pièce me permet d'aller au niveau suivant." }
   objectText(t9[getLanguageID()+1])
   createObjectAligned(16*13,16*1,0,0,9,16)
   local t10 = {
-  "Pressing L and R at the same time is useful to invert the gravity !",
-  "Appuyer simultanément sur L et R me permet d'inverser la gravité !" }
+  "Pressing L and R at the same time is useful to invert the gravity!",
+  "Appuyer simultanément sur L et R me permet d'inverser la gravité!" }
   objectText(t10[getLanguageID()+1])
 end
 

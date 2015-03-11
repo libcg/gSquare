@@ -60,7 +60,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*16,16*12,0,0,a,16)
   local t1 = {
-  "Side by side !",
-  "Côte à côte !" }
+  "Side by side!",
+  "Côte à côte!" }
   objectText(t1[getLanguageID()+1])
 end

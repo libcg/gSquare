@@ -56,7 +56,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*9,16*5,0,0,9,16)
   local t1 = {
-  "Hi di Ho ! I'm a pirate !",
-  "Hi di Ho ! Je suis un pirate !" }
+  "Hidi Ho! I'm a pirate!",
+  "Hidi Ho! Je suis un pirate!" }
   objectText(t1[getLanguageID()+1])
 end

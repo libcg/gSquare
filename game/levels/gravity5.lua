@@ -1,7 +1,7 @@
 function getInfo()
   -- Title
   local title = {
-  "Day 36.\n\nThink twice before jumping",
+  "Day 36.\n\nThink twice before you jump",
   "Jour 36.\n\nRéfléchissez deux fois avant de sauter" }
   levelText(title[getLanguageID()+1])
 end

@@ -2,7 +2,7 @@ function getInfo()
   -- Title
   local title = {
   "Day 9.\n\nThis creeper doesn't explode (yet)",
-  "Jour 9.\n\nCe creeper n'explose pas (encore)" }
+  "Jour 9.\n\nCe creeper n'explose pas (pour l'instant)" }
   levelText(title[getLanguageID()+1])
 end
 

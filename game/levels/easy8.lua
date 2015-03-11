@@ -57,8 +57,8 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*2,16*3,0,0,9,16)
   local t1 = {
-  "Coins, coins, I need more coins !",
-  "Des pièces, des pièces, je veux plus de pièces !" }
+  "Coins, coins, I need more coins!",
+  "Des pièces, des pièces, je veux plus de pièces!" }
   objectText(t1[getLanguageID()+1])
 
   -- Init lasers

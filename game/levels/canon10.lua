@@ -55,8 +55,8 @@ function setLevel()
   -- Init Checkpoints
   createObjectAligned(16*1,16*5,0,0,9,16)
   local t1 = {
-  "Okay let's go, Blue force is in the place !",
-  "C'est parti, Force Bleue est dans la place !" }
+  "I'm Blue Force, let's go!",
+  "C'est parti, je suis Force Bleue!" }
   objectText(t1[getLanguageID()+1])
   
   -- Init Canons

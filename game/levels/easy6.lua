@@ -62,8 +62,8 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*7,16*15,0,0,7,16)
   local t1 = {
-  "It was easier than I thought to come here.",
-  "C'était plus facile que je ne le pensais pour arriver ici." }
+  "It was easier than I thought to get here.",
+  "C'était plus facile que je ne le pensais pour arriver jusqu'ici." }
   objectText(t1[getLanguageID()+1])
   
 end

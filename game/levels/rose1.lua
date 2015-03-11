@@ -57,7 +57,7 @@ function setLevel()
   -- Init checkpoints
   createObjectAligned(16*10,16*5,0,0,9,16)
   local t1 = {
-  "So close, but also so far ...",
-  "Si proches, et si lointains ..." }
+  "So close, yet so far...",
+  "Si proches, et pourtant si lointains..." }
   objectText(t1[getLanguageID()+1])
 end
