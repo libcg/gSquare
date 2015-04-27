@@ -25,7 +25,7 @@
 #include "game.h"
 #include "common.h"
 
-TTF_Font *font, *bigfont, *itlfont;
+g2dFont *font, *bigfont, *itlfont;
 Images img;
 Fade main_fade = {FADE_OUT,255.f,3.5f,255,0,0.f,BLACK};
 Background back;
@@ -168,9 +168,9 @@ void drawFade(Fade* fade)
 
 // Common
 
-g2dImage* loadImage(char path[], g2dTex_Mode mode)
+g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 {
-  g2dImage* tex = g2dTexLoad(path,mode);
+  g2dTexture* tex = g2dTexLoad(path,mode);
   if (tex == NULL) throwException(IMG_GetError());
   return tex;
 }
@@ -185,11 +185,11 @@ int dispThread(void* p)
   img.gsquare = loadImage("graphics/gsquare.png",G2D_SWIZZLE);
   img.banner = loadImage("graphics/genesis.png",G2D_SWIZZLE);
 
-  TTF_Init();
-  font = TTF_OpenFont("fonts/Cantarell-Bold.ttf",24);
-  bigfont = TTF_OpenFont("fonts/Cantarell-Bold.ttf",36);
-  itlfont = TTF_OpenFont("fonts/Cantarell-Oblique.ttf",36);
-  if (!font || !itlfont) throwException("Couldn't open font: %s\n",TTF_GetError());
+  g2dFontInit();
+  font = g2dFontLoad("fonts/Cantarell-Bold.ttf",24);
+  bigfont = g2dFontLoad("fonts/Cantarell-Bold.ttf",36);
+  itlfont = g2dFontLoad("fonts/Cantarell-Oblique.ttf",36);
+  if (!font || !bigfont || !itlfont) throwException("Couldn't open font\n");
 
   initBackground();
   
@@ -230,13 +230,13 @@ int dispThread(void* p)
     if (checkGameState(LEVEL_TITLE))
     {
       g2dClear(WHITE);
-      g2dBeginRects(g2dTexFromFont(itlfont,lvl.title,BLACK));
+      g2dFontBegin(itlfont, lvl.title);
       {
-        g2dSetCoordMode(G2D_CENTER);
-        g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
-        g2dAdd();
+        g2dFontSetCoordMode(G2D_CENTER);
+        g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+        g2dFontSetColor(BLACK);
       }
-      g2dEnd();
+      g2dFontEnd();
     }
     if (checkGameState(END))
     {

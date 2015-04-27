@@ -20,6 +20,7 @@
 
 #include <SDL_ttf.h>
 #include "lib/glib2d.h"
+#include "lib/glib2d_font.h"
 
 #define BACK_W 30
 #define BACK_H 17
@@ -53,11 +54,11 @@ typedef struct
 
 typedef struct
 {
-  g2dImage* gsquare;
-  g2dImage* banner;
-  g2dImage* back;
-  g2dImage* tileset;
-  g2dImage* end;
+  g2dTexture* gsquare;
+  g2dTexture* banner;
+  g2dTexture* back;
+  g2dTexture* tileset;
+  g2dTexture* end;
 } Images;
 
 typedef struct
@@ -69,7 +70,7 @@ typedef struct
   float zoom_target, zoom;
 } Camera;
 
-extern TTF_Font *font, *bigfont, *itlfont;
+extern g2dFont *font, *bigfont, *itlfont;
 extern Fade main_fade;
 extern Fade ui_fade;
 extern Camera cam;

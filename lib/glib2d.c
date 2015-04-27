@@ -103,7 +103,7 @@ static bool obj_use_z, obj_use_blend, obj_use_rot,
             obj_use_tex_linear, obj_use_tex_repeat, obj_use_int;
 static g2dCoord_Mode obj_coord_mode;
 static int obj_colors_count;
-static g2dImage* obj_tex;
+static g2dTexture* obj_tex;
 
 // * Internal functions *
 
@@ -233,7 +233,7 @@ void _g2dBeginCommon()
 }
 
 
-void g2dBeginRects(g2dImage* tex)
+void g2dBeginRects(g2dTexture* tex)
 {
   if (obj_begin) return;
 
@@ -254,7 +254,7 @@ void g2dBeginLines(g2dLine_Mode mode)
 }
 
 
-void g2dBeginQuads(g2dImage* tex)
+void g2dBeginQuads(g2dTexture* tex)
 {
   if (obj_begin) return;
 
@@ -816,7 +816,7 @@ void g2dSetTexLinear(bool use)
 
 // * Texture management *
 
-void g2dTexFree(g2dImage** tex)
+void g2dTexFree(g2dTexture** tex)
 {
   if (tex == NULL) return;
   if (*tex == NULL) return;
@@ -825,14 +825,14 @@ void g2dTexFree(g2dImage** tex)
   *tex = NULL;
 }
 
-static g2dImage* _g2dTexFromSDLSurface(SDL_Surface* surface)
+g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface)
 {
   SDL_Surface *gl_surface = NULL;
 
   if (!surface) return NULL;
   if (!start) _g2dStart();
 
-  g2dImage* tex = (g2dImage*)malloc(sizeof(g2dImage));
+  g2dTexture* tex = (g2dTexture*)malloc(sizeof(g2dTexture));
   if (!tex) return NULL;
 
   SDL_PixelFormat format = *(surface->format);
@@ -862,23 +862,11 @@ static g2dImage* _g2dTexFromSDLSurface(SDL_Surface* surface)
   return tex;
 }
 
-g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode)
+g2dTexture* g2dTexLoad(char path[], g2dTex_Mode mode)
 {
   if (!path) return NULL;
 
-  return _g2dTexFromSDLSurface(IMG_Load(path));
-}
-
-g2dImage* g2dTexFromFont(TTF_Font* font, char text[], g2dColor color)
-{
-  if (!font) return NULL;
-
-  SDL_Color sdl_color;
-  sdl_color.r = G2D_GET_R(color);
-  sdl_color.g = G2D_GET_G(color);
-  sdl_color.b = G2D_GET_B(color);
-
-  return _g2dTexFromSDLSurface(TTF_RenderUTF8_Blended(font, text, sdl_color));
+  return g2dTexFromSDLSurface(IMG_Load(path));
 }
 
 // * Scissor functions *

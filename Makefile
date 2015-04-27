@@ -5,7 +5,7 @@ OBJS = \
     main.o level.o controls.o language.o audio.o config.o lua.o\
     disp.o disp_game.o disp_ui.o\
     game.o game_physics.o\
-    lib/glib2d.o
+    lib/glib2d.o lib/glib2d_font.o
 
 CFLAGS = $(shell sdl2-config --cflags) -Wall -O2
 LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf\

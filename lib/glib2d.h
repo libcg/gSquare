@@ -248,7 +248,7 @@ typedef int g2dAlpha;
 typedef unsigned int g2dColor;
 
 /**
- * \struct g2dImage
+ * \struct g2dTexture
  * \brief Image structure.
  */
 typedef struct
@@ -261,7 +261,7 @@ typedef struct
   bool swizzled;  /**< Is the texture swizzled ? */
   bool can_blend; /**< Can the texture blend ? */
   GLuint id;      /**< Image id. */
-} g2dImage;
+} g2dTexture;
 
 /**
  * \var g2d_draw_buffer
@@ -271,8 +271,8 @@ typedef struct
  * \var g2d_disp_buffer
  * \brief The current display buffer as a texture.
  */
-extern g2dImage g2d_draw_buffer;
-extern g2dImage g2d_disp_buffer;
+extern g2dTexture g2d_draw_buffer;
+extern g2dTexture g2d_disp_buffer;
 
 /**
  * \brief Clears screen & depth buffer.
@@ -301,7 +301,7 @@ void g2dClearZ();
  * g2dBegin*() / g2dEnd() couple can be called multiple times in the loop,
  * to render multiple textures.
  */
-void g2dBeginRects(g2dImage* tex);
+void g2dBeginRects(g2dTexture* tex);
 
 /**
  * \brief Begins lines rendering.
@@ -323,7 +323,7 @@ void g2dBeginLines(g2dLine_Mode mode);
  * g2dBegin*() / g2dEnd() couple can be called multiple times in the loop,
  * to render multiple textures.
  */
-void g2dBeginQuads(g2dImage* tex);
+void g2dBeginQuads(g2dTexture* tex);
 
 /**
  * \brief Begins points rendering.
@@ -394,29 +394,26 @@ void g2dPop();
  * Must pass the pointer to the variable which contains the pointer,
  * to set it to NULL (passing NULL to a g2dBegin* function is safe).
  */
-void g2dTexFree(g2dImage** tex);
+void g2dTexFree(g2dTexture** tex);
+
+/**
+ * \brief Generate a texture from a SDL surface.
+ * @param surface Pointer to a SDL surface.
+ * @returns Pointer to the texture.
+ */
+g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface);
 
 /**
  * \brief Loads an image.
  * @param path Path to the file.
  * @param tex_mode A g2dTex_Mode constant.
- * @returns Pointer to the image.
+ * @returns Pointer to the texture.
  *
  * This function loads an image file. There is support for PNG & JPEG files
  * (if USE_PNG and USE_JPEG are defined). Swizzling is enabled only for 16*16+
  * textures (useless on small textures), pass G2D_SWIZZLE to enable it.
- * Image support up to 512*512 only (hardware limitation).
  */
-g2dImage* g2dTexLoad(char path[], g2dTex_Mode mode);
-
-/**
- * \brief Generate a texture from a font.
- * @param font Font to use.
- * @param text Text string to print.
- * @param color Text color to print.
- * @returns Pointer to the texture.
- */
-g2dImage* g2dTexFromFont(TTF_Font* font, char text[], g2dColor color);
+g2dTexture* g2dTexLoad(char path[], g2dTex_Mode mode);
 
 /**
  * \brief Resets the current coordinates.
@@ -786,7 +783,7 @@ void g2dSetTexRepeat(bool use);
               false to desactivate (better performance).
  *
  * This function must be called during object rendering.
- * Automaticaly disabled when g2dImage::can_blend is set to false.
+ * Automaticaly disabled when g2dTexture::can_blend is set to false.
  */
 void g2dSetTexBlend(bool use);
 
