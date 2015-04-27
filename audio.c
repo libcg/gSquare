@@ -58,7 +58,7 @@ static void musicLogic()
         throwException("Failed to load the music: %s",Mix_GetError());
       }
 
-      if (Mix_PlayMusic(music, 1) != 0)
+      if (Mix_PlayMusic(music, -1) != 0)
       {
         throwException("Failed to play the music: %s",Mix_GetError());
       }
