@@ -1,4 +1,4 @@
-BIN = gsquare.exe
+BIN = gsquare
 CROSS ?= 
 
 OBJS = \
@@ -23,4 +23,4 @@ run: gsquare
 	cd game && ./$(BIN)
 
 clean:
-	rm -f *.o game/$(BIN)
+	rm -f *.o lib/*.o game/$(BIN)
