@@ -303,7 +303,6 @@ void gameBANNER()
 
   setGameState(MENU);
   SDL_Delay(50);
-  g2dTexFree(&img.banner);
 }
 
 
