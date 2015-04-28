@@ -19,12 +19,6 @@
 
 #include "glib2d.h"
 
-#if defined(__MACOSX__)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-
 #include <SDL_video.h>
 #include <SDL_image.h>
 #include <stdio.h>
@@ -41,14 +35,11 @@
 #include <jerror.h>
 #endif
 
-#define PSP_LINE_SIZE       (512)
-#define PIXEL_SIZE          (4)
-#define FRAMEBUFFER_SIZE    (PSP_LINE_SIZE*G2D_SCR_H*PIXEL_SIZE)
 #define MALLOC_STEP         (128)
 #define TRANSFORM_STACK_MAX (64)
 #define SLICE_WIDTH         (64)
-#define M_180_PI            (57.29578f)
-#define M_PI_180            (0.017453292f)
+#define M_180_PI            (180.f / 3.14159f)
+#define M_PI_180            (3.14159f / 180.f)
 
 #define DEFAULT_SIZE       (10)
 #define DEFAULT_COORD_MODE (G2D_UP_LEFT)

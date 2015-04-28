@@ -51,13 +51,6 @@
  * http://twitter.com/GeeckoDev
  */
 
-
-/**
- * \file glib2d.h
- * \brief gLib2D Header
- * \version Beta 5
- */
-
 #ifndef GLIB2D_H
 #define GLIB2D_H
 
@@ -66,35 +59,12 @@ extern "C" {
 #endif
 
 #include <SDL_ttf.h>
-#include <GL/gl.h>
 #include <stdbool.h>
-
-/**
- * \def USE_PNG
- * \brief Choose if the PNG support is enabled.
- *
- * Otherwise, this part will be not compiled to gain some space.
- * Enable this to get PNG support, disable to avoid compilation errors
- * when libpng is not linked in the Makefile.
- */
-/**
- * \def USE_JPEG
- * \brief Choose if the JPEG support is enabled.
- *
- * Otherwise, this part will be not compiled to gain some space.
- * Enable this to get JPEG support, disable to avoid compilation errors
- * when libjpeg is not linked in the Makefile.
- */
-/**
- * \def USE_VFPU
- * \brief Choose if the VFPU support is enabled.
- *
- * Otherwise, this part will be not compiled to use the standard math library.
- * Enable this to greatly improve performance with 2d rotations. You SHOULD use
- * PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER | THREAD_ATTR_VFPU) to avoid crashes.
- */
-#define USE_PNG
-#define USE_JPEG
+#if defined(__MACOSX__)
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 
 /**
  * \def G2D_SCR_W
@@ -262,17 +232,6 @@ typedef struct
   bool can_blend; /**< Can the texture blend ? */
   GLuint id;      /**< Image id. */
 } g2dTexture;
-
-/**
- * \var g2d_draw_buffer
- * \brief The current draw buffer as a texture.
- */
-/**
- * \var g2d_disp_buffer
- * \brief The current display buffer as a texture.
- */
-extern g2dTexture g2d_draw_buffer;
-extern g2dTexture g2d_disp_buffer;
 
 /**
  * \brief Clears screen & depth buffer.
