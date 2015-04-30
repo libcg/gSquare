@@ -139,7 +139,7 @@ void gameControls()
     game.g_y = (g_dir_mod == S) - (g_dir_mod == N);
     
     // Square move
-    float dir = ctrlPressed(KEY_RIGHT) - ctrlPressed(KEY_LEFT);
+    float dir = ctrlGetPressure(KEY_RIGHT) - ctrlGetPressure(KEY_LEFT);
     P_OBJ.vx += game.g_y * P_ACCEL * dir;
     P_OBJ.vy -= game.g_x * P_ACCEL * dir;
                                    
@@ -147,8 +147,10 @@ void gameControls()
     if (ctrlPressed(KEY_JUMP))
     {
       // Impulse
-      if (game.g_x) P_OBJ.vx += OBJ_JUMP * (-P_OBJ.collide_x);
-      if (game.g_y) P_OBJ.vy += OBJ_JUMP * (-P_OBJ.collide_y);
+      if (game.g_x)
+        P_OBJ.vx += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ.collide_x);
+      if (game.g_y)
+        P_OBJ.vy += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ.collide_y);
       // Jump higher by holding cross button
       if ((P_OBJ.vx > 0 && game.g_x < 0) ||
           (P_OBJ.vx < 0 && game.g_x > 0))
