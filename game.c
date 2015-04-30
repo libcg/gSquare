@@ -120,17 +120,16 @@ void gameControls()
 {
   static int lose_cnt = 0;
 
-  ctrlNextFrame();
+  ctrlPoll();
   
   if (lvl.obj_nbr != 0 && getGameState() == INGAME)
   {
     // Change gravity dir
     if (!game.g_lock)
     {
-      int g_inc = ctrlJustPressed(SDL_SCANCODE_A) -
-                  ctrlJustPressed(SDL_SCANCODE_D) +
-                  2 * (ctrlJustPressed(SDL_SCANCODE_A) &&
-                       ctrlJustPressed(SDL_SCANCODE_D));
+      int g_inc = ctrlJustPressed(KEY_G_LEFT) -
+                  ctrlJustPressed(KEY_G_RIGHT) +
+                  2 * ctrlJustPressed(KEY_G_INVERT);
       game.g_dir += g_inc;
     }
     setCameraRot(180 + game.g_dir * 90);
@@ -140,12 +139,12 @@ void gameControls()
     game.g_y = (g_dir_mod == S) - (g_dir_mod == N);
     
     // Square move
-    float dir = ctrlPressed(SDL_SCANCODE_RIGHT) - ctrlPressed(SDL_SCANCODE_LEFT);
+    float dir = ctrlPressed(KEY_RIGHT) - ctrlPressed(KEY_LEFT);
     P_OBJ.vx += game.g_y * P_ACCEL * dir;
     P_OBJ.vy -= game.g_x * P_ACCEL * dir;
                                    
     // Square jump
-    if (ctrlPressed(SDL_SCANCODE_S))
+    if (ctrlPressed(KEY_JUMP))
     {
       // Impulse
       if (game.g_x) P_OBJ.vx += OBJ_JUMP * (-P_OBJ.collide_x);
@@ -160,17 +159,6 @@ void gameControls()
     }
   }
   
-  #ifdef DEBUG
-    if (ctrlJustPressed(SDL_SCANCODE_W))
-    {
-      resetLevel();
-    }
-    if (ctrlJustPressed(SDL_SCANCODE_X))
-    {
-      nextLevel();
-    }
-  #endif
-  
   // Game state reset
   switch (getGameState())
   {
@@ -178,21 +166,21 @@ void gameControls()
       P_OBJ.state = 0;
       cam.active = 1;
       lose_cnt = 0;
-      if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+      if (ctrlJustPressed(KEY_PAUSE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
     case TIME_OVER:
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(KEY_GO))
       {
         popGameState();
         resetLevel();
       }
     break;
     case WIN:
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(KEY_GO))
       {
         save();
         waitFadeDone(&ui_fade);
@@ -216,19 +204,19 @@ void gameControls()
         resetPlayerState();
         popGameState();
       }
-      else if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+      else if (ctrlJustPressed(KEY_PAUSE))
       {
         pause.i = 0;
         pushGameState(PAUSE);
       }
     break;
     case PAUSE:
-      pause.i += ctrlJustPressed(SDL_SCANCODE_UP) -
-                 ctrlJustPressed(SDL_SCANCODE_DOWN);
+      pause.i += ctrlJustPressed(KEY_UP) -
+                 ctrlJustPressed(KEY_DOWN);
       if (pause.i < 0) pause.i += PAUSE_CHOICE_NBR;
       else if (pause.i >= PAUSE_CHOICE_NBR) pause.i -= PAUSE_CHOICE_NBR;
       
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(KEY_GO))
       {
         popGameState();
         if (pause.i == 1) resetPlayerState();
@@ -330,18 +318,18 @@ void gameMenu()
   int play = 0;
   while (!play)
   {
-    ctrlNextFrame();
+    ctrlPoll();
     
     if (menu.state == 0) // Where Bluz can rotate
     {
-      int i_inc = ctrlJustPressed(SDL_SCANCODE_LEFT) -
-                  ctrlJustPressed(SDL_SCANCODE_RIGHT);
+      int i_inc = ctrlJustPressed(KEY_RIGHT) -
+                  ctrlJustPressed(KEY_LEFT);
       menu.i += i_inc;
       menu.rot_target = -menu.i * 90;
       menu.mod_i = menu.i % MENU_TITLE_NBR;
       if (menu.mod_i < 0) menu.mod_i += MENU_TITLE_NBR;
       
-      if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+      if (ctrlJustPressed(KEY_GO))
       {
         menu.sub_i = 0;
         
@@ -361,15 +349,15 @@ void gameMenu()
     }
     else if (menu.state == 1) // Bluz is on top
     {
-      menu.sub_i += ctrlJustPressed(SDL_SCANCODE_DOWN) -
-                    ctrlJustPressed(SDL_SCANCODE_UP);
+      menu.sub_i += ctrlJustPressed(KEY_DOWN) -
+                    ctrlJustPressed(KEY_UP);
       
       if (menu.mod_i == 0) // Story
       {
         if (menu.sub_i < 0) menu.sub_i = 2;
         if (menu.sub_i > 2) menu.sub_i = 0;
         
-        if (ctrlJustPressed(SDL_SCANCODE_RETURN))
+        if (ctrlJustPressed(KEY_GO))
         {
           play = 1;
           menu.state = 2;
@@ -383,7 +371,7 @@ void gameMenu()
             strncpy(lvl.next,"select.lua",512);
           }
         }
-        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(KEY_NO))
         {
           menu.state = 0;
         }
@@ -393,7 +381,7 @@ void gameMenu()
         if (menu.sub_i < 0) menu.sub_i = 2;
         if (menu.sub_i > 2) menu.sub_i = 0;
 
-        if (ctrlJustPressed(SDL_SCANCODE_LEFT))
+        if (ctrlJustPressed(KEY_LEFT))
         {
           switch (menu.sub_i)
           {
@@ -414,7 +402,7 @@ void gameMenu()
             break;
           }
         }
-        if (ctrlJustPressed(SDL_SCANCODE_RIGHT))
+        if (ctrlJustPressed(KEY_RIGHT))
         {
           switch (menu.sub_i)
           {
@@ -435,7 +423,7 @@ void gameMenu()
             break;
           }
         }
-        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(KEY_NO))
         {
           menu.state = 0;
           configSave();
@@ -443,7 +431,7 @@ void gameMenu()
       }
       else if (menu.mod_i == 2) // Credits
       {
-        if (ctrlJustPressed(SDL_SCANCODE_ESCAPE))
+        if (ctrlJustPressed(KEY_NO))
         {
           menu.state = 0;
         }

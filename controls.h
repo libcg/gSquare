@@ -19,11 +19,29 @@
 #define CONTROLS_H
 
 #include <SDL_scancode.h>
+#include <stdbool.h>
 
-int ctrlPressed(int btn);
-int ctrlWasPressed(int btn);
-int ctrlJustPressed(int btn);
-int ctrlJustReleased(int btn);
-void ctrlNextFrame();
+typedef enum
+{
+  KEY_JUMP = 0,
+  KEY_LEFT,
+  KEY_RIGHT,
+  KEY_UP,
+  KEY_DOWN,
+  KEY_G_LEFT,
+  KEY_G_RIGHT,
+  KEY_G_INVERT,
+  KEY_GO,
+  KEY_NO,
+  KEY_PAUSE,
+  KEY_LAST
+} Key;
+
+bool ctrlPressed(Key key);
+bool ctrlWasPressed(Key key);
+bool ctrlJustPressed(Key key);
+bool ctrlJustReleased(Key key);
+float ctrlGetPressure(Key key);
+void ctrlPoll();
 
 #endif

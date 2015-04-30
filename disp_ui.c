@@ -271,7 +271,7 @@ void dispMenu()
       {
         g2dFontSetCoordMode(G2D_CENTER);
         g2dFontSetCoordXY(G2D_SCR_W/8,G2D_SCR_H-70);
-        g2dFontSetAlpha(ctrlPressed(SDL_SCANCODE_LEFT) ? 255 : 127);
+        g2dFontSetAlpha(ctrlPressed(KEY_LEFT) ? 255 : 127);
         g2dFontSetColor(BLACK);
       }
       g2dFontEnd();
@@ -279,7 +279,7 @@ void dispMenu()
       {
         g2dFontSetCoordMode(G2D_CENTER);
         g2dFontSetCoordXY(7*G2D_SCR_W/8,G2D_SCR_H-70);
-        g2dFontSetAlpha(ctrlPressed(SDL_SCANCODE_RIGHT) ? 255 : 127);
+        g2dFontSetAlpha(ctrlPressed(KEY_RIGHT) ? 255 : 127);
         g2dFontSetColor(BLACK);
       }
       g2dFontEnd();

@@ -19,35 +19,58 @@
 #include <SDL_keyboard.h>
 #include <string.h>
 
-static char curButton[SDL_NUM_SCANCODES] = {0};
-static char oldButton[SDL_NUM_SCANCODES] = {0};
+static float curKeyPres[KEY_LAST] = {0};
+static float oldKeyPres[KEY_LAST] = {0};
+static char curCodes[SDL_NUM_SCANCODES] = {0};
+static char oldCodes[SDL_NUM_SCANCODES] = {0};
 
-int ctrlPressed(int btn)
+bool ctrlPressed(Key key)
 {
-  return !!curButton[btn];
+  return (curKeyPres[key] > 0.5f);
 }
 
 
-int ctrlWasPressed(int btn)
+bool ctrlWasPressed(Key key)
 {
-  return !!oldButton[btn];
+  return (oldKeyPres[key] > 0.5f);
 }
 
 
-int ctrlJustPressed(int btn)
+bool ctrlJustPressed(Key key)
 {
-  return ctrlPressed(btn) && (!ctrlWasPressed(btn));
+  return ctrlPressed(key) && !ctrlWasPressed(key);
 }
 
 
-int ctrlJustReleased(int btn)
+bool ctrlJustReleased(Key key)
 {
-  return !ctrlPressed(btn) && ctrlWasPressed(btn);
+  return !ctrlPressed(key) && ctrlWasPressed(key);
 }
 
-
-void ctrlNextFrame()
+float ctrlGetPressure(Key key)
 {
-  memcpy(oldButton, curButton, sizeof(oldButton));
-  memcpy(curButton, SDL_GetKeyboardState(NULL), sizeof(curButton));
+  return curKeyPres[key];
 }
+
+void ctrlPoll()
+{
+  memcpy(oldCodes, curCodes, sizeof(oldCodes));
+  memcpy(curCodes, SDL_GetKeyboardState(NULL), sizeof(curCodes));
+  memcpy(oldKeyPres, curKeyPres, sizeof(oldKeyPres));
+
+  /* Map keys from keyboard */
+  curKeyPres[KEY_JUMP]      = curCodes[SDL_SCANCODE_S];
+  curKeyPres[KEY_LEFT]      = curCodes[SDL_SCANCODE_LEFT];
+  curKeyPres[KEY_RIGHT]     = curCodes[SDL_SCANCODE_RIGHT];
+  curKeyPres[KEY_UP]        = curCodes[SDL_SCANCODE_UP];
+  curKeyPres[KEY_DOWN]      = curCodes[SDL_SCANCODE_DOWN];
+  curKeyPres[KEY_G_LEFT]    = curCodes[SDL_SCANCODE_A];
+  curKeyPres[KEY_G_RIGHT]   = curCodes[SDL_SCANCODE_D];
+  curKeyPres[KEY_G_INVERT]  = curCodes[SDL_SCANCODE_A] &&
+                              curCodes[SDL_SCANCODE_D];
+  curKeyPres[KEY_GO]        = curCodes[SDL_SCANCODE_RETURN];
+  curKeyPres[KEY_NO]        = curCodes[SDL_SCANCODE_ESCAPE];
+  curKeyPres[KEY_PAUSE]     = curCodes[SDL_SCANCODE_ESCAPE];
+}
+
+// EOF
