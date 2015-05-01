@@ -66,8 +66,19 @@ void drawUI()
     {
       g2dFontSetCoordMode(G2D_CENTER);
       g2dFontSetCoordXY(G2D_SCR_W/2,20);
+      g2dFontSetScale(timer_size);
+      g2dFontSetColor(timer_back_color);
+      g2dFontSetCoordXYRelative(1, 1);
+      g2dFontAdd();
+      g2dFontSetCoordXYRelative(0, -2);
+      g2dFontAdd();
+      g2dFontSetCoordXYRelative(-2, 0);
+      g2dFontAdd();
+      g2dFontSetCoordXYRelative(0, 2);
+      g2dFontAdd();
       g2dFontSetColor(BLACK);
-      //g2dFontSetShadowColor(timer_back_color);
+      g2dFontSetCoordXYRelative(1, -1);
+      g2dFontAdd();
     }
     g2dFontEnd();
     // Flying text
@@ -77,8 +88,18 @@ void drawUI()
       {
         g2dFontSetCoordMode(G2D_CENTER);
         g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-20);
+        g2dFontSetColor(WHITE);
+        g2dFontSetCoordXYRelative(1, 1);
+        g2dFontAdd();
+        g2dFontSetCoordXYRelative(0, -2);
+        g2dFontAdd();
+        g2dFontSetCoordXYRelative(-2, 0);
+        g2dFontAdd();
+        g2dFontSetCoordXYRelative(0, 2);
+        g2dFontAdd();
         g2dFontSetColor(BLACK);
-        //g2dFontSetShadowColor(AZURE);
+        g2dFontSetCoordXYRelative(1, -1);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
@@ -95,6 +116,7 @@ void drawUI()
       g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(BLACK);
+      g2dFontAdd();
     }
     g2dFontEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
@@ -106,6 +128,7 @@ void drawUI()
         g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
         g2dFontSetScale(0.9f);
         g2dFontSetColor(BLACK);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
@@ -122,6 +145,7 @@ void drawUI()
       g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(WHITE);
+      g2dFontAdd();
     }
     g2dFontEnd();
     if (dcount < DCOUNT_MAX * 5 / 6)
@@ -133,6 +157,7 @@ void drawUI()
         g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
         g2dFontSetScale(0.9f);
         g2dFontSetColor(WHITE);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
@@ -149,6 +174,7 @@ void drawUI()
       g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(WHITE);
+      g2dFontAdd();
     }
     g2dFontEnd();
 
@@ -161,6 +187,7 @@ void drawUI()
         g2dFontSetCoordXY(G2D_SCR_W-15,G2D_SCR_H-5-25*i);
         g2dFontSetAlpha(127+(pause.i==i ? dcount*127/DCOUNT_MAX : 0));
         g2dFontSetColor(WHITE);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
@@ -188,6 +215,7 @@ void dispgSquare()
     g2dFontSetCoordMode(G2D_CENTER);
     g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-70);
     g2dFontSetColor(WHITE);
+    g2dFontAdd();
   }
   g2dFontEnd();
 
@@ -196,6 +224,7 @@ void dispgSquare()
     g2dFontSetCoordMode(G2D_CENTER);
     g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-35);
     g2dFontSetColor(WHITE);
+    g2dFontAdd();
   }
   g2dFontEnd();
 }
@@ -273,6 +302,7 @@ void dispMenu()
         g2dFontSetCoordXY(G2D_SCR_W/8,G2D_SCR_H-70);
         g2dFontSetAlpha(ctrlPressed(KEY_LEFT) ? 255 : 127);
         g2dFontSetColor(BLACK);
+        g2dFontAdd();
       }
       g2dFontEnd();
       g2dFontBegin(font, ">");
@@ -281,6 +311,7 @@ void dispMenu()
         g2dFontSetCoordXY(7*G2D_SCR_W/8,G2D_SCR_H-70);
         g2dFontSetAlpha(ctrlPressed(KEY_RIGHT) ? 255 : 127);
         g2dFontSetColor(BLACK);
+        g2dFontAdd();
       }
       g2dFontEnd();
   }
@@ -319,6 +350,7 @@ void dispMenu()
         g2dFontSetCoordXY(title_x[i],title_y[i]);
         g2dFontSetRotation(menu.rot+menu.mod_i*90);
         g2dFontSetColor(WHITE);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
@@ -342,6 +374,7 @@ void dispMenu()
           g2dFontSetRotation(menu.rot+menu.mod_i*90);
           if (menu.sub_i!=i) g2dFontSetAlpha(127);
           g2dFontSetColor(WHITE);
+          g2dFontAdd();
         }
         g2dFontEnd();
       }
@@ -359,6 +392,7 @@ void dispMenu()
           g2dFontSetRotation(menu.rot+menu.mod_i*90);
           if (menu.sub_i!=i) g2dFontSetAlpha(127);
           g2dFontSetColor(WHITE);
+          g2dFontAdd();
         }
         g2dFontEnd();
       }
@@ -372,6 +406,7 @@ void dispMenu()
         g2dFontSetRotation(menu.rot+menu.mod_i*90);
         g2dFontSetScale(0.8f);
         g2dFontSetColor(WHITE);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }

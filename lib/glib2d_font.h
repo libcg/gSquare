@@ -45,6 +45,7 @@ void g2dFontAdd();
 void g2dFontReset();
 void g2dFontSetCoordMode(g2dCoord_Mode mode);
 void g2dFontSetCoordXY(float x, float y);
+void g2dFontSetCoordXYRelative(float x, float y);
 void g2dFontSetScale(float scale);
 void g2dFontSetColor(g2dColor color);
 void g2dFontSetAlpha(g2dAlpha alpha);

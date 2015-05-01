@@ -34,6 +34,8 @@ typedef struct
 {
   g2dFont *font;
   char *text;
+  g2dFontObject **obj_list;
+  int obj_nbr;
   g2dFontObject obj;
   g2dCoord_Mode obj_coord_mode;
 } g2dFontContext;
@@ -107,18 +109,20 @@ static void g2dFontFreeLines(g2dFontLine *lines, int size)
 
 static void g2dFontDrawLines(g2dFontLine *lines, int size, g2dFontContext *ctx)
 {
-  int i;
+  int i, j;
 
   for (i = 0; i < size; i++) {
     g2dBeginRects(lines[i].tex);
-    {
-      if (G2D_GET_A(ctx->obj.color) * ctx->obj.alpha > 0) {
+    for (j = 0; j < ctx->obj_nbr; j++) {
+      g2dFontObject *obj = ctx->obj_list[j];
+
+      if (G2D_GET_A(obj->color) * obj->alpha > 0) {
         g2dSetCoordMode(ctx->obj_coord_mode);
-        g2dSetCoordXY(ctx->obj.x, ctx->obj.y);
-        g2dSetScale(ctx->obj.scale, ctx->obj.scale);
-        g2dSetAlpha(ctx->obj.alpha);
-        g2dSetRotationRad(ctx->obj.rot);
-        g2dSetColor(ctx->obj.color);
+        g2dSetCoordXY(obj->x, obj->y);
+        g2dSetScale(obj->scale, obj->scale);
+        g2dSetAlpha(obj->alpha);
+        g2dSetRotationRad(obj->rot);
+        g2dSetColor(obj->color);
         g2dSetCoordXYRelative(0, lines[i].ypad);
         g2dAdd();
       }
@@ -182,6 +186,8 @@ void g2dFontBegin(g2dFont *font, char *text)
   ctx = malloc(sizeof(g2dFontContext));
   ctx->font = font;
   ctx->text = text;
+  ctx->obj_list = NULL;
+  ctx->obj_nbr = 0;
   ctx->obj_coord_mode = G2D_UP_LEFT;
 
   g2dFontReset();
@@ -190,7 +196,7 @@ void g2dFontBegin(g2dFont *font, char *text)
 void g2dFontEnd()
 {
   g2dFontLine *lines;
-  int size;
+  int i, size;
 
   if (!ctx)
     return;
@@ -201,8 +207,23 @@ void g2dFontEnd()
     g2dFontFreeLines(lines, size);
   }
 
+  for (i = 0; i < ctx->obj_nbr; i++)
+    free(ctx->obj_list[i]);
+
+  free(ctx->obj_list);
   free(ctx);
   ctx = NULL;
+}
+
+void g2dFontAdd()
+{
+  if (!ctx)
+    return;
+
+  ctx->obj_list = realloc(ctx->obj_list, (ctx->obj_nbr + 1) * sizeof(g2dFontObject*));
+  ctx->obj_list[ctx->obj_nbr] = malloc(sizeof(g2dFontObject));
+  memcpy(ctx->obj_list[ctx->obj_nbr], &ctx->obj, sizeof(g2dFontObject));
+  ctx->obj_nbr++;
 }
 
 void g2dFontReset()
@@ -230,6 +251,15 @@ void g2dFontSetCoordXY(float x, float y)
 
   ctx->obj.x = x;
   ctx->obj.y = y;
+}
+
+void g2dFontSetCoordXYRelative(float x, float y)
+{
+  if (!ctx)
+    return;
+
+  ctx->obj.x += x;
+  ctx->obj.y += y;
 }
 
 void g2dFontSetScale(float scale)

@@ -253,6 +253,7 @@ int dispThread(void* p)
         g2dFontSetCoordMode(G2D_CENTER);
         g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
         g2dFontSetColor(BLACK);
+        g2dFontAdd();
       }
       g2dFontEnd();
     }
