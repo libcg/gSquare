@@ -168,6 +168,22 @@ void drawFade(Fade* fade)
 
 // Common
 
+static void processEvents()
+{
+  SDL_Event event;
+
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+    case SDL_QUIT:
+      exit_state = 1;
+      break;
+    }
+  }
+}
+
+
 g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 {
   g2dTexture* tex = g2dTexLoad(path,mode);
@@ -195,6 +211,8 @@ int dispThread(void* p)
   
   while (exit_state != EXCEPTION)
   {
+    processEvents();
+
     if (exit_state)
     {
       setFadeMode(&main_fade,FADE_IN,0);

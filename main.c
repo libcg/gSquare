@@ -47,7 +47,6 @@ void throwException(const char* err, ...)
 
 int main(int argc, char* argv[])
 {
-  SDL_Event event;
   SDL_mutex *mutex;
 
   mutex = SDL_CreateMutex();
@@ -62,17 +61,7 @@ int main(int argc, char* argv[])
   initDisp(mutex);
 
   while (!exit_state)
-  {
-    if (SDL_WaitEvent(&event))
-    {
-      switch (event.type)
-      {
-      case SDL_QUIT:
-        exit_state = 1;
-        break;
-      }
-    }
-  }
+    SDL_Delay(10);
 
   SDL_DestroyMutex(mutex);
 
