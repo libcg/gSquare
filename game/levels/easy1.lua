@@ -66,13 +66,13 @@ function setLevel()
   objectText(t1[getLanguageID()+1])
   createObjectAligned(16*2,16*9,0,0,9,16)
   local t2 = {
-  "I can also jump by pressing Cross button.",
-  "Je peux aussi sauter en appuyant sur Croix." }
+  "I can also jump by pressing the S key.",
+  "Je peux aussi sauter en appuyant sur la touche S." }
   objectText(t2[getLanguageID()+1])
   createObjectAligned(16*10,16*9,0,0,9,16)
   local t3 = {
-  "I can jump higher by holding Cross button.",
-  "Je peux sauter plus haut en maintenant Croix appuyé." }
+  "I can jump higher by holding the S key.",
+  "Je peux sauter plus haut en maintenant la touche S appuyée." }
   objectText(t3[getLanguageID()+1])
   createObjectAligned(16*13,16*11,0,0,9,16)
   local t4 = {
@@ -91,13 +91,13 @@ function setLevel()
   objectText(t6[getLanguageID()+1])
   createObjectAligned(16*25,16*3,0,0,9,16)
   local t7 = {
-  "If you are stuck, take a break by pressing Start.",
-  "En cas de problème, faites une pause en appuyant sur Start." }
+  "If you are stuck, take a break by pressing the Esc key.",
+  "En cas de problème, faites une pause en appuyant sur la touche Échap." }
   objectText(t7[getLanguageID()+1])
   createObjectAligned(16*15,16*8,0,0,9,16)
   local t8 = {
-  "I have the ability to control the gravity! Press L or R button to try.",
-  "Je peux contrôler la gravité! Appuyez sur L ou R pour essayer." }
+  "I have the ability to control the gravity! Press A or D keys to try.",
+  "Je peux contrôler la gravité! Appuyez sur les touches Q ou D pour essayer." }
   objectText(t8[getLanguageID()+1])
   createObjectAligned(16*22,16*4,0,0,9,16)
   local t9 = {
@@ -106,8 +106,8 @@ function setLevel()
   objectText(t9[getLanguageID()+1])
   createObjectAligned(16*13,16*1,0,0,9,16)
   local t10 = {
-  "Pressing L and R at the same time is useful to invert the gravity!",
-  "Appuyer simultanément sur L et R me permet d'inverser la gravité!" }
+  "Pressing A and D at the same time is useful to invert the gravity!",
+  "Appuyer simultanément sur Q et D me permet d'inverser la gravité!" }
   objectText(t10[getLanguageID()+1])
 end
 
