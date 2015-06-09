@@ -380,8 +380,8 @@ void gameMenu()
       }
       else if (menu.mod_i == 1) // Options
       {
-        if (menu.sub_i < 0) menu.sub_i = 2;
-        if (menu.sub_i > 2) menu.sub_i = 0;
+        if (menu.sub_i < 0) menu.sub_i = 3;
+        if (menu.sub_i > 3) menu.sub_i = 0;
 
         if (ctrlJustPressed(KEY_LEFT))
         {
@@ -401,6 +401,10 @@ void gameMenu()
               cfg.lang_id--;
               if (cfg.lang_id < 0) cfg.lang_id = lang_n-1;
               loadLanguage();
+            break;
+            case 3:
+              cfg.fullscreen = !cfg.fullscreen;
+              strcpy(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
             break;
           }
         }
@@ -422,6 +426,10 @@ void gameMenu()
               cfg.lang_id++;
               if (cfg.lang_id >= lang_n) cfg.lang_id = 0;
               loadLanguage();
+            break;
+            case 3:
+              cfg.fullscreen = !cfg.fullscreen;
+              strcpy(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
             break;
           }
         }

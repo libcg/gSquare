@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-Config cfg = {100,100,0};
+Config cfg = {100,100,0,1};
 
 void configSave()
 {
@@ -28,6 +28,7 @@ void configSave()
   
   fprintf(file,"%d %d\n",cfg.music_vol,cfg.sound_vol);
   fprintf(file,"%d\n",cfg.lang_id);
+  fprintf(file,"%d\n",cfg.fullscreen);
   
   fclose(file);
 }
@@ -40,6 +41,7 @@ void configLoad()
   
   fscanf(file,"%d %d\n",&cfg.music_vol,&cfg.sound_vol);
   fscanf(file,"%d\n",&cfg.lang_id);
+  fscanf(file,"%d\n",&cfg.fullscreen);
   
   fclose(file);
 }

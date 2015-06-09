@@ -24,6 +24,7 @@
 #include "disp.h"
 #include "game.h"
 #include "common.h"
+#include "config.h"
 
 g2dFont *font, *bigfont, *itlfont;
 Images img;
@@ -184,7 +185,7 @@ static void processEvents()
 }
 
 
-g2dTexture* loadImage(char path[], g2dTex_Mode mode)
+static g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 {
   g2dTexture* tex = g2dTexLoad(path,mode);
   if (tex == NULL) throwException(IMG_GetError());
@@ -192,14 +193,46 @@ g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 }
 
 
-int dispThread(void* p)
+static void loadTextures()
 {
-  SDL_mutex *mutex = (SDL_mutex *)p;
-
   img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
   img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
   img.gsquare = loadImage("graphics/gsquare.png",G2D_SWIZZLE);
   img.banner = loadImage("graphics/genesis.png",G2D_SWIZZLE);
+}
+
+
+static void freeTextures()
+{
+  g2dTexFree(&img.back);
+  g2dTexFree(&img.tileset);
+  g2dTexFree(&img.gsquare);
+  g2dTexFree(&img.banner);
+}
+
+
+static void manageScreenMode()
+{
+  static int fs = 1;
+
+  if (fs != cfg.fullscreen)
+  {
+    // This has to be done in the disp thread.
+    // Also, GL textures are lost during mode change so reload them.
+    freeTextures();
+    g2dSetMode(cfg.fullscreen);
+    loadTextures();
+  }
+
+  fs = cfg.fullscreen;
+}
+
+
+int dispThread(void* p)
+{
+  SDL_mutex *mutex = (SDL_mutex *)p;
+
+  loadTextures();
 
   g2dFontInit();
   font = g2dFontLoad("fonts/Cantarell-Bold.ttf",24);
@@ -212,6 +245,7 @@ int dispThread(void* p)
   while (exit_state != EXCEPTION)
   {
     processEvents();
+    manageScreenMode();
 
     if (exit_state)
     {

@@ -381,10 +381,10 @@ void dispMenu()
     }
     else if (menu.mod_i == 1) // Config
     {
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
       {
         char sub_text[128];
-        sprintf(sub_text,(menu.sub_i==i ? "< %s %s >" : "%s %s"),text.menu.config[i],text.menu.config_setting[i]);
+        sprintf(sub_text,(menu.sub_i==i ? "%s < %s >" : "%s %s"),text.menu.config[i],text.menu.config_setting[i]);
         g2dFontBegin(font, sub_text);
         {
           g2dFontSetCoordMode(G2D_CENTER);

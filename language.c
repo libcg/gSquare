@@ -73,6 +73,7 @@ void loadLanguage()
   fscanf(file,"%[^\n]\n",text.menu.config[0]);
   fscanf(file,"%[^\n]\n",text.menu.config[1]);
   fscanf(file,"%[^\n]\n",text.menu.config[2]);
+  fscanf(file,"%[^\n]\n",text.menu.config[3]);
   // Game 
   fscanf(file,"%[^\n]\n",text.game.pause);
   fscanf(file,"%[^\n]\n",text.game.pause_choice[0]);
@@ -83,6 +84,9 @@ void loadLanguage()
   fscanf(file,"%[^\n]\n",text.game.next_level);
   fscanf(file,"%[^\n]\n",text.game.time_over);
   fscanf(file,"%[^\n]\n",text.game.respawn);
+  // General
+  fscanf(file,"%[^\n]\n",text.yes);
+  fscanf(file,"%[^\n]\n",text.no);
   
   strcpy(text.credits,
 "gSquare\n\nBy meastnt and Geecko\nDesign by Maxime Brugnon and CaptainKill\nMu\
@@ -93,8 +97,10 @@ by BenHur\nAudio library - aalib by Arshia001\nPSPSDK - ps2dev.org\n\nThanks to\
 nt platform");
   strcpy(text.authors,"Presented by @meastnt and @libcg");
   strcpy(text.website,"http://sites.google.com/site/gsquarecenter");
+
   sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
-  sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol); 
+  sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
+  sprintf(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
 
   fclose(file);
 }

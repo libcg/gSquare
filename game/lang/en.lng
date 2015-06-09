@@ -7,9 +7,10 @@ Exit
 Continue story !
 Restart from the beginning.
 Warp zone
-Music volume : 
-Sound volume : 
+Music volume :
+Sound volume :
 Language :
+Fullscreen :
 Pause.
 Resume
 Respawn
@@ -19,4 +20,6 @@ You won !
 Press start for the next level...
 Time over !
 Press start to respawn...
+Yes
+No
 

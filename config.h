@@ -24,6 +24,7 @@ typedef struct
 {
   int music_vol, sound_vol;
   int lang_id;
+  int fullscreen;
 } Config;
 
 extern Config cfg;

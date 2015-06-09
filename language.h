@@ -25,8 +25,8 @@ typedef struct
 {
   char title[MENU_TITLE_NBR][128];
   char story[3][128];
-  char config[3][128];
-  char config_setting[3][128];
+  char config[4][128];
+  char config_setting[4][128];
 } Menu_Text;
 
 typedef struct
@@ -48,6 +48,8 @@ typedef struct
   char credits[1024];
   char authors[128];
   char website[128];
+  char yes[128];
+  char no[128];
 } Text;
 
 extern Text text;
