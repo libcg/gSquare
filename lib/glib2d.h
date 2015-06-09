@@ -67,19 +67,9 @@ extern "C" {
 #endif
 
 /**
- * \def G2D_SCR_W
- * \brief Screen width constant, in pixels.
- */
-/**
- * \def G2D_SCR_H
- * \brief Screen height constant, in pixels.
- */
-/**
  * \def G2D_VOID
  * \brief Generic constant, equals to 0 (do nothing).
  */
-#define G2D_SCR_W (2*480)
-#define G2D_SCR_H (2*272)
 #define G2D_VOID 0
 
 /**
@@ -233,6 +223,21 @@ typedef struct
   GLuint id;      /**< Image id. */
 } g2dTexture;
 
+/**
+ * \brief Get screen width.
+ * @returns Screen width in pixels.
+ */
+int g2dScrW();
+/**
+ * \brief Get screen height.
+ * @returns Screen height in pixels.
+ */
+int g2dScrH();
+/**
+ * \brief Set screen mode.
+ * @param fullscreen Set fullscreen or windowed mode.
+ */
+void g2dSetMode(bool fullscreen);
 /**
  * \brief Clears screen & depth buffer.
  * @param color Screen clear color

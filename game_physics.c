@@ -21,7 +21,6 @@
 #include "level.h"
 #include "game.h"
 #include "lua.h"
-#include "disp.h"
 #include "audio.h"
 
 Object* obj_ext;
@@ -215,11 +214,13 @@ int getColliders(Object* obj, Object** list, int size)
 
 int objProperties(Object* obj)
 {
+  const int gap = 500;
+
   // Outside-view object
-  if ((obj->x < lvl.limit_x0 - G2D_SCR_W ||
-       obj->x > lvl.limit_x1 + G2D_SCR_W ||
-       obj->y < lvl.limit_y0 - G2D_SCR_H ||
-       obj->y > lvl.limit_y1 + G2D_SCR_H) &&
+  if ((obj->x < lvl.limit_x0 - gap ||
+       obj->x > lvl.limit_x1 + gap ||
+       obj->y < lvl.limit_y0 - gap ||
+       obj->y > lvl.limit_y1 + gap) &&
       obj != lvl.obj_list)
   {
     obj->death = 1; // Destroy!

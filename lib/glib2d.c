@@ -35,6 +35,8 @@
 #include <jerror.h>
 #endif
 
+#define SCR_W               (960)
+#define SCR_H               (544)
 #define MALLOC_STEP         (128)
 #define TRANSFORM_STACK_MAX (64)
 #define SLICE_WIDTH         (64)
@@ -85,6 +87,7 @@ static bool init = false, start = false, zclear = true, scissor = false;
 static Transform transform_stack[TRANSFORM_STACK_MAX];
 static int transform_stack_size;
 static float global_scale = 1.f;
+static int scr_w, scr_h;
 // * Object vars *
 static Object *obj_list = NULL, obj;
 static Obj_Type obj_type;
@@ -97,7 +100,6 @@ static int obj_colors_count;
 static g2dTexture* obj_tex;
 
 // * Internal functions *
-
 
 void _g2dInit()
 {
@@ -113,31 +115,7 @@ void _g2dInit()
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
-  window = SDL_CreateWindow(
-    "gLib2D - gSquare",
-    SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
-    G2D_SCR_W,G2D_SCR_H,
-    SDL_WINDOW_OPENGL
-  );
-
-  glctx = SDL_GL_CreateContext(window);
-
-  SDL_GL_SetSwapInterval(1);
-
-  // Setup OpenGL
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0,G2D_SCR_W,G2D_SCR_H,0,0,1);
-  glMatrixMode(GL_MODELVIEW);
-
-  g2dResetScissor();
-  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-  glEnable(GL_BLEND);
-  glEnable(GL_SCISSOR_TEST);
-  glDepthFunc(GL_GEQUAL);
-  glDepthRange(0,65535);
-  glClearDepth(0);
+  g2dSetMode(true);
 
   init = true;
 }
@@ -189,6 +167,76 @@ void _g2dSetVertex(int i, int vx, int vy)
 }
 
 // * Main functions *
+
+int g2dScrW()
+{
+  return scr_w;
+}
+
+
+int g2dScrH()
+{
+  return scr_h;
+}
+
+
+void g2dSetMode(bool fullscreen)
+{
+  if (fullscreen)
+  {
+    SDL_DisplayMode dm;
+
+    if (SDL_GetDesktopDisplayMode(0,&dm))
+    {
+      scr_w = SCR_W;
+      scr_h = SCR_H;
+      fullscreen = false;
+    }
+    else
+    {
+      scr_w = dm.w;
+      scr_h = dm.h;
+    }
+  }
+  else
+  {
+    scr_w = SCR_W;
+    scr_h = SCR_H;
+  }
+
+  if (window)
+  {
+    SDL_GL_DeleteContext(glctx);
+    SDL_DestroyWindow(window);
+  }
+
+  window = SDL_CreateWindow(
+    "gLib2D - gSquare",
+    SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,scr_w,scr_h,
+    SDL_WINDOW_OPENGL | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)
+  );
+
+  glctx = SDL_GL_CreateContext(window);
+
+  SDL_GL_SetSwapInterval(1);
+  SDL_ShowCursor(!fullscreen);
+
+  // Setup OpenGL
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0,scr_w,scr_h,0,0,1);
+  glMatrixMode(GL_MODELVIEW);
+
+  g2dResetScissor();
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+  glEnable(GL_BLEND);
+  glEnable(GL_SCISSOR_TEST);
+  glDepthFunc(GL_GEQUAL);
+  glDepthRange(0,65535);
+  glClearDepth(0);
+}
+
 
 void g2dClear(g2dColor color)
 {
@@ -868,14 +916,14 @@ g2dTexture* g2dTexLoad(char path[], g2dTex_Mode mode)
 
 void g2dResetScissor()
 {
-  g2dSetScissor(0,0,G2D_SCR_W,G2D_SCR_H);
+  g2dSetScissor(0,0,scr_w,scr_h);
   scissor = false;
 }
 
 
 void g2dSetScissor(int x, int y, int w, int h)
 {
-  glScissor(x,G2D_SCR_H-y-h,w,h);
+  glScissor(x,scr_h-y-h,w,h);
   scissor = true;
 }
 

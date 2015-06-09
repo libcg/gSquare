@@ -73,13 +73,13 @@ void drawMovingBackground()
     g2dSetCoordXY(0,0);
     g2dSetAlpha(back.a[0]);
     g2dAdd();
-    g2dSetCoordXY(G2D_SCR_W,0);
+    g2dSetCoordXY(g2dScrW(),0);
     g2dSetAlpha(back.a[1]);
     g2dAdd();
-    g2dSetCoordXY(G2D_SCR_W,G2D_SCR_H);
+    g2dSetCoordXY(g2dScrW(),g2dScrH());
     g2dSetAlpha(back.a[2]);
     g2dAdd();
-    g2dSetCoordXY(0,G2D_SCR_H);
+    g2dSetCoordXY(0,g2dScrH());
     g2dSetAlpha(back.a[3]);
     g2dAdd();
     // Second
@@ -87,13 +87,13 @@ void drawMovingBackground()
     g2dSetCoordXY(0,0);
     g2dSetAlpha(255-back.a[0]);
     g2dAdd();
-    g2dSetCoordXY(G2D_SCR_W,0);
+    g2dSetCoordXY(g2dScrW(),0);
     g2dSetAlpha(255-back.a[1]);
     g2dAdd();
-    g2dSetCoordXY(G2D_SCR_W,G2D_SCR_H);
+    g2dSetCoordXY(g2dScrW(),g2dScrH());
     g2dSetAlpha(255-back.a[2]);
     g2dAdd();
-    g2dSetCoordXY(0,G2D_SCR_H);
+    g2dSetCoordXY(0,g2dScrH());
     g2dSetAlpha(255-back.a[3]);
     g2dAdd();
   }
@@ -157,7 +157,7 @@ void drawFade(Fade* fade)
   {
     g2dBeginRects(NULL);
     {
-      g2dSetScaleWH(G2D_SCR_W,G2D_SCR_H);
+      g2dSetScaleWH(g2dScrW(),g2dScrH());
       g2dSetColor(fade->color);
       g2dSetAlpha(fade->alpha);
       g2dAdd();
@@ -251,7 +251,7 @@ int dispThread(void* p)
       g2dFontBegin(itlfont, lvl.title);
       {
         g2dFontSetCoordMode(G2D_CENTER);
-        g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+        g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()/2);
         g2dFontSetColor(BLACK);
         g2dFontAdd();
       }

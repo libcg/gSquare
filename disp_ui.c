@@ -58,14 +58,14 @@ void drawUI()
   if (getGameState() == INGAME || getGameState() == LOSE)
   {
     ui_fade.mode = FADE_OUT;
-    cam.zoom_target = 1.8f;
+    cam.zoom_target = 1.9f;
     // Timer
     char timer_text[32];
     sprintf(timer_text,"%.2d:%.2d",game.time_elapsed/60,game.time_elapsed%60);
     g2dFontBegin(bigfont, timer_text);
     {
       g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(G2D_SCR_W/2,20);
+      g2dFontSetCoordXY(g2dScrW()/2,25);
       g2dFontSetScale(timer_size);
       g2dFontSetColor(timer_back_color);
       g2dFontSetCoordXYRelative(1, 1);
@@ -87,7 +87,7 @@ void drawUI()
       g2dFontBegin(font, game.flying_text);
       {
         g2dFontSetCoordMode(G2D_CENTER);
-        g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-20);
+        g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()-25);
         g2dFontSetColor(WHITE);
         g2dFontSetCoordXYRelative(1, 1);
         g2dFontAdd();
@@ -113,7 +113,7 @@ void drawUI()
     g2dFontBegin(bigfont, text.game.win);
     {
       g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(BLACK);
       g2dFontAdd();
@@ -124,7 +124,7 @@ void drawUI()
       g2dFontBegin(font, text.game.next_level);
       {
         g2dFontSetCoordMode(G2D_DOWN_RIGHT);
-        g2dFontSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dFontSetCoordXY(g2dScrW()-15,g2dScrH()-15);
         g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
         g2dFontSetScale(0.9f);
         g2dFontSetColor(BLACK);
@@ -142,7 +142,7 @@ void drawUI()
     g2dFontBegin(bigfont, text.game.time_over);
     {
       g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(WHITE);
       g2dFontAdd();
@@ -153,7 +153,7 @@ void drawUI()
       g2dFontBegin(font, text.game.respawn);
       {
         g2dFontSetCoordMode(G2D_DOWN_RIGHT);
-        g2dFontSetCoordXY(G2D_SCR_W-5,G2D_SCR_H-5);
+        g2dFontSetCoordXY(g2dScrW()-15,g2dScrH()-15);
         g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
         g2dFontSetScale(0.9f);
         g2dFontSetColor(WHITE);
@@ -171,7 +171,7 @@ void drawUI()
     g2dFontBegin(bigfont, text.game.pause);
     {
       g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+      g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()/2);
       g2dFontSetScale(0.9f);
       g2dFontSetColor(WHITE);
       g2dFontAdd();
@@ -184,7 +184,7 @@ void drawUI()
       g2dFontBegin(font, text.game.pause_choice[i]);
       {
         g2dFontSetCoordMode(G2D_DOWN_RIGHT);
-        g2dFontSetCoordXY(G2D_SCR_W-15,G2D_SCR_H-5-25*i);
+        g2dFontSetCoordXY(g2dScrW()-15,g2dScrH()-5-25*i);
         g2dFontSetAlpha(127+(pause.i==i ? dcount*127/DCOUNT_MAX : 0));
         g2dFontSetColor(WHITE);
         g2dFontAdd();
@@ -202,7 +202,7 @@ void dispgSquare()
   g2dBeginRects(img.gsquare);
   {
     g2dSetCoordMode(G2D_CENTER);
-    g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2-20);
+    g2dSetCoordXY(g2dScrW()/2,g2dScrH()/2-20);
     g2dSetScale(gsquare_size,gsquare_size);
     g2dAdd();
   }
@@ -213,7 +213,7 @@ void dispgSquare()
   g2dFontBegin(font, text.authors);
   {
     g2dFontSetCoordMode(G2D_CENTER);
-    g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-70);
+    g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()-70);
     g2dFontSetColor(WHITE);
     g2dFontAdd();
   }
@@ -222,7 +222,7 @@ void dispgSquare()
   g2dFontBegin(font, text.website);
   {
     g2dFontSetCoordMode(G2D_CENTER);
-    g2dFontSetCoordXY(G2D_SCR_W/2,G2D_SCR_H-35);
+    g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()-35);
     g2dFontSetColor(WHITE);
     g2dFontAdd();
   }
@@ -235,7 +235,7 @@ void dispBanner()
   g2dBeginRects(img.banner);
   {
     g2dSetTexLinear(false);
-    g2dSetScaleWH(G2D_SCR_W,G2D_SCR_H);
+    g2dSetScaleWH(g2dScrW(),g2dScrH());
     g2dAdd();
   }
   g2dEnd();
@@ -246,12 +246,12 @@ void dispMenu()
 {
   if (menu.state == 0)
   {
-    menu.square_y_target = G2D_SCR_H+100.f;
+    menu.square_y_target = g2dScrH()+100.f;
     menu.logo_y_target = 150.f;
   }
   else if (menu.state == 1)
   {
-    menu.square_y_target = 320.f;
+    menu.square_y_target = 0.5f*g2dScrH();
     menu.logo_y_target = 0.f;
   }
   else
@@ -274,12 +274,12 @@ void dispMenu()
     g2dSetAlpha(0);
     g2dSetCoordXY(0,0);
     g2dAdd();
-    g2dSetCoordXY(G2D_SCR_W,0);
+    g2dSetCoordXY(g2dScrW(),0);
     g2dAdd();
     g2dSetAlpha(127);
-    g2dSetCoordXY(G2D_SCR_W,G2D_SCR_H);
+    g2dSetCoordXY(g2dScrW(),g2dScrH());
     g2dAdd();
-    g2dSetCoordXY(0,G2D_SCR_H);
+    g2dSetCoordXY(0,g2dScrH());
     g2dAdd();
   }
   g2dEnd();
@@ -288,7 +288,7 @@ void dispMenu()
   g2dBeginRects(img.gsquare);
   {
     g2dSetCoordMode(G2D_CENTER);
-    g2dSetCoordXY(G2D_SCR_W/2,menu.logo_y);
+    g2dSetCoordXY(g2dScrW()/2,menu.logo_y);
     g2dAdd();
   }
   g2dEnd();
@@ -299,7 +299,7 @@ void dispMenu()
       g2dFontBegin(font, "<");
       {
         g2dFontSetCoordMode(G2D_CENTER);
-        g2dFontSetCoordXY(G2D_SCR_W/8,G2D_SCR_H-70);
+        g2dFontSetCoordXY(g2dScrW()/8,g2dScrH()-70);
         g2dFontSetAlpha(ctrlPressed(KEY_LEFT) ? 255 : 127);
         g2dFontSetColor(BLACK);
         g2dFontAdd();
@@ -308,7 +308,7 @@ void dispMenu()
       g2dFontBegin(font, ">");
       {
         g2dFontSetCoordMode(G2D_CENTER);
-        g2dFontSetCoordXY(7*G2D_SCR_W/8,G2D_SCR_H-70);
+        g2dFontSetCoordXY(7*g2dScrW()/8,g2dScrH()-70);
         g2dFontSetAlpha(ctrlPressed(KEY_RIGHT) ? 255 : 127);
         g2dFontSetColor(BLACK);
         g2dFontAdd();
@@ -323,7 +323,7 @@ void dispMenu()
     g2dSetCoordMode(G2D_CENTER);
     g2dSetCropWH(12,12);
     g2dSetScaleWH(500,500);
-    g2dSetCoordXY(G2D_SCR_W/2,menu.square_y);
+    g2dSetCoordXY(g2dScrW()/2,menu.square_y);
     g2dSetRotation(menu.rot);
     g2dAdd();
     

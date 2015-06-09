@@ -55,7 +55,7 @@ void camera()
   g2dBeginRects(NULL);
   {
     g2dPop();
-    g2dSetCoordXY(G2D_SCR_W/2,G2D_SCR_H/2);
+    g2dSetCoordXY(g2dScrW()/2,g2dScrH()/2);
     g2dSetRotation(-cam.rot);
     g2dSetGlobalScale(cam.zoom);
     g2dSetCoordXYRelative(-cam.x,-cam.y);
@@ -82,10 +82,10 @@ int isVisible(Object* obj)
   g2dGetCoordXYZ(&x[3],&y[3],NULL);
   g2dPop();
   // Check if the whole object is off-screen.
-  return (!((x[0] < 0 || x[0] > G2D_SCR_W || y[0] < 0 || y[0] > G2D_SCR_H) &&
-            (x[1] < 0 || x[1] > G2D_SCR_W || y[1] < 0 || y[1] > G2D_SCR_H) &&
-            (x[2] < 0 || x[2] > G2D_SCR_W || y[2] < 0 || y[2] > G2D_SCR_H) &&
-            (x[3] < 0 || x[3] > G2D_SCR_W || y[3] < 0 || y[3] > G2D_SCR_H)));
+  return (!((x[0] < 0 || x[0] > g2dScrW() || y[0] < 0 || y[0] > g2dScrH()) &&
+            (x[1] < 0 || x[1] > g2dScrW() || y[1] < 0 || y[1] > g2dScrH()) &&
+            (x[2] < 0 || x[2] > g2dScrW() || y[2] < 0 || y[2] > g2dScrH()) &&
+            (x[3] < 0 || x[3] > g2dScrW() || y[3] < 0 || y[3] > g2dScrH())));
 }
 
 
