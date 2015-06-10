@@ -230,9 +230,7 @@ void nextLevel()
 {
   if (lvl.next[0] == '!')
   {
-    g2dTexFree(&img.gsquare);
     setGameState(END);
-    img.end = g2dTexLoad("./graphics/end.png",0);
     setFadeMode(&main_fade,FADE_OUT,1);
     SDL_Delay(10000);
     main_fade.color = BLACK;

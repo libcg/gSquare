@@ -195,10 +195,11 @@ static g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 
 static void loadTextures()
 {
-  img.back = loadImage("graphics/back.png",G2D_SWIZZLE);
-  img.tileset = loadImage("graphics/tileset.png",G2D_SWIZZLE);
-  img.gsquare = loadImage("graphics/gsquare.png",G2D_SWIZZLE);
-  img.banner = loadImage("graphics/genesis.png",G2D_SWIZZLE);
+  img.back = loadImage("graphics/back.png",0);
+  img.tileset = loadImage("graphics/tileset.png",0);
+  img.gsquare = loadImage("graphics/gsquare.png",0);
+  img.banner = loadImage("graphics/genesis.png",0);
+  img.end = loadImage("./graphics/end.png",0);
 }
 
 
@@ -208,6 +209,7 @@ static void freeTextures()
   g2dTexFree(&img.tileset);
   g2dTexFree(&img.gsquare);
   g2dTexFree(&img.banner);
+  g2dTexFree(&img.end);
 }
 
 
