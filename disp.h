@@ -97,5 +97,6 @@ void drawUI();
 void dispgSquare();
 void dispBanner();
 void dispMenu();
+void dispEnding();
 
 #endif

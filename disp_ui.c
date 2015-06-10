@@ -413,4 +413,16 @@ void dispMenu()
   }
 }
 
+
+void dispEnding()
+{
+  g2dBeginRects(img.end);
+  {
+    g2dSetTexLinear(false);
+    g2dSetScaleWH(g2dScrW(),g2dScrH());
+    g2dAdd();
+  }
+  g2dEnd();
+}
+
 // EOF

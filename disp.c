@@ -295,12 +295,8 @@ int dispThread(void* p)
     }
     if (checkGameState(END))
     {
-      g2dClear(WHITE);
-      g2dBeginRects(img.end);
-      {
-        g2dAdd();
-      }
-      g2dEnd();
+      g2dClear(BLACK);
+      dispEnding();
     }
     
     drawFade(&main_fade);
