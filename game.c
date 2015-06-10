@@ -187,15 +187,17 @@ void gameControls()
         save();
         waitFadeDone(&ui_fade);
         game.g_lock = 0;
-        nextLevel();
-        if (exit_state == 1) break;
-        setGameState(INGAME);
-        ui_fade.alpha = 255;
-        if (lvl.obj_nbr != 0)
+
+        if (nextLevel())
         {
-          cam.x = cam.x_target = P_OBJ.x + P_OBJ.w/2.f;
-          cam.y = cam.y_target = P_OBJ.y + P_OBJ.h/2.f;
-        }
+	        setGameState(INGAME);
+	        ui_fade.alpha = 255;
+	        if (lvl.obj_nbr != 0)
+	        {
+	          cam.x = cam.x_target = P_OBJ.x + P_OBJ.w/2.f;
+	          cam.y = cam.y_target = P_OBJ.y + P_OBJ.h/2.f;
+	        }
+	      }
       }
     break;
     case LOSE:
@@ -455,12 +457,13 @@ void gameMenu()
   setFadeMode(&main_fade,FADE_IN,0);
   waitFadeDone(&main_fade);
 
-  nextLevel();
-  if (lvl.next[0] == '!') return;
-  setGameState(INGAME);
-  
-  setFadeMode(&main_fade,FADE_OUT,0);
-  ui_fade.alpha = 0;
+  if (nextLevel())
+  {
+    setGameState(INGAME);
+
+    setFadeMode(&main_fade,FADE_OUT,0);
+    ui_fade.alpha = 0;
+  }
 }
 
 

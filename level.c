@@ -226,7 +226,7 @@ void resetLevel()
 }
 
 
-void nextLevel()
+bool nextLevel()
 {
   if (lvl.next[0] == '!')
   {
@@ -238,11 +238,10 @@ void nextLevel()
     setFadeMode(&main_fade,FADE_OUT,0);
     setGameState(MENU);
     menu.state = 0;
-    return;
+    return false;
   }
   else
   {
-    SDL_Delay(1);
     strcpy(lvl.actual,lvl.next);
     luaDoFile(lvl.next); 
     lvl.title[0] = '!';   
@@ -260,6 +259,7 @@ void nextLevel()
       setGameState(INGAME);
     }
     resetLevel();
+    return true;
   }
 }
 

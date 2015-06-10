@@ -102,7 +102,7 @@ int deleteObject(int obj_id);
 int deleteObjectType(int obj_type_id);
 void objectText(const char* text);
 void resetLevel();
-void nextLevel();
+bool nextLevel();
 void save();
 
 #endif
