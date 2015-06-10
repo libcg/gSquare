@@ -233,9 +233,11 @@ void nextLevel()
     setGameState(END);
     setFadeMode(&main_fade,FADE_OUT,1);
     SDL_Delay(10000);
-    main_fade.color = BLACK;
     setFadeMode(&main_fade,FADE_IN,0);
-    exit_state = 1;
+    waitFadeDone(&main_fade);
+    setFadeMode(&main_fade,FADE_OUT,0);
+    setGameState(MENU);
+    menu.state = 0;
     return;
   }
   else
