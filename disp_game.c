@@ -117,7 +117,7 @@ void drawLevel()
         g2dSetScaleWH(obj->w,obj->h);
         g2dSetCropWH(obj->type->tex_w,obj->type->tex_h);
         g2dSetCropXY(obj->type->tex_x,
-                     obj->type->tex_y + (obj->type->tex_h+1) * obj->state);
+                     obj->type->tex_y + (obj->type->tex_h) * obj->state);
         g2dSetColor(G2D_MODULATE(WHITE,
                     255+30*(-1+sinf(shadow_x+obj->x/50.f+obj->y/120.f)),
                     255));

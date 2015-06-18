@@ -20,4 +20,4 @@ TEXT = 4096
 
 dofile("obj_types.lua")
 
-setNextLevel("./levels/easy1.lua")
+setNextLevel("./levels/demo.lua")

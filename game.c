@@ -45,7 +45,9 @@ void initGameState()
   #ifdef DEBUG
     setGameState(MENU);
   #else
-    setGameState(GSQUARE);
+    luaDoFile("start.lua");
+    nextLevel();
+    setGameState(INGAME);
   #endif
 }
 
