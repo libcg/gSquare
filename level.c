@@ -35,7 +35,6 @@ Level lvl =
   .obj_nbr = 0,
   .ray_list = NULL,
   .ray_nbr = 0,
-  .actual = "",
   .next = "",
   .limit_x0 = 0,
   .limit_x1 = 0,
@@ -289,7 +288,6 @@ bool nextLevel()
   }
   else
   {
-    strcpy(lvl.actual,lvl.next);
     luaDoFile(lvl.next); 
     lvl.title[0] = '!';   
     luaCall("getInfo");

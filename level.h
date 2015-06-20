@@ -78,7 +78,7 @@ typedef struct
   int obj_nbr;
   Ray** ray_list;
   int ray_nbr;
-  char actual[512], next[512];
+  char next[512];
   int limit_x0, limit_x1;
   int limit_y0, limit_y1;
   char title[8192];
