@@ -48,17 +48,6 @@ void initObjectType()
   lvl.obj_type_list = realloc(lvl.obj_type_list,
                               OBJ_TYPE_LIST_SIZE * sizeof(Object_Type));
   lvl.obj_type_nbr = 0;
-
-  Object_Type player;
-  player.tex_w = P_SIZE;
-  player.tex_h = P_SIZE;
-  player.tex_x = 0;
-  player.tex_y = 0;
-  player.properties = GRAVITY + COLLIDE + FRICTION + CAN_BREAK +
-                      AIR_RESISTANCE + PLAYER;
-  player.touch_callback[0] = '!';
-  player.tick_callback[0] = '!';
-  createObjectType(player);
 }
 
 

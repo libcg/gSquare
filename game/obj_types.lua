@@ -129,6 +129,13 @@ loadSound("./audio/coin.wav","coin")
 
 initObjectType()
 
+-- Bluz 0
+createObjectType(0,0,
+                 12,12,
+                 GRAVITY + FRICTION + COLLIDE + CAN_BREAK +
+                 AIR_RESISTANCE + PLAYER,
+                 "!",
+                 "!")
 -- Floor 1
 createObjectType(1*17,0,
                  16,16,
