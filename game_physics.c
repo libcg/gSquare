@@ -119,7 +119,7 @@ void bounce(Object* obj, Object* obj_col, float t)
   {
     playSound("break");
     if (obj_col->state < 2) obj_col->state++;
-    else deleteObject(obj_col - lvl.obj_list);
+    else deleteObject(findObject(obj_col));
   }
   
   // Touch callback for the object
@@ -159,47 +159,49 @@ float getCollisionPosition(Object* obj, Object** col_list, int size)
 
 int getColliders(Object* obj, Object** list, int size)
 {
-  int j, n;
-  Object* obj_j;
-  
-  for (j=0, n=0, obj_j = lvl.obj_list; j!=obj_nbr && n<size; j++, obj_j++)
+  int i, n;
+
+  for (i=0, n=0; i!=obj_nbr && n<size; i++)
   {
-    if (obj-lvl.obj_list == j) continue;
+    Object *oobj = lvl.obj_list[i];
+
+    if (oobj == obj)
+      continue;
     
     // Add a collider
-    if (collide(obj,obj_j))
+    if (collide(obj,oobj))
     {
-      if (obj_j->type->properties & COLLIDE)
+      if (oobj->type->properties & COLLIDE)
       {
-        list[n++] = obj_j;
+        list[n++] = oobj;
       }
       
       // The other object dies by touch
       if ((obj->type->properties & TOUCH_TO_DIE ||
-           obj_j->type->properties & DEATH_BY_TOUCH) &&
-          obj_j->death < 1)
+           oobj->type->properties & DEATH_BY_TOUCH) &&
+          oobj->death < 1)
       {
-        deleteObject(obj_j - lvl.obj_list);
+        deleteObject(findObject(oobj));
       }
       // The other object kills by touch
       if ((obj->type->properties & DEATH_BY_TOUCH ||
-           obj_j->type->properties & TOUCH_TO_DIE) &&
+           oobj->type->properties & TOUCH_TO_DIE) &&
          obj->death < 1)
       {
-        deleteObject(obj - lvl.obj_list);
+        deleteObject(findObject(obj));
       }
       if (obj->type->properties & PLAYER)
       {
         // Touch callback
-        if (obj_j->type->touch_callback[0] != '!')
+        if (oobj->type->touch_callback[0] != '!')
         {
-          obj_ext = obj_j;
-          luaCall(obj_j->type->touch_callback);
+          obj_ext = oobj;
+          luaCall(oobj->type->touch_callback);
         }
         // Flying text
-        if (obj_j->text[0] != '\0' && (obj_j->type->properties & TEXT))
+        if (oobj->text[0] != '\0' && (oobj->type->properties & TEXT))
         {
-          game.flying_text = obj_j->text;
+          game.flying_text = oobj->text;
         }
       }
     }
@@ -221,7 +223,7 @@ int objProperties(Object* obj)
        obj->x > lvl.limit_x1 + gap ||
        obj->y < lvl.limit_y0 - gap ||
        obj->y > lvl.limit_y1 + gap) &&
-      obj != lvl.obj_list)
+      findObject(obj) != P_ID)
   {
     obj->death = 1; // Destroy!
   }
@@ -229,7 +231,7 @@ int objProperties(Object* obj)
   // Dead object
   if (obj->death > 0)
   {
-    deleteObject(obj - lvl.obj_list);
+    deleteObject(findObject(obj));
     return 0;
   }
 
@@ -340,76 +342,78 @@ void physics()
 
   // Dynamics and collisions for each object
   int i, j;
-  Object* obj_i;
-  for (i=0, obj_i = lvl.obj_list; i<obj_nbr; i++, obj_i++)
+  for (i=0; i<obj_nbr; i++)
   {
-    if (!objProperties(obj_i)) // An object has been deleted
+    Object* obj = lvl.obj_list[i];
+
+    if (!objProperties(obj)) // An object has been deleted
     {
       obj_nbr--;
       continue;
     }
 
-    if (obj_i->type->properties & FIXED)
+    if (obj->type->properties & FIXED)
     {
-      obj_i->vx = 0.f;
-      obj_i->vy = 0.f;
+      obj->vx = 0.f;
+      obj->vy = 0.f;
       continue;
     }
     
-    objDynamics(obj_i);
-    objCollisions(obj_i);
+    objDynamics(obj);
+    objCollisions(obj);
   }
   
   // Rays
   float tl, l;
-  Ray* ray_i;
-  Object *obj_j, *cobj;
-  for (i=0, ray_i = lvl.ray_list; i<lvl.ray_nbr; i++, ray_i++)
+  for (i=0; i<lvl.ray_nbr; i++)
   {
-    cobj = NULL;
+    Ray* ray = lvl.ray_list[i];
+    Object* cobj = NULL;
     tl = l = 1000.f;
     
-    for (j=0, obj_j = lvl.obj_list; j<obj_nbr; j++, obj_j++)
+    for (j=0; j<obj_nbr; j++)
     {
-      if (ray_i->dir%2 == 1 && // X axis
-          obj_j->y+obj_j->h > ray_i->y && obj_j->y < ray_i->y+ray_i->w)
+      Object *obj = lvl.obj_list[j];
+
+      if (ray->dir%2 == 1 && // X axis
+          obj->y+obj->h > ray->y && obj->y < ray->y+ray->w)
       {
-        if (ray_i->dir == 3 && obj_j->x + obj_j->w < ray_i->x)
+        if (ray->dir == 3 && obj->x + obj->w < ray->x)
         {
-          tl = fabs(ray_i->x - (obj_j->x + obj_j->w));
+          tl = fabs(ray->x - (obj->x + obj->w));
         }
-        else if (ray_i->dir == 1 && ray_i->x < obj_j->x)
+        else if (ray->dir == 1 && ray->x < obj->x)
         {
-          tl = fabs(obj_j->x - ray_i->x);
+          tl = fabs(obj->x - ray->x);
         }
       }
-      else if (ray_i->dir%2 == 0 && // Y axis
-               obj_j->x+obj_j->w > ray_i->x && obj_j->x < ray_i->x+ray_i->w)
+      else if (ray->dir%2 == 0 && // Y axis
+               obj->x+obj->w > ray->x && obj->x < ray->x+ray->w)
       {
-        if (ray_i->dir == 0 && obj_j->y + obj_j->h < ray_i->y)
+        if (ray->dir == 0 && obj->y + obj->h < ray->y)
         {
-          tl = fabs(ray_i->y - (obj_j->y + obj_j->h));
+          tl = fabs(ray->y - (obj->y + obj->h));
         }
-        else if (ray_i->dir == 2 && ray_i->y < obj_j->y)
+        else if (ray->dir == 2 && ray->y < obj->y)
         {
-          tl = fabs(obj_j->y - ray_i->y);
+          tl = fabs(obj->y - ray->y);
         }
       }
       
       if (tl < l)
       {
         l = tl;
-        cobj = obj_j;
+        cobj = obj;
       }
     }
     
     if (cobj != NULL) // A collider has been found
     {
       // Kill
-      if ((ray_i->type->properties & TOUCH_TO_DIE) &&
+      if ((ray->type->properties & TOUCH_TO_DIE) &&
            cobj->death < 1)
       {
-        deleteObject(cobj - lvl.obj_list);
+        deleteObject(findObject(cobj));
       }
       // Touch callback
       if (cobj->type->touch_callback[0] != '!')
@@ -420,8 +424,8 @@ void physics()
     }
 
     // Update ray properties
-    if (ray_i->dir%2 == 0) ray_i->h = l;
-    else ray_i->w = l;
+    if (ray->dir%2 == 0) ray->h = l;
+    else ray->w = l;
   }
 }
 

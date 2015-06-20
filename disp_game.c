@@ -39,10 +39,10 @@ void camera()
   // Camera center too far from player
   if (cam.active && lvl.obj_nbr != 0)
   {
-    if (cam.x-P_OBJ.x > CAM_STEP) cam.x_target = P_OBJ.x+CAM_STEP;
-    else if (P_OBJ.x-cam.x > CAM_STEP) cam.x_target = P_OBJ.x-CAM_STEP;
-    if (cam.y-P_OBJ.y > CAM_STEP) cam.y_target = P_OBJ.y+CAM_STEP;
-    else if (P_OBJ.y-cam.y > CAM_STEP) cam.y_target = P_OBJ.y-CAM_STEP;
+    if (cam.x-P_OBJ->x > CAM_STEP) cam.x_target = P_OBJ->x+CAM_STEP;
+    else if (P_OBJ->x-cam.x > CAM_STEP) cam.x_target = P_OBJ->x-CAM_STEP;
+    if (cam.y-P_OBJ->y > CAM_STEP) cam.y_target = P_OBJ->y+CAM_STEP;
+    else if (P_OBJ->y-cam.y > CAM_STEP) cam.y_target = P_OBJ->y-CAM_STEP;
   }
   
   // Camera physics
@@ -107,7 +107,7 @@ void drawLevel()
     // Objects
     for (i=0; i!=lvl.obj_nbr; i++)
     {
-      Object *obj = &lvl.obj_list[i];
+      Object *obj = lvl.obj_list[i];
 
       g2dPush();
       g2dSetCoordXYRelative(obj->x,obj->y);
@@ -132,7 +132,7 @@ void drawLevel()
     {
       for (i=0; i!=lvl.ray_nbr; i++)
       {
-        Ray *ray = &lvl.ray_list[i];
+        Ray *ray = lvl.ray_list[i];
 
         if (ray->dir == 0)
           g2dSetCoordMode(G2D_DOWN_LEFT);

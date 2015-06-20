@@ -68,14 +68,18 @@ int luaVarFloat(lua_State* L, float* var)
 
 int luaVarPlayerX(lua_State* L)
 {
-  if (lvl.obj_nbr == 0) return 0;
-  return luaVarFloat(L,&P_OBJ.x);
+  if (lvl.obj_nbr == 0)
+    return 0;
+
+  return luaVarFloat(L,&P_OBJ->x);
 }
 
 int luaVarPlayerY(lua_State* L)
 {
-  if (lvl.obj_nbr == 0) return 0;
-  return luaVarFloat(L,&P_OBJ.y);
+  if (lvl.obj_nbr == 0)
+    return 0;
+
+  return luaVarFloat(L,&P_OBJ->y);
 }
 
 int luaVarGravityDir(lua_State* L)
@@ -153,8 +157,8 @@ int luaCreateObject(lua_State* L)
     float s_x = lua_tonumber(L,3);
     float s_y = lua_tonumber(L,4);
     int obj_type_id = lua_tointeger(L,5);
-    float w = lvl.obj_type_list[obj_type_id].tex_w;
-    float h = lvl.obj_type_list[obj_type_id].tex_h;
+    float w = lvl.obj_type_list[obj_type_id]->tex_w;
+    float h = lvl.obj_type_list[obj_type_id]->tex_h;
     createObject(x,y,s_x,s_y,obj_type_id,w,h);
   }
   else if (lua_gettop(L) == 7)
@@ -182,8 +186,8 @@ int luaCreateObjectAligned(lua_State* L)
     float s_x = lua_tonumber(L,3);
     float s_y = lua_tonumber(L,4);
     int obj_type_id = lua_tointeger(L,5);
-    float w = lvl.obj_type_list[obj_type_id].tex_w;
-    float h = lvl.obj_type_list[obj_type_id].tex_h;
+    float w = lvl.obj_type_list[obj_type_id]->tex_w;
+    float h = lvl.obj_type_list[obj_type_id]->tex_h;
     int align = lua_tointeger(L,6);
     createObjectAligned(x,y,s_x,s_y,obj_type_id,w,h,align);
   }
@@ -225,15 +229,14 @@ int luaCreateObjectType(lua_State* L)
 {
   LUA_EXCEPTION(lua_gettop(L) != 7,EXCEPTION_ARG)
 
-  Object_Type obj_type;
-  obj_type.tex_x = lua_tointeger(L,1);
-  obj_type.tex_y = lua_tointeger(L,2);
-  obj_type.tex_w = lua_tointeger(L,3);
-  obj_type.tex_h = lua_tointeger(L,4);
-  obj_type.properties = lua_tointeger(L,5);
-  strncpy(obj_type.touch_callback,lua_tostring(L,6),64);
-  strncpy(obj_type.tick_callback,lua_tostring(L,7),64);
-  createObjectType(obj_type);
+  int tex_x = lua_tointeger(L,1);
+  int tex_y = lua_tointeger(L,2);
+  int tex_w = lua_tointeger(L,3);
+  int tex_h = lua_tointeger(L,4);
+  int prop = lua_tointeger(L,5);
+  char* touch_cb = lua_tostring(L,6);
+  char* tick_cb = lua_tostring(L,7);
+  createObjectType(tex_x,tex_y,tex_w,tex_h,prop,touch_cb,tick_cb);
   return 0;
 }
 

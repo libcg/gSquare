@@ -27,10 +27,28 @@
 #include "lua.h"
 #include "audio.h"
 
-Level lvl = {NULL,0,NULL,0,NULL,0,"","",0,0,0,0,""};
+Level lvl =
+{
+  .obj_type_list = NULL,
+  .obj_type_nbr = 0,
+  .obj_list = NULL,
+  .obj_nbr = 0,
+  .ray_list = NULL,
+  .ray_nbr = 0,
+  .actual = "",
+  .next = "",
+  .limit_x0 = 0,
+  .limit_x1 = 0,
+  .limit_y0 = 0,
+  .limit_y1 = 0,
+  .title = ""
+};
 
 void initObject()
 {
+  for (int i=0; i<lvl.obj_nbr; i++)
+    free(lvl.obj_list[i]);
+
   lvl.obj_list = realloc(lvl.obj_list,0);
   lvl.obj_nbr = 0;
 
@@ -38,13 +56,21 @@ void initObject()
   lvl.limit_x1 = 0;
   lvl.limit_y0 = 0;
   lvl.limit_y1 = 0;
-  createObject(0.f,0.f,0.f,0.f,0,P_SIZE,P_SIZE); // Player
-  game.g_lock = false; // Gravity not locked by default.
+
+  // Create player object
+  createObject(0.f,0.f,0.f,0.f,0,P_SIZE,P_SIZE);
+
+  // Gravity not locked by default
+  // TODO: move in game.c
+  game.g_lock = false;
 }
 
 
 void initObjectType()
 {
+  for (int i=0; i<lvl.obj_type_nbr; i++)
+    free(lvl.obj_type_list[i]);
+
   lvl.obj_type_list = realloc(lvl.obj_type_list,0);
   lvl.obj_type_nbr = 0;
 }
@@ -52,6 +78,9 @@ void initObjectType()
 
 void initRay()
 {
+  for (int i=0; i<lvl.ray_nbr; i++)
+    free(lvl.ray_list[i]);
+
   lvl.ray_list = realloc(lvl.ray_list,0);
   lvl.ray_nbr = 0;
 }
@@ -60,10 +89,10 @@ void initRay()
 int createObject(float x, float y, float s_x, float s_y,
                  int obj_type_id, float w, float h)
 {
-  lvl.obj_nbr++;
-  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object));
+  Object* obj = malloc(sizeof(Object));
+  if (obj == NULL)
+    return -1;
 
-  Object* obj = &lvl.obj_list[lvl.obj_nbr - 1];
   obj->x = floorf(x);
   obj->y = floorf(y);
   obj->vx = s_x;
@@ -74,13 +103,13 @@ int createObject(float x, float y, float s_x, float s_y,
   obj->collide_y = 0;
   obj->collide_x_properties = 0;
   obj->collide_y_properties = 0;
-  obj->type = lvl.obj_type_list + obj_type_id;
+  obj->type = lvl.obj_type_list[obj_type_id];
   obj->death = 0;
   obj->state = 0;
   obj->text[0] = '\0';
   memset(obj->reg,0,16*sizeof(float));
   
-  // Change limits if needed
+  // Change level limits if needed
   if (obj->x-LVL_LIMIT_GAP < lvl.limit_x0) 
   {
     lvl.limit_x0 = obj->x-LVL_LIMIT_GAP;
@@ -97,7 +126,12 @@ int createObject(float x, float y, float s_x, float s_y,
   {
     lvl.limit_y1 = obj->y+obj->h+LVL_LIMIT_GAP;
   }
-  
+
+  // Add to the object list
+  lvl.obj_nbr++;
+  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object*));
+  lvl.obj_list[lvl.obj_nbr - 1] = obj;
+
   return lvl.obj_nbr - 1;
 }
 
@@ -113,43 +147,62 @@ int createObjectAligned(float x, float y, float s_x, float s_y,
 }
 
 
-int createObjectType(Object_Type obj_type)
+int createObjectType(int tex_x, int tex_y, int tex_w, int tex_h, int prop,
+                     char* touch_cb, char* tick_cb)
 {
+  Object_Type* type = malloc(sizeof(Object_Type));
+  if (type == NULL)
+    return -1;
+
+  type->tex_x = tex_x;
+  type->tex_y = tex_y;
+  type->tex_w = tex_w;
+  type->tex_h = tex_h;
+  type->properties = prop;
+  strncpy(type->touch_callback,touch_cb,sizeof(type->touch_callback));
+  strncpy(type->tick_callback,tick_cb,sizeof(type->tick_callback));
+
+  // Add to the object type list
   lvl.obj_type_nbr++;
-  lvl.obj_type_list = realloc(lvl.obj_type_list,lvl.obj_type_nbr * sizeof(Object_Type));
-  
-  memcpy(&lvl.obj_type_list[lvl.obj_type_nbr - 1],&obj_type,sizeof(obj_type));
-  
+  lvl.obj_type_list = realloc(lvl.obj_type_list,lvl.obj_type_nbr * sizeof(Object_Type*));
+  lvl.obj_type_list[lvl.obj_type_nbr - 1] = type;
+
   return lvl.obj_type_nbr - 1;
 }
 
 
 int createRay(float x, float y, float size, int dir, int obj_type_id)
 {
-  lvl.ray_nbr++;
-  lvl.ray_list = realloc(lvl.ray_list,lvl.ray_nbr * sizeof(Ray));
+  Ray* ray = malloc(sizeof(Ray));
+  if (ray == NULL)
+    return -1;
 
-  Ray* ray = &lvl.ray_list[lvl.ray_nbr - 1];
   ray->x = x;
   ray->y = y;
   ray->w = (dir%2 == 0 ? size : 1);
   ray->h = (dir%2 == 1 ? size : 1);
   ray->dir = dir;
-  ray->type = &lvl.obj_type_list[obj_type_id];
-  
+  ray->type = lvl.obj_type_list[obj_type_id];
+
+  // Add to the ray list
+  lvl.ray_nbr++;
+  lvl.ray_list = realloc(lvl.ray_list,lvl.ray_nbr * sizeof(Ray*));
+  lvl.ray_list[lvl.ray_nbr - 1] = ray;
+
   return lvl.ray_nbr - 1;
 }
 
 
 int deleteObject(int obj_id)
 {
-  if (lvl.obj_nbr == 0)
+  if (obj_id < 0 || obj_id >= lvl.obj_nbr)
     return -1;
 
-  if (lvl.obj_list[obj_id].type->properties & INVINCIBLE)
+  if (lvl.obj_list[obj_id]->type->properties & INVINCIBLE)
     return 1;
 
   // This object is the player
+  // TODO: delete cb for Lua
   if (obj_id == P_ID)
   {
     if (getGameState() == INGAME)
@@ -161,19 +214,20 @@ int deleteObject(int obj_id)
   }
 
   // This object will be deleted next time
-  if (lvl.obj_list[obj_id].death < 1)
+  // TODO: remove
+  if (lvl.obj_list[obj_id]->death < 1)
   {
-    lvl.obj_list[obj_id].death++;
+    lvl.obj_list[obj_id]->death++;
     return 1;
   }
 
   for (int i=obj_id; i!=lvl.obj_nbr-1; i++)
   {
-    memcpy(&lvl.obj_list[i],&lvl.obj_list[i+1],sizeof(Object));
+    lvl.obj_list[i] = lvl.obj_list[i + 1];
   }
   
   lvl.obj_nbr--;
-  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object));
+  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object*));
   
   return 0;
 }
@@ -181,12 +235,12 @@ int deleteObject(int obj_id)
 
 int deleteObjectType(int obj_type_id)
 {
-  if (lvl.obj_type_nbr <= 0)
+  if (obj_type_id < 0 || obj_type_id >= lvl.obj_type_nbr)
     return -1;
   
   for (int i=obj_type_id; i!=lvl.obj_type_nbr-1; i++)
   {
-    memcpy(&lvl.obj_type_list[i],&lvl.obj_type_list[i + 1],sizeof(Object_Type));
+    lvl.obj_type_list[i] = lvl.obj_type_list[i + 1];
   }
   
   lvl.obj_type_nbr--;
@@ -196,9 +250,19 @@ int deleteObjectType(int obj_type_id)
 }
 
 
+int findObject(Object *obj)
+{
+  for (int i=0; i<lvl.obj_nbr; i++)
+    if (lvl.obj_list[i] == obj)
+      return i;
+
+  return -1;
+}
+
+
 void objectText(const char* text)
 {
-  strncpy(lvl.obj_list[lvl.obj_nbr-1].text,text,512);
+  strncpy(lvl.obj_list[lvl.obj_nbr-1]->text,text,512);
 }
 
 

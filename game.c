@@ -108,10 +108,10 @@ void setPlayerState(float x, float y, int g_dir)
 void resetPlayerState()
 {
   if (lvl.obj_nbr == 0) return;
-  P_OBJ.vx = 0.f;
-  P_OBJ.vy = 0.f;
-  P_OBJ.x = p_state.p_x;
-  P_OBJ.y = p_state.p_y;
+  P_OBJ->vx = 0.f;
+  P_OBJ->vy = 0.f;
+  P_OBJ->x = p_state.p_x;
+  P_OBJ->y = p_state.p_y;
   game.g_dir = p_state.g_dir;
 }
 
@@ -140,24 +140,24 @@ void gameControls()
     
     // Square move
     float dir = ctrlGetPressure(KEY_RIGHT) - ctrlGetPressure(KEY_LEFT);
-    P_OBJ.vx += game.g_y * P_ACCEL * dir;
-    P_OBJ.vy -= game.g_x * P_ACCEL * dir;
+    P_OBJ->vx += game.g_y * P_ACCEL * dir;
+    P_OBJ->vy -= game.g_x * P_ACCEL * dir;
                                    
     // Square jump
     if (ctrlPressed(KEY_JUMP))
     {
       // Impulse
       if (game.g_x)
-        P_OBJ.vx += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ.collide_x);
+        P_OBJ->vx += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ->collide_x);
       if (game.g_y)
-        P_OBJ.vy += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ.collide_y);
+        P_OBJ->vy += ctrlGetPressure(KEY_JUMP) * OBJ_JUMP * (-P_OBJ->collide_y);
       // Jump higher by holding cross button
-      if ((P_OBJ.vx > 0 && game.g_x < 0) ||
-          (P_OBJ.vx < 0 && game.g_x > 0))
-        P_OBJ.vx += OBJ_CST_JUMP * (-game.g_x);
-      if ((P_OBJ.vy > 0 && game.g_y < 0) ||
-          (P_OBJ.vy < 0 && game.g_y > 0))
-        P_OBJ.vy += OBJ_CST_JUMP * (-game.g_y);
+      if ((P_OBJ->vx > 0 && game.g_x < 0) ||
+          (P_OBJ->vx < 0 && game.g_x > 0))
+        P_OBJ->vx += OBJ_CST_JUMP * (-game.g_x);
+      if ((P_OBJ->vy > 0 && game.g_y < 0) ||
+          (P_OBJ->vy < 0 && game.g_y > 0))
+        P_OBJ->vy += OBJ_CST_JUMP * (-game.g_y);
     }
   }
   
@@ -165,7 +165,7 @@ void gameControls()
   switch (getGameState())
   {
     case INGAME:
-      P_OBJ.state = 0;
+      P_OBJ->state = 0;
       cam.active = 1;
       lose_cnt = 0;
       if (ctrlJustPressed(KEY_PAUSE))
@@ -194,14 +194,14 @@ void gameControls()
 	        ui_fade.alpha = 255;
 	        if (lvl.obj_nbr != 0)
 	        {
-	          cam.x = cam.x_target = P_OBJ.x + P_OBJ.w/2.f;
-	          cam.y = cam.y_target = P_OBJ.y + P_OBJ.h/2.f;
+	          cam.x = cam.x_target = P_OBJ->x + P_OBJ->w/2.f;
+	          cam.y = cam.y_target = P_OBJ->y + P_OBJ->h/2.f;
 	        }
 	      }
       }
     break;
     case LOSE:
-      P_OBJ.state = 1;
+      P_OBJ->state = 1;
       cam.active = 0;
       if (lose_cnt++ == 40)
       {
@@ -258,10 +258,10 @@ void checkBounds()
   if (lvl.obj_nbr == 0) return;
 
   // Check if the player is "out of bounds"
-  if (P_OBJ.x < lvl.limit_x0 ||
-      P_OBJ.x+P_OBJ.type->tex_w > lvl.limit_x1 ||
-      P_OBJ.y < lvl.limit_y0 ||
-      P_OBJ.y+P_OBJ.type->tex_h > lvl.limit_y1)
+  if (P_OBJ->x < lvl.limit_x0 ||
+      P_OBJ->x+P_OBJ->type->tex_w > lvl.limit_x1 ||
+      P_OBJ->y < lvl.limit_y0 ||
+      P_OBJ->y+P_OBJ->type->tex_h > lvl.limit_y1)
   {
     cam.active = 0;
     pushGameState(LOSE);
