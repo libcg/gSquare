@@ -21,9 +21,6 @@
 #include "common.h"
 
 #define LVL_LIMIT_GAP (8*BASIC_SIZE)
-#define OBJ_LIST_SIZE 16384
-#define OBJ_TYPE_LIST_SIZE 64
-#define RAY_LIST_SIZE 128
 
 enum Obj_Properties
 {

@@ -31,7 +31,7 @@ Level lvl = {NULL,0,NULL,0,NULL,0,"","",0,0,0,0,""};
 
 void initObject()
 {
-  lvl.obj_list = realloc(lvl.obj_list,OBJ_LIST_SIZE * sizeof(Object));
+  lvl.obj_list = realloc(lvl.obj_list,0);
   lvl.obj_nbr = 0;
 
   lvl.limit_x0 = 0;
@@ -45,15 +45,14 @@ void initObject()
 
 void initObjectType()
 {
-  lvl.obj_type_list = realloc(lvl.obj_type_list,
-                              OBJ_TYPE_LIST_SIZE * sizeof(Object_Type));
+  lvl.obj_type_list = realloc(lvl.obj_type_list,0);
   lvl.obj_type_nbr = 0;
 }
 
 
 void initRay()
 {
-  lvl.ray_list = realloc(lvl.ray_list,RAY_LIST_SIZE * sizeof(Object));
+  lvl.ray_list = realloc(lvl.ray_list,0);
   lvl.ray_nbr = 0;
 }
 
@@ -61,11 +60,10 @@ void initRay()
 int createObject(float x, float y, float s_x, float s_y,
                  int obj_type_id, float w, float h)
 {
-  if (lvl.obj_list == NULL) initObject();
+  lvl.obj_nbr++;
+  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object));
 
-  if (lvl.obj_nbr < OBJ_LIST_SIZE) lvl.obj_nbr++;  
-  Object* obj = lvl.obj_list + lvl.obj_nbr - 1;
-  
+  Object* obj = &lvl.obj_list[lvl.obj_nbr - 1];
   obj->x = floorf(x);
   obj->y = floorf(y);
   obj->vx = s_x;
@@ -100,7 +98,7 @@ int createObject(float x, float y, float s_x, float s_y,
     lvl.limit_y1 = obj->y+obj->h+LVL_LIMIT_GAP;
   }
   
-  return lvl.obj_nbr-1;
+  return lvl.obj_nbr - 1;
 }
 
 
@@ -117,40 +115,39 @@ int createObjectAligned(float x, float y, float s_x, float s_y,
 
 int createObjectType(Object_Type obj_type)
 {
-  if (lvl.obj_type_list == NULL) initObjectType();
-
-  if (lvl.obj_type_nbr < OBJ_TYPE_LIST_SIZE) lvl.obj_type_nbr++;  
+  lvl.obj_type_nbr++;
+  lvl.obj_type_list = realloc(lvl.obj_type_list,lvl.obj_type_nbr * sizeof(Object_Type));
   
-  memcpy(lvl.obj_type_list+lvl.obj_type_nbr-1,&obj_type,sizeof(Object_Type));
+  memcpy(&lvl.obj_type_list[lvl.obj_type_nbr - 1],&obj_type,sizeof(obj_type));
   
-  return lvl.obj_type_nbr-1;
+  return lvl.obj_type_nbr - 1;
 }
 
 
 int createRay(float x, float y, float size, int dir, int obj_type_id)
 {
-  if (lvl.ray_list == NULL) initRay();
+  lvl.ray_nbr++;
+  lvl.ray_list = realloc(lvl.ray_list,lvl.ray_nbr * sizeof(Ray));
 
-  if (lvl.ray_nbr < RAY_LIST_SIZE) lvl.ray_nbr++;  
-  Ray* ray = lvl.ray_list + lvl.ray_nbr - 1;
-  
+  Ray* ray = &lvl.ray_list[lvl.ray_nbr - 1];
   ray->x = x;
   ray->y = y;
   ray->w = (dir%2 == 0 ? size : 1);
   ray->h = (dir%2 == 1 ? size : 1);
   ray->dir = dir;
-  ray->type = lvl.obj_type_list + obj_type_id;
+  ray->type = &lvl.obj_type_list[obj_type_id];
   
-  return lvl.ray_nbr-1;
+  return lvl.ray_nbr - 1;
 }
 
 
 int deleteObject(int obj_id)
 {
-  if (lvl.obj_list == NULL) initObject();
-  if (lvl.obj_nbr <= 0) return -1;
+  if (lvl.obj_nbr == 0)
+    return -1;
 
-  if (lvl.obj_list[obj_id].type->properties & INVINCIBLE) return 1;
+  if (lvl.obj_list[obj_id].type->properties & INVINCIBLE)
+    return 1;
 
   // This object is the player
   if (obj_id == P_ID)
@@ -170,13 +167,13 @@ int deleteObject(int obj_id)
     return 1;
   }
 
-  int i;
-  for (i=obj_id; i!=lvl.obj_nbr-1; i++)
+  for (int i=obj_id; i!=lvl.obj_nbr-1; i++)
   {
-    memcpy(lvl.obj_list+i,lvl.obj_list+i+1,sizeof(Object));
+    memcpy(&lvl.obj_list[i],&lvl.obj_list[i+1],sizeof(Object));
   }
   
   lvl.obj_nbr--;
+  lvl.obj_list = realloc(lvl.obj_list,lvl.obj_nbr * sizeof(Object));
   
   return 0;
 }
@@ -184,16 +181,16 @@ int deleteObject(int obj_id)
 
 int deleteObjectType(int obj_type_id)
 {
-  if (lvl.obj_type_list == NULL) initObjectType();
-  if (lvl.obj_type_nbr <= 0) return -1;
+  if (lvl.obj_type_nbr <= 0)
+    return -1;
   
-  int i;
-  for (i=obj_type_id; i!=lvl.obj_type_nbr-1; i++)
+  for (int i=obj_type_id; i!=lvl.obj_type_nbr-1; i++)
   {
-    memcpy(lvl.obj_type_list+i,lvl.obj_type_list+i+1,sizeof(Object_Type));
+    memcpy(&lvl.obj_type_list[i],&lvl.obj_type_list[i + 1],sizeof(Object_Type));
   }
   
   lvl.obj_type_nbr--;
+  lvl.obj_type_list = realloc(lvl.obj_type_list,lvl.obj_type_nbr * sizeof(Object_Type));
   
   return 0;
 }
@@ -207,9 +204,6 @@ void objectText(const char* text)
 
 void resetLevel()
 {
-  #ifdef DEBUG
-    luaDoFile(lvl.actual);
-  #endif
   luaCall("setLevel");
   luaCall("setGame");
 }
