@@ -58,10 +58,6 @@ void initObject()
 
   // Create player object
   createObject(0.f,0.f,0.f,0.f,0,P_SIZE,P_SIZE);
-
-  // Gravity not locked by default
-  // TODO: move in game.c
-  game.g_lock = false;
 }
 
 
@@ -269,6 +265,9 @@ void resetLevel()
 {
   luaCall("setLevel");
   luaCall("setGame");
+
+  // Gravity not locked by default
+  game.g_lock = false;
 }
 
 
