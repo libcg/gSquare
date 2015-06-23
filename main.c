@@ -27,6 +27,7 @@
 #include "lua.h"
 #include "audio.h"
 #include "config.h"
+#include "controls.h"
 
 int exit_state = 0;
 
@@ -54,6 +55,7 @@ int main(int argc, char* argv[])
     throwException("Couldn't create mutex");
 
   configLoad();
+  ctrlInit();
   initLanguage();
   initAudio();
   initLua();

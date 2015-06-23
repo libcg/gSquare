@@ -18,7 +18,6 @@
 #ifndef CONTROLS_H
 #define CONTROLS_H
 
-#include <SDL_scancode.h>
 #include <stdbool.h>
 
 typedef enum
@@ -37,6 +36,7 @@ typedef enum
   KEY_LAST
 } Key;
 
+void ctrlInit();
 bool ctrlPressed(Key key);
 bool ctrlWasPressed(Key key);
 bool ctrlJustPressed(Key key);
