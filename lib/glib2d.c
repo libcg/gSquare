@@ -263,7 +263,7 @@ void _g2dBeginCommon()
   if (!start) _g2dStart();
 
   obj_list_size = 0;
-  obj_list = (Object*)realloc(obj_list,MALLOC_STEP * sizeof(Object));
+  obj_list = realloc(obj_list,MALLOC_STEP * sizeof(Object));
 
   obj_use_z = false;
   obj_use_blend = false;
@@ -875,7 +875,7 @@ g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface)
   if (!surface) return NULL;
   if (!start) _g2dStart();
 
-  g2dTexture* tex = (g2dTexture*)malloc(sizeof(g2dTexture));
+  g2dTexture* tex = malloc(sizeof(g2dTexture));
   if (!tex) return NULL;
 
   SDL_PixelFormat format = *(surface->format);
@@ -889,15 +889,13 @@ g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface)
   gl_surface = SDL_ConvertSurface(surface,&format,0);
   tex->w = gl_surface->w;
   tex->h = gl_surface->h;
-  tex->can_blend = 1;
+  tex->can_blend = true;
 
   glGenTextures(1, &tex->id);
   glBindTexture(GL_TEXTURE_2D, tex->id);
   glTexImage2D(GL_TEXTURE_2D, 0, 4, gl_surface->w,
-               gl_surface->h, 0, GL_RGBA,GL_UNSIGNED_BYTE,
+               gl_surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                gl_surface->pixels);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
   SDL_FreeSurface(gl_surface);
   SDL_FreeSurface(surface);
@@ -905,7 +903,27 @@ g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface)
   return tex;
 }
 
-g2dTexture* g2dTexLoad(char path[], g2dTex_Mode mode)
+g2dTexture* g2dTexFromFramebuffer(int w, int h)
+{
+  if (!start) _g2dStart();
+
+  if (w > scr_w || h > scr_h) return NULL;
+
+  g2dTexture* tex = malloc(sizeof(g2dTexture));
+  if (!tex) return NULL;
+
+  tex->w = w;
+  tex->h = h;
+  tex->can_blend = false;
+
+  glGenTextures(1, &tex->id);
+  glBindTexture(GL_TEXTURE_2D, tex->id);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, scr_h - h, w, h, 0);
+
+  return tex;
+}
+
+g2dTexture* g2dTexFromFile(char path[])
 {
   if (!path) return NULL;
 

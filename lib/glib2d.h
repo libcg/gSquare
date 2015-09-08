@@ -191,10 +191,6 @@ typedef enum
   G2D_VSYNC = 1 /**< Limit the FPS to 60 (synchronized with the screen).
                      Better image quality and less power consumption. */
 } g2dFlip_Mode;
-typedef enum
-{
-  G2D_SWIZZLE = 1 /**< Recommended. Use it to get *more* rendering speed. */
-} g2dTex_Mode;
 
 /**
  * \var g2dAlpha
@@ -213,12 +209,8 @@ typedef unsigned int g2dColor;
  */
 typedef struct
 {
-  int tw;         /**< Real texture width. A power of two. */
-  int th;         /**< Real texture height. A power of two. */
   int w;          /**< Texture width, as seen when drawing. */
   int h;          /**< Texture height, as seen when drawing. */
-  float ratio;    /**< Width/height ratio. */
-  bool swizzled;  /**< Is the texture swizzled ? */
   bool can_blend; /**< Can the texture blend ? */
   GLuint id;      /**< Image id. */
 } g2dTexture;
@@ -354,7 +346,7 @@ void g2dPop();
  * \brief Frees an image & set its pointer to NULL.
  * @param tex Pointer to the variable which contains the image pointer.
  *
- * This function is used to gain memory when an image is useless.
+ * This function is used to release memory when an image is not used.
  * Must pass the pointer to the variable which contains the pointer,
  * to set it to NULL (passing NULL to a g2dBegin* function is safe).
  */
@@ -368,16 +360,24 @@ void g2dTexFree(g2dTexture** tex);
 g2dTexture* g2dTexFromSDLSurface(SDL_Surface* surface);
 
 /**
- * \brief Loads an image.
- * @param path Path to the file.
- * @param tex_mode A g2dTex_Mode constant.
+ * \brief Generate a texture from the framebuffer top-left region.
+ * @param w Texture width.
+ * @param h Texture height.
  * @returns Pointer to the texture.
  *
- * This function loads an image file. There is support for PNG & JPEG files
- * (if USE_PNG and USE_JPEG are defined). Swizzling is enabled only for 16*16+
- * textures (useless on small textures), pass G2D_SWIZZLE to enable it.
+ * NOTE: Because OpenGL internally uses a different coordinate system than
+ * gLib2D, the generated texture is vertically mirrored.
  */
-g2dTexture* g2dTexLoad(char path[], g2dTex_Mode mode);
+g2dTexture* g2dTexFromFramebuffer(int w, int h);
+
+/**
+ * \brief Generate a texture from a file.
+ * @param path Path to the file.
+ * @returns Pointer to the texture.
+ *
+ * This function loads an image file.
+ */
+g2dTexture* g2dTexFromFile(char path[]);
 
 /**
  * \brief Resets the current coordinates.

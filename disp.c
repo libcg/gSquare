@@ -185,9 +185,9 @@ static void processEvents()
 }
 
 
-static g2dTexture* loadImage(char path[], g2dTex_Mode mode)
+static g2dTexture* loadImage(char path[])
 {
-  g2dTexture* tex = g2dTexLoad(path,mode);
+  g2dTexture* tex = g2dTexFromFile(path);
   if (tex == NULL) throwException(IMG_GetError());
   return tex;
 }
@@ -195,11 +195,11 @@ static g2dTexture* loadImage(char path[], g2dTex_Mode mode)
 
 static void loadTextures()
 {
-  img.back = loadImage("graphics/back.png",0);
-  img.tileset = loadImage("graphics/tileset.png",0);
-  img.gsquare = loadImage("graphics/gsquare.png",0);
-  img.banner = loadImage("graphics/genesis.png",0);
-  img.end = loadImage("./graphics/end.png",0);
+  img.back = loadImage("graphics/back.png");
+  img.tileset = loadImage("graphics/tileset.png");
+  img.gsquare = loadImage("graphics/gsquare.png");
+  img.banner = loadImage("graphics/genesis.png");
+  img.end = loadImage("graphics/end.png");
 }
 
 
