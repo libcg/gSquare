@@ -93,9 +93,10 @@ static Object *obj_list = NULL, obj;
 static Obj_Type obj_type;
 static int obj_list_size;
 static bool obj_begin = false, obj_line_strip;
-static bool obj_use_z, obj_use_blend, obj_use_rot,
+static bool obj_use_z, obj_use_rot,
             obj_use_tex_linear, obj_use_tex_repeat, obj_use_int;
 static g2dCoord_Mode obj_coord_mode;
+static g2dBlend_Mode obj_blend_mode;
 static int obj_colors_count;
 static g2dTexture* obj_tex;
 
@@ -228,7 +229,6 @@ void g2dSetMode(bool fullscreen)
   glMatrixMode(GL_MODELVIEW);
 
   g2dResetScissor();
-  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
   glEnable(GL_BLEND);
   glEnable(GL_SCISSOR_TEST);
@@ -266,7 +266,6 @@ void _g2dBeginCommon()
   obj_list = realloc(obj_list,MALLOC_STEP * sizeof(Object));
 
   obj_use_z = false;
-  obj_use_blend = false;
   obj_use_rot = false;
   obj_use_int = false;
   obj_colors_count = 0;
@@ -412,11 +411,20 @@ void g2dEnd()
   }
 
   // Manage extensions
-  if (obj_use_z)          glEnable(GL_DEPTH_TEST);
-  else                    glDisable(GL_DEPTH_TEST);
-  if (obj_use_blend)      glEnable(GL_BLEND);
-  else                    glDisable(GL_BLEND);
-  if (obj_tex == NULL)    glDisable(GL_TEXTURE_2D);
+  if (obj_use_z)                      glEnable(GL_DEPTH_TEST);
+  else                                glDisable(GL_DEPTH_TEST);
+  if (obj_blend_mode == G2D_REPLACE)  glDisable(GL_BLEND);
+  else
+  {
+    glEnable(GL_BLEND);
+    if (obj_blend_mode == G2D_BLEND)
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    else if (obj_blend_mode == G2D_ADD)
+      glBlendFunc(GL_ONE, GL_ONE);
+    else if (obj_blend_mode == G2D_MULT)
+      glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+  }
+  if (obj_tex == NULL)                glDisable(GL_TEXTURE_2D);
   else
   {
     glEnable(GL_TEXTURE_2D);
@@ -454,6 +462,7 @@ void g2dReset()
   g2dResetRotation();
   g2dResetCrop();
   g2dResetTex();
+  g2dResetBlend();
 }
 
 
@@ -701,7 +710,6 @@ void g2dGetAlpha(g2dAlpha* alpha)
 void g2dSetColor(g2dColor color)
 {
   obj.color = color;
-  if (G2D_GET_A(obj.color) < 255) obj_use_blend = true;
 }
 
 
@@ -710,7 +718,6 @@ void g2dSetAlpha(g2dAlpha alpha)
   if (alpha < 0) alpha = 0;
   if (alpha > 255) alpha = 255;
   obj.alpha = alpha;
-  if (obj.alpha < 255) obj_use_blend = true;
 }
 
 
@@ -832,7 +839,6 @@ void g2dResetTex()
   if (obj_tex == NULL) return;
   obj_use_tex_repeat = false;
   obj_use_tex_linear = true;
-  if (obj_tex->can_blend) obj_use_blend = true;
 }
 
 
@@ -840,14 +846,6 @@ void g2dSetTexRepeat(bool use)
 {
   if (obj_tex == NULL) return;
   obj_use_tex_repeat = use;
-}
-
-
-void g2dSetTexBlend(bool use)
-{
-  if (obj_tex == NULL) return;
-  if (!obj_tex->can_blend) return;
-  obj_use_blend = use;
 }
 
 
@@ -928,6 +926,19 @@ g2dTexture* g2dTexFromFile(char path[])
   if (!path) return NULL;
 
   return g2dTexFromSDLSurface(IMG_Load(path));
+}
+
+// * Blending functions *
+
+void g2dResetBlend()
+{
+  if (obj_tex) obj_blend_mode = (obj_tex->can_blend ? G2D_BLEND : G2D_REPLACE);
+  else         obj_blend_mode = G2D_BLEND;
+}
+
+void g2dSetBlend(g2dBlend_Mode mode)
+{
+  obj_blend_mode = mode;
 }
 
 // * Scissor functions *

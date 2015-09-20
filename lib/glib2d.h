@@ -168,11 +168,11 @@ enum g2dColors
  * Can only be used with g2dFlip.
  */
 /**
- * \enum g2dTex_Mode
- * \brief Texture modes enumeration.
+ * \enum g2dBlend_Mode
+ * \brief Texture blending modes enumeration.
  *
- * Change texture properties.
- * Can only be used with g2dTexLoad.
+ * Change texture blending properties.
+ * Can only be used with g2dSetTexBlend.
  */
 typedef enum
 {
@@ -191,6 +191,13 @@ typedef enum
   G2D_VSYNC = 1 /**< Limit the FPS to 60 (synchronized with the screen).
                      Better image quality and less power consumption. */
 } g2dFlip_Mode;
+typedef enum
+{
+  G2D_REPLACE,
+  G2D_BLEND,
+  G2D_ADD,
+  G2D_MULT
+} g2dBlend_Mode;
 
 /**
  * \var g2dAlpha
@@ -742,16 +749,6 @@ void g2dResetTex();
 void g2dSetTexRepeat(bool use);
 
 /**
- * \brief Use alpha blending with the texture.
- * @param use true to activate (better look, by default),
-              false to desactivate (better performance).
- *
- * This function must be called during object rendering.
- * Automaticaly disabled when g2dTexture::can_blend is set to false.
- */
-void g2dSetTexBlend(bool use);
-
-/**
  * \brief Use the bilinear filter with the texture.
  * @param use true to activate (better look, by default).
               false to desactivate (better performance).
@@ -760,6 +757,21 @@ void g2dSetTexBlend(bool use);
  * Only useful when scaling.
  */
 void g2dSetTexLinear(bool use);
+
+/**
+ * \brief Reset blending mode.
+ *
+ * This function must be called during object rendering.
+ */
+void g2dResetBlend();
+
+/**
+ * \brief Set blending mode.
+ * @param mode One of g2dBlend_Mode modes.
+ *
+ * This function must be called during object rendering.
+ */
+void g2dSetBlend(g2dBlend_Mode mode);
 
 /**
  * \brief Resets the draw zone to the entire screen.
