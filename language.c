@@ -36,16 +36,16 @@ void getLanguageList()
   }
 
   lang_n = 0;
-  do 
+  do
   {
     lang_list = realloc(lang_list,(++lang_n)*sizeof(char*));
     lang_list[lang_n-1] = malloc(16*sizeof(char));
   }
   while (fscanf(file,"%[^\n]\n",lang_list[lang_n-1]) > 0);
-  
+
   fclose(file);
   lang_n--;
-  
+
   if (cfg.lang_id >= lang_n)
   {
     throwException("Wrong language id\n");
@@ -74,12 +74,12 @@ void loadLanguage()
   fscanf(file,"%[^\n]\n",text.menu.config[1]);
   fscanf(file,"%[^\n]\n",text.menu.config[2]);
   fscanf(file,"%[^\n]\n",text.menu.config[3]);
-  // Game 
+  // Game
   fscanf(file,"%[^\n]\n",text.game.pause);
   fscanf(file,"%[^\n]\n",text.game.pause_choice[0]);
   fscanf(file,"%[^\n]\n",text.game.pause_choice[1]);
   fscanf(file,"%[^\n]\n",text.game.pause_choice[2]);
-  fscanf(file,"%[^\n]\n",text.game.pause_choice[3]);  
+  fscanf(file,"%[^\n]\n",text.game.pause_choice[3]);
   fscanf(file,"%[^\n]\n",text.game.win);
   fscanf(file,"%[^\n]\n",text.game.next_level);
   fscanf(file,"%[^\n]\n",text.game.time_over);
@@ -87,16 +87,16 @@ void loadLanguage()
   // General
   fscanf(file,"%[^\n]\n",text.yes);
   fscanf(file,"%[^\n]\n",text.no);
-  
+
   strcpy(text.credits,
-"gSquare\n\nBy meastnt and Geecko\nDesign by Maxime Brugnon and CaptainKill\nMu\
-sic by c418 (mainly from Little Things)\nTesting by Léo, Arthur, Baptiste, Maxi\
-me\n\nUsing :\nGraphics library - gLib2D by Geecko\nFont library - intraFont-G \
-by BenHur\nAudio library - aalib by Arshia001\nPSPSDK - ps2dev.org\n\nThanks to\
-:\nFrench PSP community (PSP-Gen, XtreamLua)\nSony for his marvellous developme\
-nt platform");
+    "\n\ngSquare\n\n"
+    "Game engine: libcg\n"
+    "Gameplay, level design: meastnt\n"
+    "Design: Maxime Brugnon, CaptainKill\n"
+    "Music: c418 (mainly from Little Things)\n\n"
+    "Originally released on the Playstation Portable");
   strcpy(text.authors,"Presented by @meastnt and @libcg");
-  strcpy(text.website,"http://sites.google.com/site/gsquarecenter");
+  strcpy(text.website,"https://github.com/libcg/gsquare");
 
   sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
   sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
@@ -109,6 +109,6 @@ void initLanguage()
 {
   getLanguageList();
   loadLanguage();
-}  
+}
 
 // EOF
