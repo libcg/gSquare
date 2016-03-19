@@ -398,7 +398,9 @@ int luaSetCameraActive(lua_State* L)
 
 int luaGetLanguageID(lua_State* L)
 {
-  return luaVarInteger(L,&cfg.lang_id);
+  Config *cfg = configGet();
+
+  return luaVarInteger(L,&cfg->lang_id);
 }
 
 // Common

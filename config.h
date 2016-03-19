@@ -18,18 +18,22 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdbool.h>
+
 #define CONFIG_PATH "config"
 
 typedef struct
 {
-  int music_vol, sound_vol;
+  int music_vol;
+  int sound_vol;
   int lang_id;
-  int fullscreen;
+  bool fullscreen;
 } Config;
 
-extern Config cfg;
 
+void configInit();
 void configSave();
 void configLoad();
+Config *configGet();
 
 #endif

@@ -36,6 +36,8 @@ int sound_nbr = 0, music_fade = 0;
 
 static void musicLogic()
 {
+  Config *cfg = configGet();
+
   global_volume += music_fade * FADE_TIME / FPS;
 
   if (music_fade > 0 && global_volume > 1.f)
@@ -68,7 +70,7 @@ static void musicLogic()
   if (global_volume > 0.f)
   {
     Mix_ResumeMusic();
-    Mix_VolumeMusic(MIX_MAX_VOLUME * global_volume * cfg.music_vol / 100.f);
+    Mix_VolumeMusic(MIX_MAX_VOLUME * global_volume * cfg->music_vol / 100.f);
   }
 }
 
@@ -76,7 +78,9 @@ static void musicLogic()
 
 void setMusic(const char* path)
 {
-  if (cfg.music_vol == 0) Mix_HaltMusic();
+  Config *cfg = configGet();
+
+  if (cfg->music_vol == 0) Mix_HaltMusic();
   if (path == NULL) throwException("NULL music path");
   if (strcmp(path,music_old_path) != 0)
   {
@@ -135,11 +139,12 @@ void freeSound(const char* name)
 
 void playSound(const char* name)
 {
+  Config *cfg = configGet();
   int id = getSoundId(name);
 
-  if (id >= 0 && cfg.sound_vol > 0) {
+  if (id >= 0 && cfg->sound_vol > 0) {
     Mix_VolumeChunk(sound[id].chunk,
-                    MIX_MAX_VOLUME * global_volume * cfg.sound_vol / 100);
+                    MIX_MAX_VOLUME * global_volume * cfg->sound_vol / 100);
     Mix_PlayChannel(id, sound[id].chunk, 0);
   }
 }

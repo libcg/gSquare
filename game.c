@@ -382,6 +382,8 @@ void gameMenu()
       }
       else if (menu.mod_i == 1) // Options
       {
+	Config *cfg = configGet();
+
         if (menu.sub_i < 0) menu.sub_i = 3;
         if (menu.sub_i > 3) menu.sub_i = 0;
 
@@ -390,23 +392,23 @@ void gameMenu()
           switch (menu.sub_i)
           {
             case 0:
-              cfg.music_vol -= 25;
-              if (cfg.music_vol < 0) cfg.music_vol = 0;
-              sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
+              cfg->music_vol -= 25;
+              if (cfg->music_vol < 0) cfg->music_vol = 0;
+              sprintf(text.menu.config_setting[0],"%d%%",cfg->music_vol);
             break;
             case 1:
-              cfg.sound_vol -= 25;
-              if (cfg.sound_vol < 0) cfg.sound_vol = 0;
-              sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
+              cfg->sound_vol -= 25;
+              if (cfg->sound_vol < 0) cfg->sound_vol = 0;
+              sprintf(text.menu.config_setting[1],"%d%%",cfg->sound_vol);
             break;
             case 2:
-              cfg.lang_id--;
-              if (cfg.lang_id < 0) cfg.lang_id = lang_n-1;
+              cfg->lang_id--;
+              if (cfg->lang_id < 0) cfg->lang_id = lang_n-1;
               loadLanguage();
             break;
             case 3:
-              cfg.fullscreen = !cfg.fullscreen;
-              strcpy(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
+              cfg->fullscreen = !cfg->fullscreen;
+              strcpy(text.menu.config_setting[3],cfg->fullscreen ? text.yes : text.no);
             break;
           }
         }
@@ -415,23 +417,23 @@ void gameMenu()
           switch (menu.sub_i)
           {
             case 0:
-              cfg.music_vol += 25;
-              if (cfg.music_vol > 100) cfg.music_vol = 100;
-              sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
+              cfg->music_vol += 25;
+              if (cfg->music_vol > 100) cfg->music_vol = 100;
+              sprintf(text.menu.config_setting[0],"%d%%",cfg->music_vol);
             break;
             case 1:
-              cfg.sound_vol += 25;
-              if (cfg.sound_vol > 100) cfg.sound_vol = 100;
-              sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
+              cfg->sound_vol += 25;
+              if (cfg->sound_vol > 100) cfg->sound_vol = 100;
+              sprintf(text.menu.config_setting[1],"%d%%",cfg->sound_vol);
             break;
             case 2:
-              cfg.lang_id++;
-              if (cfg.lang_id >= lang_n) cfg.lang_id = 0;
+              cfg->lang_id++;
+              if (cfg->lang_id >= lang_n) cfg->lang_id = 0;
               loadLanguage();
             break;
             case 3:
-              cfg.fullscreen = !cfg.fullscreen;
-              strcpy(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
+              cfg->fullscreen = !cfg->fullscreen;
+              strcpy(text.menu.config_setting[3],cfg->fullscreen ? text.yes : text.no);
             break;
           }
         }

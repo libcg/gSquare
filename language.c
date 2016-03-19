@@ -28,6 +28,7 @@ char** lang_list = NULL;
 
 void getLanguageList()
 {
+  Config *cfg = configGet();
   FILE* file = fopen("lang/list","r");
   if (file == NULL)
   {
@@ -46,7 +47,7 @@ void getLanguageList()
   fclose(file);
   lang_n--;
 
-  if (cfg.lang_id >= lang_n)
+  if (cfg->lang_id >= lang_n)
   {
     throwException("Wrong language id\n");
     return;
@@ -57,8 +58,9 @@ void getLanguageList()
 
 void loadLanguage()
 {
-  char path[256] = {0};
-  sprintf(path,"lang/%s.lng",lang_list[cfg.lang_id]);
+  Config *cfg = configGet();
+  char path[256];
+  sprintf(path,"lang/%s.lng",lang_list[cfg->lang_id]);
   FILE* file = fopen(path,"r");
 
   fscanf(file,"%[^\n]\n\n",text.menu.config_setting[2]);
@@ -98,9 +100,9 @@ void loadLanguage()
   strcpy(text.authors,"Presented by @meastnt and @libcg");
   strcpy(text.website,"https://github.com/libcg/gsquare");
 
-  sprintf(text.menu.config_setting[0],"%d%%",cfg.music_vol);
-  sprintf(text.menu.config_setting[1],"%d%%",cfg.sound_vol);
-  sprintf(text.menu.config_setting[3],cfg.fullscreen ? text.yes : text.no);
+  sprintf(text.menu.config_setting[0],"%d%%",cfg->music_vol);
+  sprintf(text.menu.config_setting[1],"%d%%",cfg->sound_vol);
+  sprintf(text.menu.config_setting[3],cfg->fullscreen ? text.yes : text.no);
 
   fclose(file);
 }

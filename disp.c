@@ -215,18 +215,19 @@ static void freeTextures()
 
 static void manageScreenMode()
 {
-  static int fs = 1;
+  Config *cfg = configGet();
+  static bool fs = true;
 
-  if (fs != cfg.fullscreen)
+  if (fs != cfg->fullscreen)
   {
     // This has to be done in the disp thread.
     // Also, GL textures are lost during mode change so reload them.
     freeTextures();
-    g2dSetMode(cfg.fullscreen);
+    g2dSetMode(cfg->fullscreen);
     loadTextures();
   }
 
-  fs = cfg.fullscreen;
+  fs = cfg->fullscreen;
 }
 
 

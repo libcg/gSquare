@@ -54,6 +54,7 @@ int main(int argc, char* argv[])
   if (!mutex)
     throwException("Couldn't create mutex");
 
+  configInit();
   configLoad();
   ctrlInit();
   initLanguage();

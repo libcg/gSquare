@@ -19,31 +19,43 @@
 
 #include "config.h"
 
-Config cfg = {100,100,0,1};
+static Config cfg;
+
+void configInit()
+{
+  cfg.music_vol = 100;
+  cfg.sound_vol = 100;
+  cfg.lang_id = 0;
+  cfg.fullscreen = true;
+}
 
 void configSave()
 {
-  FILE* file = fopen(CONFIG_PATH,"w");
+  FILE *file = fopen(CONFIG_PATH,"w");
   if (file == NULL) return;
-  
+
   fprintf(file,"%d %d\n",cfg.music_vol,cfg.sound_vol);
   fprintf(file,"%d\n",cfg.lang_id);
-  fprintf(file,"%d\n",cfg.fullscreen);
-  
+  fprintf(file,"%d\n",(int)cfg.fullscreen);
+
   fclose(file);
 }
 
-
 void configLoad()
 {
-  FILE* file = fopen(CONFIG_PATH,"r");
+  FILE *file = fopen(CONFIG_PATH,"r");
   if (file == NULL) return;
-  
+
   fscanf(file,"%d %d\n",&cfg.music_vol,&cfg.sound_vol);
   fscanf(file,"%d\n",&cfg.lang_id);
-  fscanf(file,"%d\n",&cfg.fullscreen);
-  
+  fscanf(file,"%d\n",(int *)&cfg.fullscreen);
+
   fclose(file);
+}
+
+Config *configGet()
+{
+  return &cfg;
 }
 
 // EOF
