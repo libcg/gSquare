@@ -61,10 +61,9 @@ int main(int argc, char* argv[])
   initAudio();
   initLua();
   initGame(mutex);
-  initDisp(mutex);
+  initDisp();
 
-  while (!exit_state)
-    SDL_Delay(10);
+  dispLoop(mutex);
 
   SDL_DestroyMutex(mutex);
 

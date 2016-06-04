@@ -230,20 +230,8 @@ static void manageScreenMode()
 }
 
 
-int dispThread(void* p)
+void dispLoop(SDL_mutex* mutex)
 {
-  SDL_mutex *mutex = (SDL_mutex *)p;
-
-  loadTextures();
-
-  g2dFontInit();
-  font = g2dFontLoad("fonts/Cantarell-Bold.ttf",24);
-  bigfont = g2dFontLoad("fonts/Cantarell-Bold.ttf",36);
-  itlfont = g2dFontLoad("fonts/Cantarell-Oblique.ttf",36);
-  if (!font || !bigfont || !itlfont) throwException("Couldn't open font\n");
-
-  initBackground();
-  
   while (exit_state != EXCEPTION)
   {
     processEvents();
@@ -302,15 +290,20 @@ int dispThread(void* p)
     drawFade(&main_fade);
     g2dFlip(G2D_VSYNC);
   }
-  
-  return 0;
 }
 
 
-void initDisp(SDL_mutex *mutex)
+void initDisp()
 {
-  // Start disp thread
-  SDL_CreateThread(dispThread, "disp_thread", (void *)mutex);
+  loadTextures();
+
+  g2dFontInit();
+  font = g2dFontLoad("fonts/Cantarell-Bold.ttf",24);
+  bigfont = g2dFontLoad("fonts/Cantarell-Bold.ttf",36);
+  itlfont = g2dFontLoad("fonts/Cantarell-Oblique.ttf",36);
+  if (!font || !bigfont || !itlfont) throwException("Couldn't open font\n");
+
+  initBackground();
 }
 
 // EOF

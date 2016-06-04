@@ -82,7 +82,8 @@ void setFadeColor(Fade* fade, short color);
 short getFadeState(Fade* fade);
 void waitFadeDone(Fade* fade);
 void drawFade(Fade* fade);
-void initDisp(SDL_mutex *mutex);
+void initDisp();
+void dispLoop(SDL_mutex* mutex);
 
 // Game
 void setCameraRot(int rot);
