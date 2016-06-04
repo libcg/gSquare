@@ -16,7 +16,7 @@
  */
 
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <time.h>
 #include <SDL_timer.h>
 #include <SDL_thread.h>

@@ -17,7 +17,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-#include <malloc.h>
 #include <SDL_timer.h>
 #include <SDL_image.h>
 
