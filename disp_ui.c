@@ -28,15 +28,7 @@
 #include "lib/glib2d_font.h"
 
 Fade ui_fade = {FADE_OUT,0.f,3.5f,255,0,0.f,BLACK};
-g2dColor timer_back_color = WHITE;
-float timer_size = 1.f;
 int dcount = 0;
-
-void setTimerAspect(float size, g2dColor color)
-{
-  if (size >= 0.f) timer_size = size;
-  timer_back_color = color;
-}
 
 
 void drawUI()
@@ -45,42 +37,10 @@ void drawUI()
 
   drawFade(&ui_fade);
 
-  // Timer
-  timer_size += (1.f-timer_size) * TIMER_SIZE_SPEED;
-  timer_back_color = G2D_RGBA(G2D_GET_R(timer_back_color) +
-                              (int)((255-G2D_GET_R(timer_back_color))*TIMER_SIZE_SPEED),
-                              G2D_GET_G(timer_back_color) +
-                              (int)((255-G2D_GET_G(timer_back_color))*TIMER_SIZE_SPEED),
-                              G2D_GET_B(timer_back_color) +
-                              (int)((255-G2D_GET_B(timer_back_color))*TIMER_SIZE_SPEED),
-                              255);
-
   if (getGameState() == INGAME || getGameState() == LOSE)
   {
     ui_fade.mode = FADE_OUT;
     cam.zoom_target = 1.9f;
-    // Timer
-    char timer_text[32];
-    sprintf(timer_text,"%.2d:%.2d",game.time_elapsed/60,game.time_elapsed%60);
-    g2dFontBegin(bigfont, timer_text);
-    {
-      g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(g2dScrW()/2,25);
-      g2dFontSetScale(timer_size);
-      g2dFontSetColor(timer_back_color);
-      g2dFontSetCoordXYRelative(1, 1);
-      g2dFontAdd();
-      g2dFontSetCoordXYRelative(0, -2);
-      g2dFontAdd();
-      g2dFontSetCoordXYRelative(-2, 0);
-      g2dFontAdd();
-      g2dFontSetCoordXYRelative(0, 2);
-      g2dFontAdd();
-      g2dFontSetColor(BLACK);
-      g2dFontSetCoordXYRelative(1, -1);
-      g2dFontAdd();
-    }
-    g2dFontEnd();
     // Flying text
     if (game.flying_text != NULL)
     {
@@ -128,35 +88,6 @@ void drawUI()
         g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
         g2dFontSetScale(0.9f);
         g2dFontSetColor(BLACK);
-        g2dFontAdd();
-      }
-      g2dFontEnd();
-    }
-  }
-  else if (getGameState() == TIME_OVER)
-  {
-    ui_fade.color = BLACK;
-    ui_fade.max = 255;
-    ui_fade.mode = FADE_IN;
-    cam.zoom_target = 1.f;
-    g2dFontBegin(bigfont, text.game.time_over);
-    {
-      g2dFontSetCoordMode(G2D_CENTER);
-      g2dFontSetCoordXY(g2dScrW()/2,g2dScrH()/2);
-      g2dFontSetScale(0.9f);
-      g2dFontSetColor(WHITE);
-      g2dFontAdd();
-    }
-    g2dFontEnd();
-    if (dcount < DCOUNT_MAX * 5 / 6)
-    {
-      g2dFontBegin(font, text.game.respawn);
-      {
-        g2dFontSetCoordMode(G2D_DOWN_RIGHT);
-        g2dFontSetCoordXY(g2dScrW()-15,g2dScrH()-15);
-        g2dFontSetAlpha(255*dcount/DCOUNT_MAX);
-        g2dFontSetScale(0.9f);
-        g2dFontSetColor(WHITE);
         g2dFontAdd();
       }
       g2dFontEnd();

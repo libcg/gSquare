@@ -10,8 +10,6 @@ end
 function setGame()
   -- Music
   setMusic("./audio/c418-bummer.mp3")
-  -- Timer
-  varTimeElapsed(60)
   -- Player 
   varPlayerX(16*3)
   varPlayerY(16*15)

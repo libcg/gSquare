@@ -10,8 +10,6 @@ end
 function setGame()
   -- Music
   setMusic("./audio/c418-itscomplicated.mp3")
-  -- Timer
-  varTimeElapsed(60)
   -- Player 
   varPlayerX(16)
   varPlayerY(240)

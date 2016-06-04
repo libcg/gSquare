@@ -2,7 +2,6 @@
 INGAME = 0
 LOSE = 1
 WIN = 2
-TIME_OVER = 3
 
 FIXED = 1
 GRAVITY = 2

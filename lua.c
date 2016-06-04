@@ -92,11 +92,6 @@ int luaVarGravityLock(lua_State* L)
   return luaVarInteger(L,&game.g_lock);
 }
 
-int luaVarTimeElapsed(lua_State* L)
-{
-  return luaVarInteger(L,&game.time_elapsed);
-}
-
 int luaVarExitState(lua_State* L)
 {
   return luaVarInteger(L,&exit_state);
@@ -376,16 +371,6 @@ int luaPlaySound(lua_State* L)
 
 // Display functions
 
-int luaSetTimerAspect(lua_State* L)
-{
-  LUA_EXCEPTION(lua_gettop(L) != 4,EXCEPTION_ARG)
-
-  setTimerAspect(lua_tonumber(L,1),G2D_RGBA(lua_tointeger(L,2),
-                                            lua_tointeger(L,3),
-                                            lua_tointeger(L,4),255));
-  return 0;
-}
-
 int luaSetCameraActive(lua_State* L)
 {
   LUA_EXCEPTION(lua_gettop(L) != 1,EXCEPTION_ARG)
@@ -412,7 +397,6 @@ void luaRegister()
   lua_register(lua_state,"varPlayerY",luaVarPlayerY);
   lua_register(lua_state,"varGravityDir",luaVarGravityDir);
   lua_register(lua_state,"varGravityLock",luaVarGravityLock);
-  lua_register(lua_state,"varTimeElapsed",luaVarTimeElapsed);
   lua_register(lua_state,"varExitState",luaVarExitState);
   lua_register(lua_state,"setPlayerState",luaSetPlayerState);
   lua_register(lua_state,"resetPlayerState",luaResetPlayerState);
@@ -442,7 +426,6 @@ void luaRegister()
   lua_register(lua_state,"freeSound",luaFreeSound);
   lua_register(lua_state,"playSound",luaPlaySound);
   // Display
-  lua_register(lua_state,"setTimerAspect",luaSetTimerAspect);
   lua_register(lua_state,"setCameraActive",luaSetCameraActive);
   // Language
   lua_register(lua_state,"getLanguageID",luaGetLanguageID);

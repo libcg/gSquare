@@ -10,8 +10,6 @@ end
 function setGame()
   -- Music
   setMusic("./audio/c418-peanuts.mp3")
-  -- Timer
-  varTimeElapsed(60)
   -- Player 
   varPlayerX(16*1)
   varPlayerY(16*2)

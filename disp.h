@@ -29,7 +29,6 @@
 #define CAM_POS_SPEED 0.06f
 #define CAM_ROT_SPEED 0.18f
 #define CAM_ZOOM_SPEED 0.05f
-#define TIMER_SIZE_SPEED 0.1f
 #define DCOUNT_MAX 30
 
 enum fade_mode { FADE_OUT = -1, FADE_IN = 1 };
@@ -93,7 +92,6 @@ void drawShadowMask();
 void drawLevel();
 
 // UI
-void setTimerAspect(float size, g2dColor color);
 void drawUI();
 void dispgSquare();
 void dispBanner();

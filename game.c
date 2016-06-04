@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <SDL_timer.h>
 #include <SDL_thread.h>
 
@@ -31,11 +30,10 @@
 #include "config.h"
 #include "language.h"
 
-Game game = {S,0,0.f,0.f,0,0,{0},0,NULL};
+Game game = {S,0,0.f,0.f,0,{0},0,NULL};
 Pause pause = {0};
 Menu menu = {0,0,0,0,0,0.f,0.f,0.f,70.f,500.f,350.f};
 State p_state;
-static time_t old_time = 0;
 
 // Game States
 
@@ -170,13 +168,6 @@ void gameControls()
         pushGameState(PAUSE);
       }
     break;
-    case TIME_OVER:
-      if (ctrlJustPressed(KEY_GO))
-      {
-        popGameState();
-        resetLevel();
-      }
-    break;
     case WIN:
       if (ctrlJustPressed(KEY_GO))
       {
@@ -224,27 +215,6 @@ void gameControls()
         if (pause.i == 3) {setGameState(MENU); menu.state = 0;}
       }
      break;
-  }
-}
-
-
-void timer()
-{
-  time_t actual_time = time(NULL);
-  
-  if (actual_time >= old_time + 1)
-  {
-    game.time_elapsed--;
-    if (game.time_elapsed < 15)
-      setTimerAspect(1.5f,RED);
-    old_time = actual_time;    
-  }
-  
-  if (game.time_elapsed <= 0)
-  {
-    pushGameState(TIME_OVER);
-    cam.active = 0;
-    setMusic("!");
   }
 }
 
@@ -498,7 +468,6 @@ int gameThread(void* p)
       if (getGameState() == INGAME)
       {
         checkBounds();
-        timer();
       }
     }
 

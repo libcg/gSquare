@@ -5,28 +5,23 @@ bullet_speed = 4.5
 -- Touch callbacks
 
 function coin_touch_callback()
-  varTimeElapsed(varTimeElapsed() + 5)
-  setTimerAspect(1.5,255,255,0)
+  -- TODO find coins a purpose
   playSound("coin")
 end
 
 function checkpoint_north_touch_callback()
-  setTimerAspect(-1,0,255,0)
   setPlayerState(varObjX()+2,varObjY()+2,0)
 end
 
 function checkpoint_east_touch_callback()
-  setTimerAspect(-1,0,255,0)
   setPlayerState(varObjX()+2,varObjY()+2,1)
 end
 
 function checkpoint_south_touch_callback()
-  setTimerAspect(-1,0,255,0)
   setPlayerState(varObjX()+2,varObjY()+2,2)
 end
 
 function checkpoint_west_touch_callback()
-  setTimerAspect(-1,0,255,0)
   setPlayerState(varObjX()+2,varObjY()+2,3)
 end
 

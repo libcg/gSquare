@@ -10,8 +10,6 @@ end
 function setGame()
   -- Music
   setMusic("./audio/c418-icantaffordmastering.mp3")
-  -- Timer
-  varTimeElapsed(60)
   -- Player 
   varPlayerX(240)
   varPlayerY(16)
