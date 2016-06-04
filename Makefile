@@ -1,4 +1,5 @@
 BIN = gsquare
+OS = $(shell uname)
 CROSS ?= 
 
 OBJS = \
@@ -9,7 +10,13 @@ OBJS = \
 
 CFLAGS = $(shell sdl2-config --cflags) -Wall -O2
 LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf\
-          -lGL -lpng -ljpeg -lm -llua
+          -lpng -ljpeg -lm -llua
+
+ifeq ($(OS), Darwin)
+LDFLAGS += -framework OpenGL
+else
+LDFLAGS += -lGL
+endif
 
 all: gsquare
 
