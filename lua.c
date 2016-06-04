@@ -234,8 +234,8 @@ int luaCreateObjectType(lua_State* L)
   int tex_w = lua_tointeger(L,3);
   int tex_h = lua_tointeger(L,4);
   int prop = lua_tointeger(L,5);
-  char* touch_cb = lua_tostring(L,6);
-  char* tick_cb = lua_tostring(L,7);
+  char* touch_cb = (char*)lua_tostring(L,6);
+  char* tick_cb = (char*)lua_tostring(L,7);
   createObjectType(tex_x,tex_y,tex_w,tex_h,prop,touch_cb,tick_cb);
   return 0;
 }

@@ -102,7 +102,8 @@ void loadLanguage()
 
   sprintf(text.menu.config_setting[0],"%d%%",cfg->music_vol);
   sprintf(text.menu.config_setting[1],"%d%%",cfg->sound_vol);
-  sprintf(text.menu.config_setting[3],cfg->fullscreen ? text.yes : text.no);
+  sprintf(text.menu.config_setting[3],"%s",
+    cfg->fullscreen ? text.yes : text.no);
 
   fclose(file);
 }
