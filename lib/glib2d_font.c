@@ -125,44 +125,41 @@ static g2dTexture *g2dFontTexCacheGet(g2dFont *font, char *text)
 static g2dFontLine *g2dFontGenLines(int *size, g2dFontContext *ctx)
 {
   g2dFontLine *lines = NULL;
-  char *dtext;
+  char *text;
   int i, j, len, yskip;
   int break_count = 0;
   int line_count = 0;
 
-  dtext = strdup(ctx->text);
-  len = strlen(dtext);
+  text = strdup(ctx->text);
+  len = strlen(text);
   yskip = TTF_FontLineSkip(ctx->font->ttf) / 1.4f;
 
   for (i = 0, j = 0; i <= len; i++) {
-    if (dtext[i] == '\n' || dtext[i] == '\0') {
-      if (i <= j) {
+    if (text[i] == '\n' || text[i] == '\0') {
+      if (i == j) {
         /* Found an empty line */
-        dtext[i] = ' ';
-      }
-      else {
-        char *text;
-
-        /* Found a non-empty line. Fetch from cache and add to the list */
-        dtext[i] = '\0';
-        text = &dtext[j];
-
-        lines = realloc(lines, (line_count + 1) * sizeof(g2dFontLine));
-        lines[line_count].tex = g2dFontTexCacheGet(ctx->font, text);
-        if (!lines[line_count].tex) {
-          lines[line_count].tex = g2dFontTexCacheInsert(ctx->font, text);
-        }
-        lines[line_count].ypad = yskip * break_count;
-
-        j = i + 1;
-        line_count++;
+        j++;
+        break_count++;
+        continue;
       }
 
+      /* Found a non-empty line. Fetch from cache and add to the list */
+      text[i] = '\0';
+
+      lines = realloc(lines, (line_count + 1) * sizeof(g2dFontLine));
+      lines[line_count].tex = g2dFontTexCacheGet(ctx->font, &text[j]);
+      if (!lines[line_count].tex) {
+        lines[line_count].tex = g2dFontTexCacheInsert(ctx->font, &text[j]);
+      }
+      lines[line_count].ypad = yskip * break_count;
+
+      j = i + 1;
       break_count++;
+      line_count++;
     }
   }
 
-  free(dtext);
+  free(text);
 
   *size = line_count;
   return lines;
