@@ -30,6 +30,8 @@
 #include "controls.h"
 
 int exit_state = 0;
+SDL_sem *logic_sem;
+SDL_sem *render_sem;
 
 void throwException(const char* err, ...)
 {
@@ -48,11 +50,8 @@ void throwException(const char* err, ...)
 
 int main(int argc, char* argv[])
 {
-  SDL_mutex *mutex;
-
-  mutex = SDL_CreateMutex();
-  if (!mutex)
-    throwException("Couldn't create mutex");
+  logic_sem = SDL_CreateSemaphore(1);
+  render_sem = SDL_CreateSemaphore(0);
 
   configInit();
   configLoad();
@@ -60,12 +59,13 @@ int main(int argc, char* argv[])
   initLanguage();
   initAudio();
   initLua();
-  initGame(mutex);
+  initGame();
   initDisp();
 
-  dispLoop(mutex);
+  dispLoop();
 
-  SDL_DestroyMutex(mutex);
+  SDL_DestroySemaphore(logic_sem);
+  SDL_DestroySemaphore(render_sem);
 
   return 0;
 }

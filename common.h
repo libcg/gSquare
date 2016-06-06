@@ -19,6 +19,7 @@
 #define COMMON_H
 
 #include <stdbool.h>
+#include <SDL_mutex.h>
 
 // *
 //#define DEBUG
@@ -30,6 +31,8 @@
 #define ERROR_LEN 2048
 
 extern int exit_state;
+extern SDL_sem *logic_sem;
+extern SDL_sem *render_sem;
 
 #define BASIC_SIZE 16
 #define AIR_FRICTION 1.008f

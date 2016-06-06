@@ -89,7 +89,7 @@ void popGameState();
 void setGameState(int state);
 int checkGameState(int state);
 int getGameState();
-void initGame(SDL_mutex *mutex);
+void initGame();
 void setPlayerState(float x, float y, int g_dir);
 void resetPlayerState();
 

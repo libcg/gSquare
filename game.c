@@ -437,7 +437,6 @@ void gameMenu()
 
 int gameThread(void* p)
 {
-  SDL_mutex *mutex = (SDL_mutex *)p;
   initGameState();
 
   while (!exit_state)
@@ -456,22 +455,20 @@ int gameThread(void* p)
     }    
     if (checkGameState(INGAME))
     {
+      SDL_SemWait(logic_sem);
+
       gameControls();
       if (getGameState() != PAUSE)
       {
-        SDL_LockMutex(mutex);
-
         physics(); // and player controls
-
-        SDL_UnlockMutex(mutex);
       }
       if (getGameState() == INGAME)
       {
         checkBounds();
       }
-    }
 
-    SDL_Delay(1000/FPS); // FIXME
+      SDL_SemPost(render_sem);
+    }
   }
   
   if (exit_state != EXCEPTION)
@@ -483,10 +480,10 @@ int gameThread(void* p)
 }
 
 
-void initGame(SDL_mutex *mutex)
+void initGame()
 {
   // Start game thread
-  SDL_CreateThread(gameThread, "game_thread", (void *)mutex);
+  SDL_CreateThread(gameThread, "game_thread", NULL);
 }
 
 // EOF

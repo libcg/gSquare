@@ -141,6 +141,7 @@ void waitFadeDone(Fade* fade)
 {
   while (getFadeState(fade) != FADE_DONE)
   {
+    SDL_SemPost(render_sem);
     SDL_Delay(1);
   }
 }
@@ -230,7 +231,7 @@ static void manageScreenMode()
 }
 
 
-void dispLoop(SDL_mutex* mutex)
+void dispLoop()
 {
   while (exit_state != EXCEPTION)
   {
@@ -260,14 +261,14 @@ void dispLoop(SDL_mutex* mutex)
     }
     if (checkGameState(INGAME))
     {
-      SDL_LockMutex(mutex);
+      SDL_SemWait(render_sem);
 
       drawMovingBackground();
       camera();
       drawLevel();
       drawUI();
 
-      SDL_UnlockMutex(mutex);
+      SDL_SemPost(logic_sem);
     }
     if (checkGameState(LEVEL_TITLE))
     {
