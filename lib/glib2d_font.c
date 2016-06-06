@@ -19,6 +19,10 @@
 
 #include "glib2d_font.h"
 
+/* Number of textures the cache can hold. It must be at least equal to the
+ * number of lines rendered per context, otherwise glitches will happen. */
+#define TEX_CACHE_SIZE    (32)
+
 /* Object properties of the text being drawn */
 typedef struct
 {
@@ -28,6 +32,14 @@ typedef struct
   g2dColor color;
   g2dAlpha alpha;
 } g2dFontObject;
+
+typedef struct
+{
+  int age;
+  g2dFont *font;
+  char *text;
+  g2dTexture *tex;
+} g2dFontTexCacheLine;
 
 /* Text rendering context */
 typedef struct
@@ -49,13 +61,70 @@ typedef struct
 
 static bool init = false;
 static g2dFontContext *ctx = NULL;
+static g2dFontTexCacheLine tex_cache[TEX_CACHE_SIZE];
 
 // * Internal functions *
+
+static void g2dFontTexCacheInit()
+{
+  int i;
+
+  for (i = 0; i < TEX_CACHE_SIZE; i++) {
+    tex_cache[i].age = 0;
+    tex_cache[i].font = NULL;
+    tex_cache[i].text = NULL;
+    tex_cache[i].tex = NULL;
+  }
+}
+
+static g2dTexture *g2dFontTexCacheInsert(g2dFont *font, char *text)
+{
+  int i, j;
+  SDL_Color color = {255, 255, 255};
+
+  /* Search for oldest texture */
+  for (i = 0, j = 0; i < TEX_CACHE_SIZE; i++) {
+    if (tex_cache[i].age > tex_cache[j].age) {
+      j = i;
+    }
+  }
+
+  if (tex_cache[j].text) {
+    free(tex_cache[j].text);
+    g2dTexFree(&tex_cache[j].tex);
+  }
+
+  tex_cache[j].age = 0;
+  tex_cache[j].font = font;
+  tex_cache[j].text = strdup(text);
+  tex_cache[j].tex = g2dTexFromSDLSurface(
+    TTF_RenderUTF8_Blended(font->ttf, text, color)
+  );
+
+  return tex_cache[j].tex;
+}
+
+static g2dTexture *g2dFontTexCacheGet(g2dFont *font, char *text)
+{
+  int i;
+  g2dTexture *tex = NULL;
+
+  /* Search while incrementing ages */
+  for (i = 0; i < TEX_CACHE_SIZE; i++) {
+    tex_cache[i].age++;
+
+    if (tex_cache[i].font == font && strcmp(tex_cache[i].text, text) == 0) {
+      tex = tex_cache[i].tex;
+      tex_cache[i].age = 0;
+    }
+  }
+
+  return tex;
+}
 
 static g2dFontLine *g2dFontGenLines(int *size, g2dFontContext *ctx)
 {
   g2dFontLine *lines = NULL;
-  SDL_Color color = {255, 255, 255};
   char *dtext;
   int i, j, len, yskip;
   int break_count = 0;
@@ -67,19 +136,22 @@ static g2dFontLine *g2dFontGenLines(int *size, g2dFontContext *ctx)
 
   for (i = 0, j = 0; i <= len; i++) {
     if (dtext[i] == '\n' || dtext[i] == '\0') {
-      /* Found a line */
       if (i <= j) {
-        /* An empty one */
+        /* Found an empty line */
         dtext[i] = ' ';
       }
       else {
-        /* A non-empty one. Render and add to the list */
+        char *text;
+
+        /* Found a non-empty line. Fetch from cache and add to the list */
         dtext[i] = '\0';
+        text = &dtext[j];
 
         lines = realloc(lines, (line_count + 1) * sizeof(g2dFontLine));
-        lines[line_count].tex = g2dTexFromSDLSurface(
-          TTF_RenderUTF8_Blended(ctx->font->ttf, &dtext[j], color)
-        );
+        lines[line_count].tex = g2dFontTexCacheGet(ctx->font, text);
+        if (!lines[line_count].tex) {
+          lines[line_count].tex = g2dFontTexCacheInsert(ctx->font, text);
+        }
         lines[line_count].ypad = yskip * break_count;
 
         j = i + 1;
@@ -96,20 +168,13 @@ static g2dFontLine *g2dFontGenLines(int *size, g2dFontContext *ctx)
   return lines;
 }
 
-static void g2dFontFreeLines(g2dFontLine *lines, int size)
+static void g2dFontDrawLines(g2dFontContext *ctx)
 {
-  int i;
-
-  for (i = 0; i < size; i++) {
-    g2dTexFree(&lines[i].tex);
-  }
-
-  free(lines);
-}
-
-static void g2dFontDrawLines(g2dFontLine *lines, int size, g2dFontContext *ctx)
-{
+  g2dFontLine *lines;
+  int size;
   int i, j;
+
+  lines = g2dFontGenLines(&size, ctx);
 
   for (i = 0; i < size; i++) {
     g2dBeginRects(lines[i].tex);
@@ -129,6 +194,8 @@ static void g2dFontDrawLines(g2dFontLine *lines, int size, g2dFontContext *ctx)
     }
     g2dEnd();
   }
+
+  free(lines);
 }
 
 // * Exposed functions *
@@ -137,6 +204,8 @@ void g2dFontInit()
 {
   if (TTF_Init() != 0)
     return;
+
+  g2dFontTexCacheInit();
 
   init = true;
 }
@@ -195,17 +264,12 @@ void g2dFontBegin(g2dFont *font, char *text)
 
 void g2dFontEnd()
 {
-  g2dFontLine *lines;
-  int i, size;
+  int i;
 
   if (!ctx)
     return;
 
-  lines = g2dFontGenLines(&size, ctx);
-  if (lines) {
-    g2dFontDrawLines(lines, size, ctx);
-    g2dFontFreeLines(lines, size);
-  }
+  g2dFontDrawLines(ctx);
 
   for (i = 0; i < ctx->obj_nbr; i++)
     free(ctx->obj_list[i]);
