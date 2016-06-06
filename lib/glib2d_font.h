@@ -34,6 +34,7 @@ typedef struct
 
 void g2dFontInit();
 void g2dFontTerm();
+void g2dFontInvalidate();
 
 g2dFont *g2dFontLoad(char *path, int pt);
 void g2dFontFree(g2dFont *font);

@@ -223,6 +223,7 @@ static void manageScreenMode()
     // This has to be done in the disp thread.
     // Also, GL textures are lost during mode change so reload them.
     freeTextures();
+    g2dFontInvalidate();
     g2dSetMode(cfg->fullscreen);
     loadTextures();
   }

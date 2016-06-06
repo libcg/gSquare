@@ -77,6 +77,18 @@ static void g2dFontTexCacheInit()
   }
 }
 
+static void g2dFontTexCacheFree()
+{
+  int i;
+
+  for (i = 0; i < TEX_CACHE_SIZE; i++) {
+    if (tex_cache[i].text) {
+      free(tex_cache[i].text);
+      g2dTexFree(&tex_cache[i].tex);
+    }
+  }
+}
+
 static g2dTexture *g2dFontTexCacheInsert(g2dFont *font, char *text)
 {
   int i, j;
@@ -211,7 +223,15 @@ void g2dFontTerm()
 {
   TTF_Quit();
 
+  g2dFontTexCacheFree();
+
   init = false;
+}
+
+void g2dFontInvalidate()
+{
+  g2dFontTexCacheFree();
+  g2dFontTexCacheInit();
 }
 
 g2dFont *g2dFontLoad(char *path, int pt)
