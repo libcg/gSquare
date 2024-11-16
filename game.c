@@ -70,8 +70,6 @@ void setGameState(int state)
 
 int checkGameState(int state)
 {
-  if (game.state_stack == NULL) return 0;
-
   int i;
   for (i=0; i!=game.state_stack_size; i++)
   {
@@ -83,8 +81,6 @@ int checkGameState(int state)
 
 int getGameState()
 {
-  if (game.state_stack == NULL) return -1;
-
   if (game.state_stack_size <= 0) return -1;
   return game.state_stack[game.state_stack_size-1];
 }

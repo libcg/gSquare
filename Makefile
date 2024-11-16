@@ -13,7 +13,7 @@ LIBS = -lpng -lz -lpspgu -lpspvram -llua -lpspusb -lpspusbstor\
        -lpspaudio -lpspaudiocodec -lpspatrac3 -lpspmp3 -lvorbisfile -lvorbis\
        -logg -lm 
 
-CFLAGS = -O2 -Wall -G0 #-g
+CFLAGS = -Wno-stringop-truncation -O2 -Wall -G0 #-g
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

@@ -142,8 +142,8 @@ int RewindSceMp3(int channel)
 void FillBuffer(int channel)
 {
 	SceUChar8* dst;
-	int num;
-	int pos;
+	SceInt32 num;
+	SceInt32 pos;
 	sceMp3GetInfoToAddStreamData(streamsSceMp3[channel].handle,&dst,&num,&pos);
 	if (streamsSceMp3[channel].lastPosition>pos)
 	{
@@ -216,8 +216,6 @@ int LoadSceMp3(char* filename,int channel)
 	}
 	streamsSceMp3[channel].args.mp3StreamStart=0;
 	streamsSceMp3[channel].args.mp3StreamEnd=sceIoLseek(streamsSceMp3[channel].file,0,PSP_SEEK_END);
-	streamsSceMp3[channel].args.unk1=0;
-	streamsSceMp3[channel].args.unk2=0;
 	streamsSceMp3[channel].args.mp3Buf=streamsSceMp3[channel].mp3Buf;
 	streamsSceMp3[channel].args.mp3BufSize=16*1024;
 	streamsSceMp3[channel].args.pcmBuf=streamsSceMp3[channel].pcmBuf;

@@ -13,6 +13,7 @@
 #include <vram.h>
 #include <malloc.h>
 #include <math.h>
+#include <string.h>
 
 #ifdef USE_PNG
 #include <png.h>
