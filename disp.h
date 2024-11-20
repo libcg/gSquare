@@ -8,7 +8,7 @@
 #define DISP_H
 
 #include "lib/glib2d.h"
-#include "lib/intraFont.h"
+#include "intraFont.h"
 
 #define BACK_W 30
 #define BACK_H 17

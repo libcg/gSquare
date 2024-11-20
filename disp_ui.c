@@ -14,10 +14,6 @@
 #include "audio.h"
 #include "language.h"
 
-#include "lib/glib2d.h"
-#include "lib/pspaalib.h"
-#include "lib/intraFont.h"
-
 Fade ui_fade = {FADE_OUT,0.f,3.5f,255,0,0.f,BLACK};
 g2dColor timer_back_color = WHITE;
 float timer_size = 1.f, gsquare_size = 1.f;
